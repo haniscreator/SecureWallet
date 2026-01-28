@@ -5,8 +5,8 @@ namespace App\Domain\Wallet\DataTransferObjects;
 class WalletData
 {
     public function __construct(
-        public readonly string $name,
-        public readonly int $currency_id,
+        public readonly ?string $name = null,
+        public readonly ?int $currency_id = null,
         public readonly ?bool $status = null,
         public readonly ?float $initial_balance = null,
     ) {
@@ -15,8 +15,8 @@ class WalletData
     public static function fromRequest(array $data): self
     {
         return new self(
-            name: $data['name'],
-            currency_id: (int) $data['currency_id'],
+            name: $data['name'] ?? null,
+            currency_id: isset($data['currency_id']) ? (int) $data['currency_id'] : null,
             status: isset($data['status']) ? (bool) $data['status'] : null,
             initial_balance: isset($data['initial_balance']) ? (float) $data['initial_balance'] : null,
         );

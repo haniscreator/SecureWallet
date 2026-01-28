@@ -5,8 +5,8 @@ namespace App\Domain\User\DataTransferObjects;
 class UserData
 {
     public function __construct(
-        public readonly string $name,
-        public readonly string $email,
+        public readonly ?string $name = null,
+        public readonly ?string $email = null,
         public readonly ?string $password = null,
         public readonly ?string $role = null,
         public readonly ?bool $status = null,
@@ -16,8 +16,8 @@ class UserData
     public static function fromRequest(array $data): self
     {
         return new self(
-            name: $data['name'],
-            email: $data['email'],
+            name: $data['name'] ?? null,
+            email: $data['email'] ?? null,
             password: $data['password'] ?? null,
             role: $data['role'] ?? null,
             status: isset($data['status']) ? (bool) $data['status'] : null,

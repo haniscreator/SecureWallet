@@ -5,9 +5,9 @@ namespace App\Domain\Currency\DataTransferObjects;
 class CurrencyData
 {
     public function __construct(
-        public readonly string $code,
-        public readonly string $name,
-        public readonly string $symbol,
+        public readonly ?string $code = null,
+        public readonly ?string $name = null,
+        public readonly ?string $symbol = null,
         public readonly ?bool $status = null,
     ) {
     }
@@ -15,9 +15,9 @@ class CurrencyData
     public static function fromRequest(array $data): self
     {
         return new self(
-            code: $data['code'],
-            name: $data['name'],
-            symbol: $data['symbol'],
+            code: $data['code'] ?? null,
+            name: $data['name'] ?? null,
+            symbol: $data['symbol'] ?? null,
             status: isset($data['status']) ? (bool) $data['status'] : null,
         );
     }

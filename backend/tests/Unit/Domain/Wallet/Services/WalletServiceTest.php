@@ -87,6 +87,25 @@ class WalletServiceTest extends TestCase
         $this->assertDatabaseHas('wallets', ['id' => $wallet->id, 'name' => 'New Name']);
     }
 
+    public function test_update_wallet_partial()
+    {
+        $wallet = Wallet::create([
+            'name' => 'Original Name',
+            'currency_id' => $this->currency->id,
+            'status' => true,
+        ]);
+
+        // Only update name
+        $data = new \App\Domain\Wallet\DataTransferObjects\WalletData(
+            name: 'Updated Name Only'
+        );
+
+        $updatedWallet = $this->walletService->update($wallet, $data);
+
+        $this->assertEquals('Updated Name Only', $updatedWallet->name);
+        $this->assertEquals($this->currency->id, $updatedWallet->currency_id); // Should remain unchanged
+    }
+
     public function test_update_wallet_status_freeze()
     {
         $wallet = Wallet::create([

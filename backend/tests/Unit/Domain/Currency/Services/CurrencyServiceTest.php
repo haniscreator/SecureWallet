@@ -83,6 +83,22 @@ class CurrencyServiceTest extends TestCase
         $this->assertDatabaseHas('currencies', ['id' => $currency->id, 'name' => 'New Name']);
     }
 
+    public function test_update_currency_partial()
+    {
+        $currency = Currency::create(['code' => 'PART', 'name' => 'Partial Update', 'symbol' => 'P']);
+
+        // Only update name, leave symbol and code null
+        $data = new \App\Domain\Currency\DataTransferObjects\CurrencyData(
+            name: 'Updated Name'
+        );
+
+        $updated = $this->currencyService->update($currency, $data);
+
+        $this->assertEquals('Updated Name', $updated->name);
+        $this->assertEquals('PART', $updated->code); // Should remain unchanged
+        $this->assertEquals('P', $updated->symbol); // Should remain unchanged
+    }
+
     public function test_delete_currency()
     {
         $currency = Currency::create(['code' => 'DEL', 'name' => 'Delete Me', 'symbol' => 'D']);
