@@ -7,53 +7,218 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
-## About Laravel
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Project Structure
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+The project follows a Domain-Driven Design (DDD) inspired structure within Laravel.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+```
+app/
+├── Domain/                 # Core Business Logic & Models
+│   ├── Auth/               
+│   │   ├── Actions/        # Single Responsibility Actions
+│   │   ├── DataTransferObjects/ # Strict DTOs
+│   │   └── Services/       # Business Logic Services
+│   ├── User/
+│   │   ├── Models/         # Eloquent Models
+│   │   └── ...
+│   ├── Wallet/
+│   │   ├── Models/
+│   │   ├── Actions/
+│   │   ├── Services/
+│   │   └── DataTransferObjects/
+│   └── Currency/
+│       └── ...
+├── Http/
+│   ├── Controllers/        # API Controllers (Thin)
+│   ├── Requests/           # Form Requests (Validation)
+│   └── Resources/          # API Resources (Transformation)
+├── Policies/               # Authorization Policies
+└── Providers/              # Service Providers
+```
 
-## Learning Laravel
+# Wallet Module Architecture Flow
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+This diagram illustrates the data flow and strict typing implementation in the Wallet Module, demonstrating how the Controller, Action, Service, and Data Layers interact.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Component Roles
 
-## Laravel Sponsors
+1.  **Controller (`WalletController`)**:
+    *   Handles HTTP inputs and validation (`StoreWalletRequest`).
+    *   **Crucial Step**: Instantly converts validated array data into a strict `WalletData` DTO.
+    *   Delegates the business operation to a specific **Action**.
+    *   Formats the final response using `WalletResource`.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+2.  **DTO (`WalletData`)**:
+    *   Acts as a strict contract for data transfer.
+    *   Ensures that strictly typed data streams flow into the Action and Service layers, replacing loose associative arrays.
 
-### Premium Partners
+3.  **Action (`CreateWalletAction`)**:
+    *   Follows the Single Responsibility Principle.
+    *   Orchestrates the operation by calling the `WalletService`.
+    *   Strictly accepts `WalletData` as input.
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+4.  **Service (`WalletService`)**:
+    *   Contains the core business logic (e.g., creating the wallet, handling initial balance transactions).
+    *   Interacts directly with Eloquent Models.
+    *   Strictly accepts `WalletData` as input.
 
-## Contributing
+5.  **Model (`Wallet`)**:
+    *   Represents the database table structure.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Interaction Flow
 
-## Code of Conduct
+```mermaid
+sequenceDiagram
+    participant Client
+    participant Controller as WalletController
+    participant DTO as WalletData (DTO)
+    participant Action as CreateWalletAction
+    participant Service as WalletService
+    participant Model as Wallet (Model)
+    participant DB as Database
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+    Client->>Controller: POST /api/v1/wallets (JSON)
+    Note over Controller: Validates Request (StoreWalletRequest)
+    
+    Controller->>DTO: fromRequest($validatedData)
+    DTO-->>Controller: WalletData Object
+    
+    Controller->>Action: execute(WalletData $data)
+    
+    Action->>Service: create(WalletData $data)
+    
+    Note over Service: Business Logic (e.g. Transactions)
+    Service->>Model: Wallet::create(...) / Transaction::create(...)
+    Model->>DB: INSERT INTO wallets...
+    DB-->>Model: Success
+    Model-->>Service: Wallet Instance
+    
+    Service-->>Action: Wallet Instance
+    
+    Action-->>Controller: Wallet Instance
+    
+    Note over Controller: Transform to API Response
+    Controller->>Client: WalletResource (JSON Response)
+```
 
-## Security Vulnerabilities
+## System Design (Component Structure)
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+This diagram shows the static structure and dependencies between the classes in the Wallet Module.
 
-## License
+```mermaid
+classDiagram
+    direction TB
+    
+    %% API Layer
+    class WalletController {
+        +index()
+        +store(StoreWalletRequest)
+        +show(id)
+        +update(UpdateWalletRequest, id)
+    }
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+    class StoreWalletRequest {
+        +rules()
+        +authorize()
+    }
+    
+    %% Data Transfer Layer
+    class WalletData {
+        +string name
+        +int currency_id
+        +bool status
+        +float initial_balance
+        +fromRequest(array): self
+        +toArray(): array
+    }
+
+    %% Business Logic Layer (Actions & Services)
+    class CreateWalletAction {
+        +execute(WalletData): Wallet
+    }
+    
+    class UpdateWalletAction {
+        +execute(Wallet, WalletData): Wallet
+    }
+
+    class WalletService {
+        +create(WalletData): Wallet
+        +update(Wallet, WalletData): Wallet
+        +listWallets(User)
+        +assignUsers(Wallet, array)
+    }
+
+    %% Domain Model Layer
+    class Wallet {
+        +id
+        +name
+        +currency_id
+        +status
+        +balance()
+        +users()
+        +transactions()
+    }
+    
+    class Transaction {
+        +id
+        +wallet_id
+        +amount
+        +type
+        +reference
+    }
+
+    %% Relationships
+    WalletController ..> StoreWalletRequest : uses
+    WalletController ..> WalletData : creates
+    WalletController --> CreateWalletAction : invokes
+    WalletController --> UpdateWalletAction : invokes
+    
+    CreateWalletAction --> WalletService : delegates
+    UpdateWalletAction --> WalletService : delegates
+    
+    WalletService ..> WalletData : reads
+    WalletService --> Wallet : manages
+    WalletService --> Transaction : creates (initial balance)
+    
+    Wallet "1" -- "*" Transaction : has
+```
+
+## Database Schema (ERD)
+
+Strict database structure for the Wallet Module.
+
+```mermaid
+erDiagram
+    WALLETS ||--o{ TRANSACTIONS : has
+    WALLETS ||--o{ WALLET_USER : "assigned to"
+    CURRENCIES ||--o{ WALLETS : "denominated in"
+    USERS ||--o{ WALLET_USER : "accesses"
+
+    WALLETS {
+        bigint id PK
+        string name
+        bigint currency_id FK
+        boolean status "1=Active, 0=Frozen"
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    TRANSACTIONS {
+        bigint id PK
+        bigint from_wallet_id FK "nullable"
+        bigint to_wallet_id FK "nullable"
+        enum type "credit, debit"
+        decimal amount "15,2"
+        string reference
+        timestamp created_at
+    }
+
+    CURRENCIES {
+        bigint id PK
+        string code "USD, EUR"
+        string name
+        string symbol
+        boolean status
+    }
+```
