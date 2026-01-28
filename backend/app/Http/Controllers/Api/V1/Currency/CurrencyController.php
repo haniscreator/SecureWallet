@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1\Currency;
 
 use App\Http\Controllers\Controller;
 use App\Domain\Currency\Models\Currency;
+use App\Http\Resources\CurrencyResource;
 use Illuminate\Http\Request;
 
 use App\Http\Requests\Currency\StoreCurrencyRequest;
@@ -24,19 +25,19 @@ class CurrencyController extends Controller
 
     public function index(Request $request)
     {
-        return response()->json($this->listCurrenciesAction->execute());
+        return CurrencyResource::collection($this->listCurrenciesAction->execute());
     }
 
     public function show(Request $request, $id)
     {
-        return response()->json($this->getCurrencyAction->execute($id));
+        return new CurrencyResource($this->getCurrencyAction->execute($id));
     }
 
     public function store(StoreCurrencyRequest $request)
     {
         $currency = $this->createCurrencyAction->execute($request->validated());
 
-        return response()->json(['message' => 'Currency created', 'currency' => $currency], 201);
+        return response()->json(['message' => 'Currency created', 'currency' => new CurrencyResource($currency)], 201);
     }
 
     public function update(UpdateCurrencyRequest $request, $id)
@@ -50,7 +51,7 @@ class CurrencyController extends Controller
         $currency = $this->getCurrencyAction->execute($id);
         $updatedCurrency = $this->updateCurrencyAction->execute($currency, $request->validated());
 
-        return response()->json(['message' => 'Currency updated', 'currency' => $updatedCurrency]);
+        return response()->json(['message' => 'Currency updated', 'currency' => new CurrencyResource($updatedCurrency)]);
     }
 
     public function destroy(Request $request, $id)

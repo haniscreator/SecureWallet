@@ -22,7 +22,7 @@ class AuthController extends Controller
 
         return response()->json([
             'message' => 'Login successful',
-            'user' => $data['user'],
+            'user' => new \App\Http\Resources\UserResource($data['user']),
             'token' => $data['token'],
         ]);
     }

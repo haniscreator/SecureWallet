@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1\Wallet;
 use App\Http\Controllers\Controller;
 use App\Domain\Wallet\Models\Wallet;
 use App\Domain\Wallet\Services\TransactionService;
+use App\Http\Resources\TransactionResource;
 use Illuminate\Http\Request;
 
 class TransactionController extends Controller
@@ -30,6 +31,6 @@ class TransactionController extends Controller
 
         $transactions = $this->transactionService->listTransactions($wallet, $validated);
 
-        return response()->json($transactions);
+        return TransactionResource::collection($transactions);
     }
 }

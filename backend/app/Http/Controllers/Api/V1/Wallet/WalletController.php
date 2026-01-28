@@ -15,6 +15,7 @@ use App\Http\Requests\Wallet\UpdateWalletStatusRequest;
 use App\Http\Requests\Wallet\AssignUserToWalletRequest;
 use App\Domain\Wallet\Actions\ListWalletsAction;
 use App\Domain\Wallet\Actions\GetWalletAction;
+use App\Http\Resources\WalletResource;
 
 class WalletController extends Controller
 {
@@ -34,7 +35,7 @@ class WalletController extends Controller
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
-        return response()->json($this->listWalletsAction->execute($request->user()));
+        return WalletResource::collection($this->listWalletsAction->execute($request->user()));
     }
 
     public function show(Request $request, $id)
@@ -45,14 +46,14 @@ class WalletController extends Controller
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
-        return response()->json($this->getWalletAction->execute($wallet)->append('balance'));
+        return new WalletResource($this->getWalletAction->execute($wallet)->append('balance'));
     }
 
     public function store(StoreWalletRequest $request)
     {
         $wallet = $this->createWalletAction->execute($request->validated());
 
-        return response()->json(['message' => 'Wallet created', 'wallet' => $wallet->append('balance')]);
+        return response()->json(['message' => 'Wallet created', 'wallet' => new WalletResource($wallet->append('balance'))]);
     }
 
     public function update(UpdateWalletRequest $request, $id)
@@ -64,7 +65,7 @@ class WalletController extends Controller
 
         $wallet = $this->updateWalletAction->execute($wallet, $request->validated());
 
-        return response()->json(['message' => 'Wallet updated', 'wallet' => $wallet]);
+        return response()->json(['message' => 'Wallet updated', 'wallet' => new WalletResource($wallet)]);
     }
 
     public function updateStatus(UpdateWalletStatusRequest $request, $id)
@@ -73,7 +74,7 @@ class WalletController extends Controller
 
         $wallet = $this->updateWalletStatusAction->execute($wallet, $request->validated()['status']);
 
-        return response()->json(['message' => 'Wallet status updated', 'wallet' => $wallet]);
+        return response()->json(['message' => 'Wallet status updated', 'wallet' => new WalletResource($wallet)]);
     }
 
     public function assignUser(AssignUserToWalletRequest $request, $id)

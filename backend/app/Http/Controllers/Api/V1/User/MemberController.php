@@ -11,6 +11,9 @@ use App\Domain\User\Actions\UpdateMemberAction;
 use App\Domain\User\Actions\DeleteMemberAction;
 use App\Domain\User\Actions\GetMemberAction;
 
+use App\Http\Resources\UserResource;
+use Illuminate\Http\Request;
+
 class MemberController extends Controller
 {
     public function __construct(
@@ -28,7 +31,7 @@ class MemberController extends Controller
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
-        return response()->json($this->listMembersAction->execute());
+        return UserResource::collection($this->listMembersAction->execute());
     }
 
     public function store(StoreMemberRequest $request)
@@ -37,7 +40,7 @@ class MemberController extends Controller
 
         return response()->json([
             'message' => 'Member created successfully',
-            'user' => $user,
+            'user' => new UserResource($user),
         ], 201);
     }
 
@@ -49,7 +52,7 @@ class MemberController extends Controller
 
         return response()->json([
             'message' => 'Member updated successfully',
-            'user' => $updatedUser,
+            'user' => new UserResource($updatedUser),
         ]);
     }
 
