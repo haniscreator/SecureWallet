@@ -51,7 +51,7 @@ class WalletController extends Controller
 
     public function store(StoreWalletRequest $request)
     {
-        $wallet = $this->createWalletAction->execute($request->validated());
+        $wallet = $this->createWalletAction->execute(\App\Domain\Wallet\DataTransferObjects\WalletData::fromRequest($request->validated()));
 
         return response()->json(['message' => 'Wallet created', 'wallet' => new WalletResource($wallet->append('balance'))]);
     }
@@ -63,7 +63,7 @@ class WalletController extends Controller
         // Authorization handled in Form Request, but we need the model here to pass to action
         // Technically FormRequest loaded it too, but fetching again is cheap and safe or use route binding.
 
-        $wallet = $this->updateWalletAction->execute($wallet, $request->validated());
+        $wallet = $this->updateWalletAction->execute($wallet, \App\Domain\Wallet\DataTransferObjects\WalletData::fromRequest($request->validated()));
 
         return response()->json(['message' => 'Wallet updated', 'wallet' => new WalletResource($wallet)]);
     }

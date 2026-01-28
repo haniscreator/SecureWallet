@@ -12,7 +12,7 @@ class UpdateWalletAction
     ) {
     }
 
-    public function execute(Wallet $wallet, array $data): Wallet
+    public function execute(Wallet $wallet, \App\Domain\Wallet\DataTransferObjects\WalletData $data): Wallet
     {
         return $this->walletService->update($wallet, $data);
     }

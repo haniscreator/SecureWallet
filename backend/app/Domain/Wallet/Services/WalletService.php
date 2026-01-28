@@ -26,21 +26,21 @@ class WalletService
         return $wallet->load('users');
     }
 
-    public function create(array $data): Wallet
+    public function create(\App\Domain\Wallet\DataTransferObjects\WalletData $data): Wallet
     {
         return \Illuminate\Support\Facades\DB::transaction(function () use ($data) {
             $wallet = Wallet::create([
-                'name' => $data['name'],
-                'currency_id' => $data['currency_id'],
-                'status' => 1, // 1 = active
+                'name' => $data->name,
+                'currency_id' => $data->currency_id,
+                'status' => $data->status ?? true,
             ]);
 
             // Handle Initial Balance by creating a 'credit' transaction
-            if (isset($data['initial_balance']) && $data['initial_balance'] > 0) {
+            if ($data->initial_balance && $data->initial_balance > 0) {
                 \App\Domain\Wallet\Models\Transaction::create([
                     'to_wallet_id' => $wallet->id,
                     'type' => 'credit',
-                    'amount' => $data['initial_balance'],
+                    'amount' => $data->initial_balance,
                     'reference' => 'Initial Balance',
                 ]);
             }
@@ -63,9 +63,9 @@ class WalletService
         $wallet->users()->syncWithoutDetaching($userIds);
     }
 
-    public function update(Wallet $wallet, array $data): Wallet
+    public function update(Wallet $wallet, \App\Domain\Wallet\DataTransferObjects\WalletData $data): Wallet
     {
-        $wallet->update($data);
+        $wallet->update($data->toArray());
         return $wallet;
     }
 }

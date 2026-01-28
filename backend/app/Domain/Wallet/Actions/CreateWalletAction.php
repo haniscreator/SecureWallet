@@ -12,7 +12,7 @@ class CreateWalletAction
     ) {
     }
 
-    public function execute(array $data): Wallet
+    public function execute(\App\Domain\Wallet\DataTransferObjects\WalletData $data): Wallet
     {
         return $this->walletService->create($data);
     }

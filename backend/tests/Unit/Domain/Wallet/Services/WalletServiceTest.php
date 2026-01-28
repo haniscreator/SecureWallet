@@ -32,11 +32,11 @@ class WalletServiceTest extends TestCase
 
     public function test_create_wallet_successfully()
     {
-        $data = [
-            'name' => 'My Wallet',
-            'currency_id' => $this->currency->id,
-            'initial_balance' => 0,
-        ];
+        $data = new \App\Domain\Wallet\DataTransferObjects\WalletData(
+            name: 'My Wallet',
+            currency_id: $this->currency->id,
+            initial_balance: 0
+        );
 
         $wallet = $this->walletService->create($data);
 
@@ -47,11 +47,11 @@ class WalletServiceTest extends TestCase
 
     public function test_create_wallet_with_initial_balance_creates_transaction()
     {
-        $data = [
-            'name' => 'Funded Wallet',
-            'currency_id' => $this->currency->id,
-            'initial_balance' => 1000,
-        ];
+        $data = new \App\Domain\Wallet\DataTransferObjects\WalletData(
+            name: 'Funded Wallet',
+            currency_id: $this->currency->id,
+            initial_balance: 1000
+        );
 
         $wallet = $this->walletService->create($data);
 
@@ -78,7 +78,10 @@ class WalletServiceTest extends TestCase
             'status' => true,
         ]);
 
-        $updatedWallet = $this->walletService->update($wallet, ['name' => 'New Name']);
+        $updatedWallet = $this->walletService->update($wallet, new \App\Domain\Wallet\DataTransferObjects\WalletData(
+            name: 'New Name',
+            currency_id: $this->currency->id // Required by DTO constructor
+        ));
 
         $this->assertEquals('New Name', $updatedWallet->name);
         $this->assertDatabaseHas('wallets', ['id' => $wallet->id, 'name' => 'New Name']);

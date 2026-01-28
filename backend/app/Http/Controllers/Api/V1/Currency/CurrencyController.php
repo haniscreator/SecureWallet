@@ -35,7 +35,7 @@ class CurrencyController extends Controller
 
     public function store(StoreCurrencyRequest $request)
     {
-        $currency = $this->createCurrencyAction->execute($request->validated());
+        $currency = $this->createCurrencyAction->execute(\App\Domain\Currency\DataTransferObjects\CurrencyData::fromRequest($request->validated()));
 
         return response()->json(['message' => 'Currency created', 'currency' => new CurrencyResource($currency)], 201);
     }
@@ -49,7 +49,7 @@ class CurrencyController extends Controller
         // Since GetCurrencyAction returns Currency, let's use it.
 
         $currency = $this->getCurrencyAction->execute($id);
-        $updatedCurrency = $this->updateCurrencyAction->execute($currency, $request->validated());
+        $updatedCurrency = $this->updateCurrencyAction->execute($currency, \App\Domain\Currency\DataTransferObjects\CurrencyData::fromRequest($request->validated()));
 
         return response()->json(['message' => 'Currency updated', 'currency' => new CurrencyResource($updatedCurrency)]);
     }

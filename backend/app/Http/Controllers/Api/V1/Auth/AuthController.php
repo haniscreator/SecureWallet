@@ -18,7 +18,7 @@ class AuthController extends Controller
 
     public function login(LoginRequest $request)
     {
-        $data = $this->loginAction->execute($request->validated());
+        $data = $this->loginAction->execute(\App\Domain\Auth\DataTransferObjects\LoginData::fromRequest($request->validated()));
 
         return response()->json([
             'message' => 'Login successful',

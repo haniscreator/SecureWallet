@@ -12,7 +12,7 @@ class UpdateMemberAction
     ) {
     }
 
-    public function execute(User $user, array $data): User
+    public function execute(User $user, \App\Domain\User\DataTransferObjects\UserData $data): User
     {
         return $this->userService->updateUser($user, $data);
     }

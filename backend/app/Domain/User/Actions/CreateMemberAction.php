@@ -12,7 +12,7 @@ class CreateMemberAction
     ) {
     }
 
-    public function execute(array $data): User
+    public function execute(\App\Domain\User\DataTransferObjects\UserData $data): User
     {
         return $this->userService->createUser($data);
     }

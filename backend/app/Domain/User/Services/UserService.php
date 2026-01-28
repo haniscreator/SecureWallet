@@ -7,13 +7,14 @@ use Illuminate\Support\Facades\Hash;
 
 class UserService
 {
-    public function createUser(array $data): User
+    public function createUser(\App\Domain\User\DataTransferObjects\UserData $data): User
     {
         return User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => Hash::make($data['password']),
-            'role' => $data['role'] ?? 'user',
+            'name' => $data->name,
+            'email' => $data->email,
+            'password' => Hash::make($data->password),
+            'role' => $data->role ?? 'user',
+            'status' => $data->status ?? true,
         ]);
     }
 
@@ -22,9 +23,9 @@ class UserService
         return User::all();
     }
 
-    public function updateUser(User $user, array $data): User
+    public function updateUser(User $user, \App\Domain\User\DataTransferObjects\UserData $data): User
     {
-        $user->update($data);
+        $user->update($data->toArray());
         return $user;
     }
 

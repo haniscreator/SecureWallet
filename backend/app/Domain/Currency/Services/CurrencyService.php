@@ -17,22 +17,20 @@ class CurrencyService
         return Currency::findOrFail($id);
     }
 
-    public function create(array $data): Currency
+    public function create(\App\Domain\Currency\DataTransferObjects\CurrencyData $data): Currency
     {
         return \Illuminate\Support\Facades\DB::transaction(function () use ($data) {
-            return Currency::create([
-                'code' => $data['code'],
-                'name' => $data['name'],
-                'symbol' => $data['symbol'],
-                'status' => $data['status'] ?? 1,
-            ]);
+            return Currency::create(array_merge(
+                ['status' => 1],
+                $data->toArray()
+            ));
         });
     }
 
-    public function update(Currency $currency, array $data): Currency
+    public function update(Currency $currency, \App\Domain\Currency\DataTransferObjects\CurrencyData $data): Currency
     {
         return \Illuminate\Support\Facades\DB::transaction(function () use ($currency, $data) {
-            $currency->update($data);
+            $currency->update($data->toArray());
             return $currency;
         });
     }

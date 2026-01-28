@@ -12,7 +12,7 @@ class CreateCurrencyAction
     ) {
     }
 
-    public function execute(array $data): Currency
+    public function execute(\App\Domain\Currency\DataTransferObjects\CurrencyData $data): Currency
     {
         return $this->currencyService->create($data);
     }

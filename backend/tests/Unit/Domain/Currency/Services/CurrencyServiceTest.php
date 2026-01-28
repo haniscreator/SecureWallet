@@ -21,12 +21,12 @@ class CurrencyServiceTest extends TestCase
 
     public function test_create_currency()
     {
-        $data = [
-            'code' => 'TST',
-            'name' => 'Test Coin',
-            'symbol' => 'T',
-            'status' => 1,
-        ];
+        $data = new \App\Domain\Currency\DataTransferObjects\CurrencyData(
+            code: 'TST',
+            name: 'Test Coin',
+            symbol: 'T',
+            status: true
+        );
 
         $currency = $this->currencyService->create($data);
 
@@ -37,11 +37,11 @@ class CurrencyServiceTest extends TestCase
 
     public function test_create_currency_defaults_status_to_active()
     {
-        $data = [
-            'code' => 'ACT',
-            'name' => 'Active Coin',
-            'symbol' => 'A',
-        ];
+        $data = new \App\Domain\Currency\DataTransferObjects\CurrencyData(
+            code: 'ACT',
+            name: 'Active Coin',
+            symbol: 'A'
+        );
 
         $currency = $this->currencyService->create($data);
 
@@ -71,7 +71,13 @@ class CurrencyServiceTest extends TestCase
     {
         $currency = Currency::create(['code' => 'OLD', 'name' => 'Old Name', 'symbol' => 'O']);
 
-        $updated = $this->currencyService->update($currency, ['name' => 'New Name']);
+        $data = new \App\Domain\Currency\DataTransferObjects\CurrencyData(
+            code: 'OLD',
+            name: 'New Name',
+            symbol: 'O'
+        );
+
+        $updated = $this->currencyService->update($currency, $data);
 
         $this->assertEquals('New Name', $updated->name);
         $this->assertDatabaseHas('currencies', ['id' => $currency->id, 'name' => 'New Name']);

@@ -22,12 +22,12 @@ class UserServiceTest extends TestCase
 
     public function test_create_user_success()
     {
-        $data = [
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-            'password' => 'password123',
-            'role' => 'admin',
-        ];
+        $data = new \App\Domain\User\DataTransferObjects\UserData(
+            name: 'Test User',
+            email: 'test@example.com',
+            password: 'password123',
+            role: 'admin'
+        );
 
         $user = $this->service->createUser($data);
 
@@ -42,11 +42,11 @@ class UserServiceTest extends TestCase
 
     public function test_create_user_defaults_to_user_role()
     {
-        $data = [
-            'name' => 'Web User',
-            'email' => 'web@example.com',
-            'password' => 'password123',
-        ];
+        $data = new \App\Domain\User\DataTransferObjects\UserData(
+            name: 'Web User',
+            email: 'web@example.com',
+            password: 'password123'
+        );
 
         $user = $this->service->createUser($data);
 
@@ -64,9 +64,14 @@ class UserServiceTest extends TestCase
 
     public function test_update_user()
     {
-        $user = User::factory()->create(['name' => 'Old Name']);
+        $user = User::factory()->create(['name' => 'Old Name', 'email' => 'old@example.com']);
 
-        $updatedUser = $this->service->updateUser($user, ['name' => 'New Name']);
+        $data = new \App\Domain\User\DataTransferObjects\UserData(
+            name: 'New Name',
+            email: 'old@example.com' // Email required in DTO constructor but not modified here
+        );
+
+        $updatedUser = $this->service->updateUser($user, $data);
 
         $this->assertEquals('New Name', $updatedUser->name);
         $this->assertDatabaseHas('users', [

@@ -11,8 +11,8 @@ class LoginAction
     ) {
     }
 
-    public function execute(array $credentials): array
+    public function execute(\App\Domain\Auth\DataTransferObjects\LoginData $data): array
     {
-        return $this->authService->attemptLogin($credentials);
+        return $this->authService->attemptLogin($data);
     }
 }

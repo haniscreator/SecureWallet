@@ -7,9 +7,9 @@ use Illuminate\Validation\ValidationException;
 
 class AuthService
 {
-    public function attemptLogin(array $credentials): array
+    public function attemptLogin(\App\Domain\Auth\DataTransferObjects\LoginData $data): array
     {
-        if (!Auth::attempt($credentials)) {
+        if (!Auth::attempt($data->toArray())) {
             throw ValidationException::withMessages([
                 'email' => ['The provided credentials do not match our records.'],
             ]);

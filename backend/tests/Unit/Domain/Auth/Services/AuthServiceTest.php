@@ -19,13 +19,16 @@ class AuthServiceTest extends TestCase
 
     public function test_attempt_login_success()
     {
-        $credentials = ['email' => 'test@example.com', 'password' => 'password'];
+        $credentials = new \App\Domain\Auth\DataTransferObjects\LoginData(
+            email: 'test@example.com',
+            password: 'password'
+        );
         $user = Mockery::mock(User::class);
         $user->shouldReceive('createToken')->andReturn((object) ['plainTextToken' => 'test-token']);
 
         Auth::shouldReceive('attempt')
             ->once()
-            ->with($credentials)
+            ->with($credentials->toArray())
             ->andReturn(true);
 
         Auth::shouldReceive('user')
@@ -41,11 +44,14 @@ class AuthServiceTest extends TestCase
 
     public function test_attempt_login_failure()
     {
-        $credentials = ['email' => 'wrong@example.com', 'password' => 'wrong'];
+        $credentials = new \App\Domain\Auth\DataTransferObjects\LoginData(
+            email: 'wrong@example.com',
+            password: 'wrong'
+        );
 
         Auth::shouldReceive('attempt')
             ->once()
-            ->with($credentials)
+            ->with($credentials->toArray())
             ->andReturn(false);
 
         $this->expectException(ValidationException::class);

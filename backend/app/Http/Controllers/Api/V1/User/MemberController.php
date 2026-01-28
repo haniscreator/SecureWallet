@@ -36,7 +36,7 @@ class MemberController extends Controller
 
     public function store(StoreMemberRequest $request)
     {
-        $user = $this->createMemberAction->execute($request->validated());
+        $user = $this->createMemberAction->execute(\App\Domain\User\DataTransferObjects\UserData::fromRequest($request->validated()));
 
         return response()->json([
             'message' => 'Member created successfully',
@@ -48,7 +48,7 @@ class MemberController extends Controller
     {
         $user = $this->getMemberAction->execute($id);
 
-        $updatedUser = $this->updateMemberAction->execute($user, $request->validated());
+        $updatedUser = $this->updateMemberAction->execute($user, \App\Domain\User\DataTransferObjects\UserData::fromRequest($request->validated()));
 
         return response()->json([
             'message' => 'Member updated successfully',
