@@ -4,26 +4,16 @@ namespace App\Domain\Wallet\Actions;
 
 use App\Domain\Wallet\Models\Wallet;
 use App\Domain\Wallet\Models\Transaction;
-use App\Domain\Currency\Models\Currency;
 use Illuminate\Support\Facades\DB;
-use InvalidArgumentException;
 
 class CreateWalletAction
 {
     public function execute(array $data): Wallet
     {
         return DB::transaction(function () use ($data) {
-            // Lookup Currency
-            $currency = Currency::where('code', $data['currency'])->first();
-
-            if (!$currency) {
-                // Should be caught by validation really, but safety check
-                throw new InvalidArgumentException("Invalid currency code: {$data['currency']}");
-            }
-
             $wallet = Wallet::create([
                 'name' => $data['name'],
-                'currency_id' => $currency->id,
+                'currency_id' => $data['currency_id'],
                 'status' => 1, // 1 = active
             ]);
 

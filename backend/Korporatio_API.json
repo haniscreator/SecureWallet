@@ -384,8 +384,33 @@
                         },
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n    \"name\": \"Main Wallet\",\n    \"currency\": \"USD\",\n    \"initial_balance\": 1000.00\n}"
+                            "raw": "{\n    \"name\": \"Main Wallet\",\n    \"currency_id\": 1,\n    \"initial_balance\": 1000.00\n}"
                         }
+                    }
+                },
+                {
+                    "name": "Update Wallet (Name)",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"name\": \"Updated Wallet Name\"\n}"
+                        },
+                        "url": "{{base_url}}/api/v1/wallets/1"
                     }
                 },
                 {

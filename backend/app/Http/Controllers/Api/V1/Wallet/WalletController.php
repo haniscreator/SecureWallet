@@ -55,13 +55,30 @@ class WalletController extends Controller
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'currency' => 'required|exists:currencies,code', // Validate valid code
+            'currency_id' => 'required|exists:currencies,id',
             'initial_balance' => 'sometimes|numeric|min:0',
         ]);
 
         $wallet = $this->createWalletAction->execute($validated); // Controller -> Action
 
         return response()->json(['message' => 'Wallet created', 'wallet' => $wallet->append('balance')]);
+    }
+
+    public function update(Request $request, $id)
+    {
+        $wallet = Wallet::findOrFail($id);
+
+        if ($request->user()->cannot('update', $wallet)) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+        ]);
+
+        $wallet->update(['name' => $validated['name']]);
+
+        return response()->json(['message' => 'Wallet updated', 'wallet' => $wallet]);
     }
 
     public function updateStatus(Request $request, $id)

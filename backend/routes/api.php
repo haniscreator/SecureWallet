@@ -25,6 +25,7 @@ Route::prefix('v1')->group(function () {
         Route::get('/wallets', [\App\Http\Controllers\Api\V1\Wallet\WalletController::class, 'index']);
         Route::post('/wallets', [\App\Http\Controllers\Api\V1\Wallet\WalletController::class, 'store']);
         Route::get('/wallets/{id}', [\App\Http\Controllers\Api\V1\Wallet\WalletController::class, 'show']);
+        Route::put('/wallets/{id}', [\App\Http\Controllers\Api\V1\Wallet\WalletController::class, 'update']);
         Route::post('/wallets/{id}/users', [\App\Http\Controllers\Api\V1\Wallet\WalletController::class, 'assignUser']);
         Route::put('/wallets/{id}/status', [\App\Http\Controllers\Api\V1\Wallet\WalletController::class, 'updateStatus']);
 
