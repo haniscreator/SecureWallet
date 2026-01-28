@@ -19,7 +19,7 @@ class TransactionService
         }
 
         if (isset($filters['from_date'])) {
-            $query->whereDate('created_at', '>=', $filters['from_date']);
+            $query->where('created_at', '>=', $filters['from_date']);
         }
 
         if (isset($filters['to_date'])) {

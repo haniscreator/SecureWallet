@@ -54,4 +54,11 @@ class User extends Authenticatable
             'status' => 'boolean',
         ];
     }
+    /**
+     * The wallets that belong to the user.
+     */
+    public function wallets()
+    {
+        return $this->belongsToMany(\App\Domain\Wallet\Models\Wallet::class, 'wallet_user');
+    }
 }

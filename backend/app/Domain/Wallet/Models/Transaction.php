@@ -15,6 +15,7 @@ class Transaction extends Model
         'type', // credit, debit
         'amount',
         'reference',
+        'created_at',
     ];
 
     public function fromWallet()
