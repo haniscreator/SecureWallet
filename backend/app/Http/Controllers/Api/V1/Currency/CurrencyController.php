@@ -6,6 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Domain\Currency\Models\Currency;
 use Illuminate\Http\Request;
 
+use App\Http\Requests\Currency\StoreCurrencyRequest;
+use App\Http\Requests\Currency\UpdateCurrencyRequest;
+
 class CurrencyController extends Controller
 {
     protected $currencyService;
@@ -35,39 +38,17 @@ class CurrencyController extends Controller
         return response()->json($this->currencyService->getCurrency($id));
     }
 
-    public function store(Request $request)
+    public function store(StoreCurrencyRequest $request)
     {
-        if ($request->user()->role !== 'admin') {
-            return response()->json(['message' => 'Unauthorized'], 403);
-        }
-
-        $validated = $request->validate([
-            'code' => 'required|string|unique:currencies,code|max:10',
-            'name' => 'required|string|max:255',
-            'symbol' => 'nullable|string|max:10',
-            'status' => 'sometimes|boolean',
-        ]);
-
-        $currency = $this->createCurrencyAction->execute($validated);
+        $currency = $this->createCurrencyAction->execute($request->validated());
 
         return response()->json(['message' => 'Currency created', 'currency' => $currency], 201);
     }
 
-    public function update(Request $request, $id)
+    public function update(UpdateCurrencyRequest $request, $id)
     {
-        if ($request->user()->role !== 'admin') {
-            return response()->json(['message' => 'Unauthorized'], 403);
-        }
-
         $currency = $this->currencyService->getCurrency($id);
-
-        $validated = $request->validate([
-            'name' => 'sometimes|string|max:255',
-            'symbol' => 'nullable|string|max:10',
-            'status' => 'sometimes|boolean',
-        ]);
-
-        $updatedCurrency = $this->updateCurrencyAction->execute($currency, $validated);
+        $updatedCurrency = $this->updateCurrencyAction->execute($currency, $request->validated());
 
         return response()->json(['message' => 'Currency updated', 'currency' => $updatedCurrency]);
     }
