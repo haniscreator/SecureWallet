@@ -3,18 +3,24 @@
 namespace App\Http\Controllers\Api\V1\User;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\User\StoreMemberRequest;
+use App\Http\Requests\User\UpdateMemberRequest;
+use App\Domain\User\Actions\ListMembersAction;
 use App\Domain\User\Actions\CreateMemberAction;
-use App\Domain\User\Services\UserService;
-use Illuminate\Http\Request;
+use App\Domain\User\Actions\UpdateMemberAction;
+use App\Domain\User\Actions\DeleteMemberAction;
+use App\Domain\User\Actions\GetMemberAction;
 
 class MemberController extends Controller
 {
     public function __construct(
+        protected ListMembersAction $listMembersAction,
+        protected GetMemberAction $getMemberAction,
         protected CreateMemberAction $createMemberAction,
-        protected UserService $userService
+        protected UpdateMemberAction $updateMemberAction,
+        protected DeleteMemberAction $deleteMemberAction
     ) {
     }
-
 
     public function index(Request $request)
     {
@@ -22,23 +28,12 @@ class MemberController extends Controller
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
-        return response()->json($this->userService->listUsers());
+        return response()->json($this->listMembersAction->execute());
     }
 
-    public function store(Request $request)
+    public function store(StoreMemberRequest $request)
     {
-        if ($request->user()->cannot('create', \App\Domain\User\Models\User::class)) {
-            return response()->json(['message' => 'Unauthorized'], 403);
-        }
-
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8',
-            'role' => 'nullable|string|in:user,admin',
-        ]);
-
-        $user = $this->createMemberAction->execute($validated);
+        $user = $this->createMemberAction->execute($request->validated());
 
         return response()->json([
             'message' => 'Member created successfully',
@@ -46,20 +41,11 @@ class MemberController extends Controller
         ], 201);
     }
 
-    public function update(Request $request, $id)
+    public function update(UpdateMemberRequest $request, $id)
     {
-        $user = \App\Domain\User\Models\User::findOrFail($id);
+        $user = $this->getMemberAction->execute($id);
 
-        if ($request->user()->cannot('update', $user)) {
-            return response()->json(['message' => 'Unauthorized'], 403);
-        }
-
-        $validated = $request->validate([
-            'name' => 'sometimes|required|string|max:255',
-            'role' => 'nullable|string|in:user,admin',
-        ]);
-
-        $updatedUser = $this->userService->updateUser($user, $validated);
+        $updatedUser = $this->updateMemberAction->execute($user, $request->validated());
 
         return response()->json([
             'message' => 'Member updated successfully',
@@ -69,13 +55,13 @@ class MemberController extends Controller
 
     public function destroy(Request $request, $id)
     {
-        $user = \App\Domain\User\Models\User::findOrFail($id);
+        $user = $this->getMemberAction->execute($id);
 
         if ($request->user()->cannot('delete', $user)) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
-        $this->userService->deleteUser($user);
+        $this->deleteMemberAction->execute($user);
 
         return response()->json(['message' => 'Member deleted successfully']);
     }
