@@ -8,21 +8,22 @@ use Illuminate\Http\Request;
 
 class CurrencyController extends Controller
 {
-    // Simple CRUD - straightforward enough to put in Controller or separate generic Service
-    // Following Action logic might be overkill for simple CRUD lookup unless we have complex validation logic?
-    // Let's stick to simple Eloquent for Settings.
+    protected $currencyService;
+
+    public function __construct(
+        \App\Domain\Currency\Services\CurrencyService $currencyService
+    ) {
+        $this->currencyService = $currencyService;
+    }
 
     public function index(Request $request)
     {
-        // Public or Authenticated? Probably authenticated users can see available currencies
-        // Admin can see all, maybe inactive ones too?
-        return response()->json(Currency::all());
+        return response()->json($this->currencyService->listCurrencies());
     }
 
     public function show(Request $request, $id)
     {
-        $currency = Currency::findOrFail($id);
-        return response()->json($currency);
+        return response()->json($this->currencyService->getCurrency($id));
     }
 
     public function store(Request $request)
@@ -35,9 +36,10 @@ class CurrencyController extends Controller
             'code' => 'required|string|unique:currencies,code|max:10',
             'name' => 'required|string|max:255',
             'symbol' => 'nullable|string|max:10',
+            'status' => 'sometimes|boolean',
         ]);
 
-        $currency = Currency::create($validated);
+        $currency = $this->currencyService->createCurrency($validated);
 
         return response()->json(['message' => 'Currency created', 'currency' => $currency], 201);
     }
@@ -48,7 +50,7 @@ class CurrencyController extends Controller
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
-        $currency = Currency::findOrFail($id);
+        $currency = $this->currencyService->getCurrency($id);
 
         $validated = $request->validate([
             'name' => 'sometimes|string|max:255',
@@ -56,9 +58,9 @@ class CurrencyController extends Controller
             'status' => 'sometimes|boolean',
         ]);
 
-        $currency->update($validated);
+        $updatedCurrency = $this->currencyService->updateCurrency($currency, $validated);
 
-        return response()->json(['message' => 'Currency updated', 'currency' => $currency]);
+        return response()->json(['message' => 'Currency updated', 'currency' => $updatedCurrency]);
     }
 
     public function destroy(Request $request, $id)
@@ -67,10 +69,8 @@ class CurrencyController extends Controller
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
-        $currency = Currency::findOrFail($id);
-        // Maybe check if used in wallets?
-        // simple delete for now
-        $currency->delete();
+        $currency = $this->currencyService->getCurrency($id);
+        $this->currencyService->deleteCurrency($currency);
 
         return response()->json(['message' => 'Currency deleted']);
     }
