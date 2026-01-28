@@ -2,10 +2,12 @@
 
 namespace App\Domain\Auth\Actions;
 
+use Illuminate\Support\Facades\Auth;
+
 class LogoutAction
 {
-    public function execute()
+    public function execute(): void
     {
-        // Implementation later
+        Auth::user()->currentAccessToken()->delete();
     }
 }

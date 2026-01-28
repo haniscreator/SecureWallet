@@ -98,7 +98,7 @@
                     }
                 },
                 {
-                    "name": "Create Member",
+                    "name": "Create Member (Admin Only)",
                     "request": {
                         "method": "POST",
                         "header": [
@@ -129,6 +129,97 @@
                         "body": {
                             "mode": "raw",
                             "raw": "{\n    \"name\": \"New Member\",\n    \"email\": \"new@member.com\",\n    \"password\": \"password123\",\n    \"role\": \"user\"\n}"
+                        }
+                    }
+                },
+                {
+                    "name": "List Members (Admin Only)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/members",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "v1",
+                                "members"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Update Member (Admin Only)",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/members/2",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "v1",
+                                "members",
+                                "2"
+                            ]
+                        },
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"name\": \"Updated Name\",\n    \"role\": \"admin\"\n}"
+                        }
+                    }
+                },
+                {
+                    "name": "Delete Member (Admin Only)",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/members/3",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "v1",
+                                "members",
+                                "3"
+                            ]
                         }
                     }
                 }

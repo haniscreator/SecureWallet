@@ -16,6 +16,9 @@ Route::prefix('v1')->group(function () {
             return $request->user();
         });
 
+        Route::get('/members', [MemberController::class, 'index']);
         Route::post('/members', [MemberController::class, 'store']);
+        Route::put('/members/{id}', [MemberController::class, 'update']);
+        Route::delete('/members/{id}', [MemberController::class, 'destroy']);
     });
 });

@@ -15,11 +15,26 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        // validation and authService->login
+        $credentials = $request->validate([
+            'email' => ['required', 'email'],
+            'password' => ['required'],
+        ]);
+
+        $data = $this->authService->login($credentials);
+
+        return response()->json([
+            'message' => 'Login successful',
+            'user' => $data['user'],
+            'token' => $data['token'],
+        ]);
     }
 
     public function logout(Request $request)
     {
-        // authService->logout
+        $this->authService->logout();
+
+        return response()->json([
+            'message' => 'Successfully logged out',
+        ]);
     }
 }

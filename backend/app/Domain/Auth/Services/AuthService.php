@@ -13,5 +13,13 @@ class AuthService
     ) {
     }
 
-    // Service methods that use actions
+    public function login(array $credentials): array
+    {
+        return $this->loginAction->execute($credentials);
+    }
+
+    public function logout(): void
+    {
+        $this->logoutAction->execute();
+    }
 }
