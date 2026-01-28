@@ -1,0 +1,102 @@
+<?php
+
+namespace App\Http\Controllers\Api\V1\Wallet;
+
+use App\Http\Controllers\Controller;
+use App\Domain\Wallet\Models\Wallet;
+use App\Domain\Wallet\Services\WalletService;
+use App\Domain\Wallet\Actions\CreateWalletAction;
+use App\Domain\Wallet\Actions\UpdateWalletStatusAction;
+use App\Domain\Wallet\Actions\AssignWalletAction;
+use Illuminate\Http\Request;
+
+class WalletController extends Controller
+{
+    public function __construct(
+        protected WalletService $walletService,
+        protected CreateWalletAction $createWalletAction, // Inject actions directly for mutations if desired, or use Service facades.
+        // Based on previous refactor turn specific instructions: "Controller -> Action -> Service" was strict, 
+        // but here "Controller -> Action" or "Controller -> Service" depends on complexity.
+        // For consistency with Auth/User refactor:
+        // Writes -> Action
+        // Reads -> Service
+        protected UpdateWalletStatusAction $updateWalletStatusAction,
+        protected AssignWalletAction $assignWalletAction
+    ) {
+    }
+
+    public function index(Request $request)
+    {
+        // Policy check for "viewAny" is vague, usually we filter list in Service based on user
+        // But we can check generic "viewAny"
+        if ($request->user()->cannot('viewAny', Wallet::class)) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        return response()->json($this->walletService->listWallets($request->user()));
+    }
+
+    public function show(Request $request, $id)
+    {
+        $wallet = Wallet::findOrFail($id);
+
+        if ($request->user()->cannot('view', $wallet)) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        return response()->json($this->walletService->getWallet($wallet)->append('balance'));
+    }
+
+    public function store(Request $request)
+    {
+        if ($request->user()->cannot('create', Wallet::class)) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'currency' => 'required|in:USD,EUR',
+            'initial_balance' => 'sometimes|numeric|min:0',
+        ]);
+
+        $wallet = $this->createWalletAction->execute($validated); // Controller -> Action
+
+        return response()->json(['message' => 'Wallet created', 'wallet' => $wallet->append('balance')]);
+    }
+
+    public function updateStatus(Request $request, $id)
+    {
+        $wallet = Wallet::findOrFail($id);
+
+        // Custom policy method 'freeze'? Or update?
+        if ($request->user()->cannot('freeze', $wallet)) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $validated = $request->validate([
+            'status' => 'required|in:active,frozen',
+        ]);
+
+        $wallet = $this->updateWalletStatusAction->execute($wallet, $validated['status']);
+
+        return response()->json(['message' => 'Wallet status updated', 'wallet' => $wallet]);
+    }
+
+    public function assignUser(Request $request, $id)
+    {
+        $wallet = Wallet::findOrFail($id);
+
+        if ($request->user()->cannot('assignMember', $wallet)) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        $validated = $request->validate([
+            'user_ids' => 'required|array',
+            'user_ids.*' => 'exists:users,id',
+        ]);
+
+        $this->assignWalletAction->execute($wallet, $validated['user_ids']);
+
+        return response()->json(['message' => 'Users assigned to wallet']);
+    }
+}
