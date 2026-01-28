@@ -40,6 +40,65 @@
                         },
                         "url": "{{base_url}}/api/v1/currencies"
                     }
+                },
+                {
+                    "name": "Get Currency Detail",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": "{{base_url}}/api/v1/currencies/1"
+                    }
+                },
+                {
+                    "name": "Update Currency (Admin)",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": "{{base_url}}/api/v1/currencies/1",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"name\": \"British Pound Updated\",\n    \"status\": true\n}"
+                        }
+                    }
+                },
+                {
+                    "name": "Delete Currency (Admin)",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": "{{base_url}}/api/v1/currencies/1"
+                    }
                 }
             ]
         },

@@ -19,6 +19,12 @@ class CurrencyController extends Controller
         return response()->json(Currency::all());
     }
 
+    public function show(Request $request, $id)
+    {
+        $currency = Currency::findOrFail($id);
+        return response()->json($currency);
+    }
+
     public function store(Request $request)
     {
         if ($request->user()->role !== 'admin') {
