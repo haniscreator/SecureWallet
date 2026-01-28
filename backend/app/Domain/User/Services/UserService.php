@@ -2,34 +2,33 @@
 
 namespace App\Domain\User\Services;
 
-use App\Domain\User\Actions\CreateMemberAction;
-use App\Domain\User\Actions\AssignWalletAction;
+use App\Domain\User\Models\User;
+use Illuminate\Support\Facades\Hash;
 
 class UserService
 {
-    public function __construct(
-        protected CreateMemberAction $createMemberAction,
-        protected AssignWalletAction $assignWalletAction
-    ) {
-    }
-
-    public function createMember(array $data)
+    public function createUser(array $data): User
     {
-        return $this->createMemberAction->execute($data);
+        return User::create([
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'password' => Hash::make($data['password']),
+            'role' => $data['role'] ?? 'user',
+        ]);
     }
 
-    public function listMembers()
+    public function listUsers()
     {
-        return \App\Domain\User\Models\User::all();
+        return User::all();
     }
 
-    public function updateMember(\App\Domain\User\Models\User $user, array $data)
+    public function updateUser(User $user, array $data): User
     {
         $user->update($data);
         return $user;
     }
 
-    public function deleteMember(\App\Domain\User\Models\User $user)
+    public function deleteUser(User $user): bool
     {
         return $user->delete();
     }

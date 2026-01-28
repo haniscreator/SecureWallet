@@ -3,12 +3,14 @@
 namespace App\Http\Controllers\Api\V1\User;
 
 use App\Http\Controllers\Controller;
+use App\Domain\User\Actions\CreateMemberAction;
 use App\Domain\User\Services\UserService;
 use Illuminate\Http\Request;
 
 class MemberController extends Controller
 {
     public function __construct(
+        protected CreateMemberAction $createMemberAction,
         protected UserService $userService
     ) {
     }
@@ -20,7 +22,7 @@ class MemberController extends Controller
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
-        return response()->json($this->userService->listMembers());
+        return response()->json($this->userService->listUsers());
     }
 
     public function store(Request $request)
@@ -36,7 +38,7 @@ class MemberController extends Controller
             'role' => 'nullable|string|in:user,admin',
         ]);
 
-        $user = $this->userService->createMember($validated);
+        $user = $this->createMemberAction->execute($validated);
 
         return response()->json([
             'message' => 'Member created successfully',
@@ -57,7 +59,7 @@ class MemberController extends Controller
             'role' => 'nullable|string|in:user,admin',
         ]);
 
-        $updatedUser = $this->userService->updateMember($user, $validated);
+        $updatedUser = $this->userService->updateUser($user, $validated);
 
         return response()->json([
             'message' => 'Member updated successfully',
@@ -73,7 +75,7 @@ class MemberController extends Controller
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
-        $this->userService->deleteMember($user);
+        $this->userService->deleteUser($user);
 
         return response()->json(['message' => 'Member deleted successfully']);
     }

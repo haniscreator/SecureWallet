@@ -2,12 +2,17 @@
 
 namespace App\Domain\Auth\Actions;
 
-use Illuminate\Support\Facades\Auth;
+use App\Domain\Auth\Services\AuthService;
 
 class LogoutAction
 {
+    public function __construct(
+        protected AuthService $authService
+    ) {
+    }
+
     public function execute(): void
     {
-        Auth::user()->currentAccessToken()->delete();
+        $this->authService->logoutUser();
     }
 }

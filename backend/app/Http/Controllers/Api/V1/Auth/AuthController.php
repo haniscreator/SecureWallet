@@ -2,14 +2,16 @@
 
 namespace App\Http\Controllers\Api\V1\Auth;
 
+use App\Domain\Auth\Actions\LoginAction;
+use App\Domain\Auth\Actions\LogoutAction;
 use App\Http\Controllers\Controller;
-use App\Domain\Auth\Services\AuthService;
 use Illuminate\Http\Request;
 
 class AuthController extends Controller
 {
     public function __construct(
-        protected AuthService $authService
+        protected LoginAction $loginAction,
+        protected LogoutAction $logoutAction
     ) {
     }
 
@@ -20,7 +22,7 @@ class AuthController extends Controller
             'password' => ['required'],
         ]);
 
-        $data = $this->authService->login($credentials);
+        $data = $this->loginAction->execute($credentials);
 
         return response()->json([
             'message' => 'Login successful',
@@ -31,7 +33,7 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-        $this->authService->logout();
+        $this->logoutAction->execute();
 
         return response()->json([
             'message' => 'Successfully logged out',
