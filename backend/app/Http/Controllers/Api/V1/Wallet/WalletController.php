@@ -9,15 +9,22 @@ use App\Domain\Wallet\Actions\CreateWalletAction;
 use App\Domain\Wallet\Actions\UpdateWalletStatusAction;
 use App\Domain\Wallet\Actions\AssignWalletAction;
 use Illuminate\Http\Request;
+use App\Http\Requests\Wallet\StoreWalletRequest;
+use App\Http\Requests\Wallet\UpdateWalletRequest;
+use App\Http\Requests\Wallet\UpdateWalletStatusRequest;
+use App\Http\Requests\Wallet\AssignUserToWalletRequest;
+use App\Domain\Wallet\Actions\ListWalletsAction;
+use App\Domain\Wallet\Actions\GetWalletAction;
 
 class WalletController extends Controller
 {
     public function __construct(
-        protected WalletService $walletService,
         protected CreateWalletAction $createWalletAction,
         protected UpdateWalletStatusAction $updateWalletStatusAction,
         protected AssignWalletAction $assignWalletAction,
-        protected \App\Domain\Wallet\Actions\UpdateWalletAction $updateWalletAction
+        protected \App\Domain\Wallet\Actions\UpdateWalletAction $updateWalletAction,
+        protected ListWalletsAction $listWalletsAction,
+        protected GetWalletAction $getWalletAction
     ) {
     }
 
@@ -27,7 +34,7 @@ class WalletController extends Controller
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
-        return response()->json($this->walletService->listWallets($request->user()));
+        return response()->json($this->listWalletsAction->execute($request->user()));
     }
 
     public function show(Request $request, $id)
@@ -38,75 +45,42 @@ class WalletController extends Controller
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
-        return response()->json($this->walletService->getWallet($wallet)->append('balance'));
+        return response()->json($this->getWalletAction->execute($wallet)->append('balance'));
     }
 
-    public function store(Request $request)
+    public function store(StoreWalletRequest $request)
     {
-        if ($request->user()->cannot('create', Wallet::class)) {
-            return response()->json(['message' => 'Unauthorized'], 403);
-        }
-
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'currency_id' => 'required|exists:currencies,id',
-            'initial_balance' => 'sometimes|numeric|min:0',
-        ]);
-
-        $wallet = $this->createWalletAction->execute($validated);
+        $wallet = $this->createWalletAction->execute($request->validated());
 
         return response()->json(['message' => 'Wallet created', 'wallet' => $wallet->append('balance')]);
     }
 
-    public function update(Request $request, $id)
+    public function update(UpdateWalletRequest $request, $id)
     {
         $wallet = Wallet::findOrFail($id);
 
-        if ($request->user()->cannot('update', $wallet)) {
-            return response()->json(['message' => 'Unauthorized'], 403);
-        }
+        // Authorization handled in Form Request, but we need the model here to pass to action
+        // Technically FormRequest loaded it too, but fetching again is cheap and safe or use route binding.
 
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-        ]);
-
-        $wallet = $this->updateWalletAction->execute($wallet, $validated);
+        $wallet = $this->updateWalletAction->execute($wallet, $request->validated());
 
         return response()->json(['message' => 'Wallet updated', 'wallet' => $wallet]);
     }
 
-    public function updateStatus(Request $request, $id)
+    public function updateStatus(UpdateWalletStatusRequest $request, $id)
     {
         $wallet = Wallet::findOrFail($id);
 
-        // Custom policy method 'freeze'? Or update?
-        if ($request->user()->cannot('freeze', $wallet)) {
-            return response()->json(['message' => 'Unauthorized'], 403);
-        }
-
-        $validated = $request->validate([
-            'status' => 'required|boolean', // true/1 or false/0
-        ]);
-
-        $wallet = $this->updateWalletStatusAction->execute($wallet, $validated['status']);
+        $wallet = $this->updateWalletStatusAction->execute($wallet, $request->validated()['status']);
 
         return response()->json(['message' => 'Wallet status updated', 'wallet' => $wallet]);
     }
 
-    public function assignUser(Request $request, $id)
+    public function assignUser(AssignUserToWalletRequest $request, $id)
     {
         $wallet = Wallet::findOrFail($id);
 
-        if ($request->user()->cannot('assignMember', $wallet)) {
-            return response()->json(['message' => 'Unauthorized'], 403);
-        }
-
-        $validated = $request->validate([
-            'user_ids' => 'required|array',
-            'user_ids.*' => 'exists:users,id',
-        ]);
-
-        $this->assignWalletAction->execute($wallet, $validated['user_ids']);
+        $this->assignWalletAction->execute($wallet, $request->validated()['user_ids']);
 
         return response()->json(['message' => 'Users assigned to wallet']);
     }
