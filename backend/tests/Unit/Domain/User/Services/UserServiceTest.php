@@ -80,6 +80,21 @@ class UserServiceTest extends TestCase
         ]);
     }
 
+    public function test_update_user_partial()
+    {
+        $user = User::factory()->create(['name' => 'Old Name', 'email' => 'old@example.com']);
+
+        // Only update name
+        $data = new \App\Domain\User\DataTransferObjects\UserData(
+            name: 'New Name'
+        );
+
+        $updatedUser = $this->service->updateUser($user, $data);
+
+        $this->assertEquals('New Name', $updatedUser->name);
+        $this->assertEquals('old@example.com', $updatedUser->email); // Should remain unchanged
+    }
+
     public function test_delete_user()
     {
         $user = User::factory()->create();
