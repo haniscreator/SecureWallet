@@ -13,9 +13,14 @@ class Wallet extends Model
 
     protected $fillable = [
         'name',
-        'currency',
+        'currency_id',
         'status',
     ];
+
+    public function currency()
+    {
+        return $this->belongsTo(\App\Domain\Currency\Models\Currency::class);
+    }
 
     /**
      * Get the balance derived from transactions.

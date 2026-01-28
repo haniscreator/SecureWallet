@@ -30,5 +30,8 @@ Route::prefix('v1')->group(function () {
 
         // Transactions
         Route::get('/wallets/{id}/transactions', [\App\Http\Controllers\Api\V1\Wallet\TransactionController::class, 'index']);
+
+        // Currencies
+        Route::apiResource('currencies', \App\Http\Controllers\Api\V1\Currency\CurrencyController::class);
     });
 });

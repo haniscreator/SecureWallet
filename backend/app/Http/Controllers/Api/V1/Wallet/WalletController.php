@@ -55,7 +55,7 @@ class WalletController extends Controller
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'currency' => 'required|in:USD,EUR',
+            'currency' => 'required|exists:currencies,code', // Validate valid code
             'initial_balance' => 'sometimes|numeric|min:0',
         ]);
 
