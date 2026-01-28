@@ -8,34 +8,28 @@ use Illuminate\Http\Request;
 
 use App\Http\Requests\Currency\StoreCurrencyRequest;
 use App\Http\Requests\Currency\UpdateCurrencyRequest;
+use App\Domain\Currency\Actions\ListCurrenciesAction;
+use App\Domain\Currency\Actions\GetCurrencyAction;
 
 class CurrencyController extends Controller
 {
-    protected $currencyService;
-    protected $createCurrencyAction;
-    protected $updateCurrencyAction;
-    protected $deleteCurrencyAction;
-
     public function __construct(
-        \App\Domain\Currency\Services\CurrencyService $currencyService,
-        \App\Domain\Currency\Actions\CreateCurrencyAction $createCurrencyAction,
-        \App\Domain\Currency\Actions\UpdateCurrencyAction $updateCurrencyAction,
-        \App\Domain\Currency\Actions\DeleteCurrencyAction $deleteCurrencyAction
+        protected \App\Domain\Currency\Actions\CreateCurrencyAction $createCurrencyAction,
+        protected \App\Domain\Currency\Actions\UpdateCurrencyAction $updateCurrencyAction,
+        protected \App\Domain\Currency\Actions\DeleteCurrencyAction $deleteCurrencyAction,
+        protected ListCurrenciesAction $listCurrenciesAction,
+        protected GetCurrencyAction $getCurrencyAction
     ) {
-        $this->currencyService = $currencyService;
-        $this->createCurrencyAction = $createCurrencyAction;
-        $this->updateCurrencyAction = $updateCurrencyAction;
-        $this->deleteCurrencyAction = $deleteCurrencyAction;
     }
 
     public function index(Request $request)
     {
-        return response()->json($this->currencyService->listCurrencies());
+        return response()->json($this->listCurrenciesAction->execute());
     }
 
     public function show(Request $request, $id)
     {
-        return response()->json($this->currencyService->getCurrency($id));
+        return response()->json($this->getCurrencyAction->execute($id));
     }
 
     public function store(StoreCurrencyRequest $request)
@@ -47,7 +41,13 @@ class CurrencyController extends Controller
 
     public function update(UpdateCurrencyRequest $request, $id)
     {
-        $currency = $this->currencyService->getCurrency($id);
+        // For update action, we need the currency model. 
+        // We can either fetch it here via GetCurrencyAction or Service, or let Action fetch it.
+        // Based on previous pattern (updateAction takes Currency model), we fetch it first.
+        // Let's use getCurrencyAction for consistency or just findOrFail.
+        // Since GetCurrencyAction returns Currency, let's use it.
+
+        $currency = $this->getCurrencyAction->execute($id);
         $updatedCurrency = $this->updateCurrencyAction->execute($currency, $request->validated());
 
         return response()->json(['message' => 'Currency updated', 'currency' => $updatedCurrency]);
@@ -59,7 +59,7 @@ class CurrencyController extends Controller
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
-        $currency = $this->currencyService->getCurrency($id);
+        $currency = $this->getCurrencyAction->execute($id);
         $this->deleteCurrencyAction->execute($currency);
 
         return response()->json(['message' => 'Currency deleted']);
