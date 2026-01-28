@@ -10,28 +10,8 @@ use App\Domain\Wallet\Actions\AssignWalletAction;
 
 class WalletService
 {
-    public function __construct(
-        protected CreateWalletAction $createWalletAction,
-        protected UpdateWalletStatusAction $updateWalletStatusAction,
-        protected AssignWalletAction $assignWalletAction
-    ) {
-    }
-
-    public function createWallet(array $data)
-    {
-        return $this->createWalletAction->execute($data);
-    }
-
-    public function updateWalletStatus(Wallet $wallet, string $status)
-    {
-        return $this->updateWalletStatusAction->execute($wallet, $status);
-    }
-
-    public function assignWalletToUser(Wallet $wallet, array $userIds)
-    {
-        $this->assignWalletAction->execute($wallet, $userIds);
-    }
-
+class WalletService
+{
     public function listWallets(User $user)
     {
         if ($user->role === 'admin') {
@@ -46,5 +26,48 @@ class WalletService
     {
         // Add relationships if needed, e.g. users
         return $wallet->load('users');
+    }
+
+    public function create(array $data): Wallet
+    {
+        return \Illuminate\Support\Facades\DB::transaction(function () use ($data) {
+            $wallet = Wallet::create([
+                'name' => $data['name'],
+                'currency_id' => $data['currency_id'],
+                'status' => 1, // 1 = active
+            ]);
+
+            // Handle Initial Balance by creating a 'credit' transaction
+            if (isset($data['initial_balance']) && $data['initial_balance'] > 0) {
+                \App\Domain\Wallet\Models\Transaction::create([
+                    'to_wallet_id' => $wallet->id,
+                    'type' => 'credit',
+                    'amount' => $data['initial_balance'],
+                    'reference' => 'Initial Balance',
+                ]);
+            }
+
+            // Reload to get relationship if needed
+            $wallet->load('currency');
+
+            return $wallet;
+        });
+    }
+
+    public function updateStatus(Wallet $wallet, string|int|bool $status): Wallet
+    {
+        $wallet->update(['status' => (bool) $status]);
+        return $wallet;
+    }
+
+    public function assignUsers(Wallet $wallet, array $userIds): void
+    {
+        $wallet->users()->syncWithoutDetaching($userIds);
+    }
+
+    public function update(Wallet $wallet, array $data): Wallet
+    {
+        $wallet->update($data);
+        return $wallet;
     }
 }

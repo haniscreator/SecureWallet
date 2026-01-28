@@ -9,11 +9,20 @@ use Illuminate\Http\Request;
 class CurrencyController extends Controller
 {
     protected $currencyService;
+    protected $createCurrencyAction;
+    protected $updateCurrencyAction;
+    protected $deleteCurrencyAction;
 
     public function __construct(
-        \App\Domain\Currency\Services\CurrencyService $currencyService
+        \App\Domain\Currency\Services\CurrencyService $currencyService,
+        \App\Domain\Currency\Actions\CreateCurrencyAction $createCurrencyAction,
+        \App\Domain\Currency\Actions\UpdateCurrencyAction $updateCurrencyAction,
+        \App\Domain\Currency\Actions\DeleteCurrencyAction $deleteCurrencyAction
     ) {
         $this->currencyService = $currencyService;
+        $this->createCurrencyAction = $createCurrencyAction;
+        $this->updateCurrencyAction = $updateCurrencyAction;
+        $this->deleteCurrencyAction = $deleteCurrencyAction;
     }
 
     public function index(Request $request)
@@ -39,7 +48,7 @@ class CurrencyController extends Controller
             'status' => 'sometimes|boolean',
         ]);
 
-        $currency = $this->currencyService->createCurrency($validated);
+        $currency = $this->createCurrencyAction->execute($validated);
 
         return response()->json(['message' => 'Currency created', 'currency' => $currency], 201);
     }
@@ -58,7 +67,7 @@ class CurrencyController extends Controller
             'status' => 'sometimes|boolean',
         ]);
 
-        $updatedCurrency = $this->currencyService->updateCurrency($currency, $validated);
+        $updatedCurrency = $this->updateCurrencyAction->execute($currency, $validated);
 
         return response()->json(['message' => 'Currency updated', 'currency' => $updatedCurrency]);
     }
@@ -70,7 +79,7 @@ class CurrencyController extends Controller
         }
 
         $currency = $this->currencyService->getCurrency($id);
-        $this->currencyService->deleteCurrency($currency);
+        $this->deleteCurrencyAction->execute($currency);
 
         return response()->json(['message' => 'Currency deleted']);
     }

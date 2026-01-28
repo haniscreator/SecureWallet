@@ -3,15 +3,17 @@
 namespace App\Domain\Currency\Actions;
 
 use App\Domain\Currency\Models\Currency;
-use Illuminate\Support\Facades\DB;
+use App\Domain\Currency\Services\CurrencyService;
 
 class UpdateCurrencyAction
 {
+    public function __construct(
+        protected CurrencyService $currencyService
+    ) {
+    }
+
     public function execute(Currency $currency, array $data): Currency
     {
-        return DB::transaction(function () use ($currency, $data) {
-            $currency->update($data);
-            return $currency;
-        });
+        return $this->currencyService->update($currency, $data);
     }
 }

@@ -7,13 +7,6 @@ use Illuminate\Database\Eloquent\Collection;
 
 class CurrencyService
 {
-    public function __construct(
-        protected \App\Domain\Currency\Actions\CreateCurrencyAction $createCurrencyAction,
-        protected \App\Domain\Currency\Actions\UpdateCurrencyAction $updateCurrencyAction,
-        protected \App\Domain\Currency\Actions\DeleteCurrencyAction $deleteCurrencyAction
-    ) {
-    }
-
     public function listCurrencies(): Collection
     {
         return Currency::all();
@@ -24,18 +17,30 @@ class CurrencyService
         return Currency::findOrFail($id);
     }
 
-    public function createCurrency(array $data): Currency
+    public function create(array $data): Currency
     {
-        return $this->createCurrencyAction->execute($data);
+        return \Illuminate\Support\Facades\DB::transaction(function () use ($data) {
+            return Currency::create([
+                'code' => $data['code'],
+                'name' => $data['name'],
+                'symbol' => $data['symbol'],
+                'status' => $data['status'] ?? 1,
+            ]);
+        });
     }
 
-    public function updateCurrency(Currency $currency, array $data): Currency
+    public function update(Currency $currency, array $data): Currency
     {
-        return $this->updateCurrencyAction->execute($currency, $data);
+        return \Illuminate\Support\Facades\DB::transaction(function () use ($currency, $data) {
+            $currency->update($data);
+            return $currency;
+        });
     }
 
-    public function deleteCurrency(Currency $currency): void
+    public function delete(Currency $currency): void
     {
-        $this->deleteCurrencyAction->execute($currency);
+        \Illuminate\Support\Facades\DB::transaction(function () use ($currency) {
+            $currency->delete();
+        });
     }
 }

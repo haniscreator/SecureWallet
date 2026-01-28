@@ -14,21 +14,15 @@ class WalletController extends Controller
 {
     public function __construct(
         protected WalletService $walletService,
-        protected CreateWalletAction $createWalletAction, // Inject actions directly for mutations if desired, or use Service facades.
-        // Based on previous refactor turn specific instructions: "Controller -> Action -> Service" was strict, 
-        // but here "Controller -> Action" or "Controller -> Service" depends on complexity.
-        // For consistency with Auth/User refactor:
-        // Writes -> Action
-        // Reads -> Service
+        protected CreateWalletAction $createWalletAction,
         protected UpdateWalletStatusAction $updateWalletStatusAction,
-        protected AssignWalletAction $assignWalletAction
+        protected AssignWalletAction $assignWalletAction,
+        protected \App\Domain\Wallet\Actions\UpdateWalletAction $updateWalletAction
     ) {
     }
 
     public function index(Request $request)
     {
-        // Policy check for "viewAny" is vague, usually we filter list in Service based on user
-        // But we can check generic "viewAny"
         if ($request->user()->cannot('viewAny', Wallet::class)) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
@@ -59,7 +53,7 @@ class WalletController extends Controller
             'initial_balance' => 'sometimes|numeric|min:0',
         ]);
 
-        $wallet = $this->createWalletAction->execute($validated); // Controller -> Action
+        $wallet = $this->createWalletAction->execute($validated);
 
         return response()->json(['message' => 'Wallet created', 'wallet' => $wallet->append('balance')]);
     }
@@ -76,7 +70,7 @@ class WalletController extends Controller
             'name' => 'required|string|max:255',
         ]);
 
-        $wallet->update(['name' => $validated['name']]);
+        $wallet = $this->updateWalletAction->execute($wallet, $validated);
 
         return response()->json(['message' => 'Wallet updated', 'wallet' => $wallet]);
     }
