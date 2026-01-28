@@ -47,7 +47,7 @@ class CurrencyController extends Controller
         $validated = $request->validate([
             'name' => 'sometimes|string|max:255',
             'symbol' => 'nullable|string|max:10',
-            'status' => 'sometimes|in:active,inactive',
+            'status' => 'sometimes|boolean',
         ]);
 
         $currency->update($validated);

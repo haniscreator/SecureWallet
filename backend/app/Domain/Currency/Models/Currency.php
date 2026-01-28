@@ -15,4 +15,8 @@ class Currency extends Model
         'symbol',
         'status',
     ];
+
+    protected $casts = [
+        'status' => 'boolean',
+    ];
 }

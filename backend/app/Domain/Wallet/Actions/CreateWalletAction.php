@@ -24,7 +24,7 @@ class CreateWalletAction
             $wallet = Wallet::create([
                 'name' => $data['name'],
                 'currency_id' => $currency->id,
-                'status' => 'active',
+                'status' => 1, // 1 = active
             ]);
 
             // Handle Initial Balance by creating a 'credit' transaction

@@ -7,13 +7,9 @@ use InvalidArgumentException;
 
 class UpdateWalletStatusAction
 {
-    public function execute(Wallet $wallet, string $status): Wallet
+    public function execute(Wallet $wallet, string|int|bool $status): Wallet
     {
-        if (!in_array($status, ['active', 'frozen'])) {
-            throw new InvalidArgumentException("Invalid status: {$status}");
-        }
-
-        $wallet->update(['status' => $status]);
+        $wallet->update(['status' => (bool) $status]);
 
         return $wallet;
     }

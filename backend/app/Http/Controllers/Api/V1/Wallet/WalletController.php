@@ -74,7 +74,7 @@ class WalletController extends Controller
         }
 
         $validated = $request->validate([
-            'status' => 'required|in:active,frozen',
+            'status' => 'required|boolean', // true/1 or false/0
         ]);
 
         $wallet = $this->updateWalletStatusAction->execute($wallet, $validated['status']);

@@ -17,6 +17,10 @@ class Wallet extends Model
         'status',
     ];
 
+    protected $casts = [
+        'status' => 'boolean',
+    ];
+
     public function currency()
     {
         return $this->belongsTo(\App\Domain\Currency\Models\Currency::class);
