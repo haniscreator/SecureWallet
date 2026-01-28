@@ -10,8 +10,6 @@ use App\Domain\Wallet\Actions\AssignWalletAction;
 
 class WalletService
 {
-class WalletService
-{
     public function listWallets(User $user)
     {
         if ($user->role === 'admin') {
