@@ -7,12 +7,13 @@
   >
       <div class="card-content pa-6 d-flex flex-column justify-space-between fill-height">
           <div>
-              <div class="d-flex align-center mb-4">
+              <div class="d-flex align-center">
                    <v-avatar color="primary" variant="tonal" size="40" class="mr-3 rounded-lg">
                        <v-icon color="primary">mdi-wallet-bifold</v-icon>
                    </v-avatar>
                    <div class="text-subtitle-1 font-weight-medium text-grey-darken-1">Total Balance</div>
               </div>
+              <v-divider class="my-4"></v-divider>
               
               <div class="balance-list">
                 <template v-if="hasBalances">

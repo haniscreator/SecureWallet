@@ -3,6 +3,7 @@
     <v-card-title class="pa-4 text-h6 font-weight-bold">
       Recent Transactions
     </v-card-title>
+    <v-divider></v-divider>
     
     <v-table class="pa-2 recent-transactions-table">
       <thead>

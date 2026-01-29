@@ -17,7 +17,8 @@
                   
                   <!-- Column 2: Stats -->
                   <v-col cols="12" md="4" class="d-flex flex-column justify-center pr-4 border-end-sm">
-                      <div class="text-h6 font-weight-bold mb-4 text-grey-darken-3">Company Overview</div>
+                      <div class="text-h6 font-weight-bold text-grey-darken-3">Company Overview</div>
+                      <v-divider class="my-4"></v-divider>
                       
                       <div class="stats-column d-flex flex-column gap-2">
                           <div class="d-flex align-center mb-2">
