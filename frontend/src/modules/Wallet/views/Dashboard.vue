@@ -18,10 +18,13 @@
          Let's stack them vertically as standard dashboard flow.
     -->
     
-    <!-- Total Balance Section -->
-    <v-row no-gutters class="mb-6">
-      <v-col cols="12">
+    <!-- Top Stats Row -->
+    <v-row class="mb-6" align="stretch">
+      <v-col cols="12" md="6" lg="5">
         <TotalBalanceCard />
+      </v-col>
+      <v-col cols="12" md="6" lg="7">
+        <CompanyInfoCard />
       </v-col>
     </v-row>
 
@@ -64,17 +67,21 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import TotalBalanceCard from '../components/dashboard/TotalBalanceCard.vue';
+import CompanyInfoCard from '../components/dashboard/CompanyInfoCard.vue';
 import WalletWidget from '../components/dashboard/WalletWidget.vue';
 import RecentTransactions from '../components/dashboard/RecentTransactions.vue';
 import CreateWalletDialog from '@/modules/Wallet/components/CreateWalletDialog.vue';
 import { useWalletStore } from '@/modules/Wallet/store';
+import { useUserStore } from '@/modules/User/store';
 
 // We import store just to have it ready for future API integration
 const walletStore = useWalletStore();
+const userStore = useUserStore();
 const showCreateDialog = ref(false);
 
 onMounted(() => {
     walletStore.fetchWallets();
+    userStore.fetchMembers(); // Fetch members for stats
 });
 
 function handleWalletCreated() {
