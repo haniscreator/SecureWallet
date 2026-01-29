@@ -5,6 +5,7 @@ import { useNotificationStore } from '@/shared/stores/notification';
 
 export const useCurrencyStore = defineStore('currency', () => {
     const currencies = ref<Currency[]>([]);
+    const currentCurrency = ref<Currency | null>(null);
     const loading = ref(false);
     const error = ref<string | null>(null);
     const notificationStore = useNotificationStore();
@@ -18,6 +19,20 @@ export const useCurrencyStore = defineStore('currency', () => {
         } catch (e: any) {
             error.value = e.message || 'Failed to fetch currencies';
             console.error(e);
+        } finally {
+            loading.value = false;
+        }
+    }
+
+    async function fetchCurrency(id: number) {
+        loading.value = true;
+        try {
+            const response = await currencyApi.getCurrency(id);
+            const data = response.data as any;
+            currentCurrency.value = data.data || data;
+        } catch (e: any) {
+            error.value = e.message || 'Failed to fetch currency details';
+            throw e;
         } finally {
             loading.value = false;
         }
@@ -71,9 +86,11 @@ export const useCurrencyStore = defineStore('currency', () => {
 
     return {
         currencies,
+        currentCurrency,
         loading,
         error,
         fetchCurrencies,
+        fetchCurrency,
         createCurrency,
         updateCurrency,
         deleteCurrency

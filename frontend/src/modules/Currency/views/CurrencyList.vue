@@ -9,7 +9,7 @@
             prepend-icon="mdi-plus"
             elevation="2"
             class="text-capitalize"
-            @click="openDialog()"
+            :to="{ name: 'CurrencyCreate' }"
           >
             Add Currency
           </v-btn>
@@ -25,7 +25,7 @@
             >
                 <!-- Status Column -->
                 <template v-slot:item.status="{ item }">
-                    <v-chip
+                     <v-chip
                         :color="item.status ? 'success' : 'grey'"
                         size="small"
                         variant="tonal"
@@ -37,29 +37,40 @@
 
                 <!-- Actions Column -->
                 <template v-slot:item.actions="{ item }">
-                    <div class="d-flex gap-2">
-                        <v-btn
-                            icon
-                            variant="text"
-                            size="small"
-                            color="primary"
-                            @click="openDialog(item)"
-                        >
-                            <v-icon>mdi-pencil</v-icon>
-                        </v-btn>
-                         <v-btn
-                            icon
-                            variant="text"
-                            size="small"
-                            color="error"
-                            @click="confirmDelete(item)"
-                        >
-                            <v-icon>mdi-delete</v-icon>
-                        </v-btn>
+                    <div class="d-flex gap-2 justify-center">
+                        <v-tooltip text="Edit Currency" location="top">
+                          <template v-slot:activator="{ props }">
+                            <v-btn
+                                v-bind="props"
+                                icon
+                                variant="text"
+                                size="small"
+                                color="primary"
+                                :to="{ name: 'CurrencyEdit', params: { id: item.id } }"
+                            >
+                                <v-icon>mdi-pencil</v-icon>
+                            </v-btn>
+                          </template>
+                        </v-tooltip>
+
+                         <v-tooltip text="Delete Currency" location="top">
+                          <template v-slot:activator="{ props }">
+                            <v-btn
+                                v-bind="props"
+                                icon
+                                variant="text"
+                                size="small"
+                                color="error"
+                                @click="confirmDelete(item)"
+                            >
+                                <v-icon>mdi-delete</v-icon>
+                            </v-btn>
+                          </template>
+                        </v-tooltip>
                     </div>
                 </template>
                 
-                <!-- No Data -->
+                 <!-- No Data -->
                 <template v-slot:no-data>
                     <div class="pa-4 text-center text-grey">
                         No currencies found.
@@ -69,14 +80,6 @@
         </v-card>
       </v-col>
     </v-row>
-
-    <!-- Form Dialog -->
-    <CurrencyFormDialog
-        v-model="dialog"
-        :item="editedItem"
-        :loading="currencyStore.loading"
-        @save="saveItem"
-    />
 
     <!-- Delete Confirmation Dialog -->
     <v-dialog v-model="deleteDialog" max-width="400">
@@ -99,7 +102,6 @@
 import { ref, onMounted } from 'vue';
 import { useCurrencyStore } from '../store';
 import type { Currency } from '../api';
-import CurrencyFormDialog from '../components/CurrencyFormDialog.vue';
 
 const currencyStore = useCurrencyStore();
 
@@ -109,30 +111,15 @@ const headers = [
     { title: 'Code', key: 'code', align: 'start' as const },
     { title: 'Symbol', key: 'symbol', align: 'start' as const },
     { title: 'Status', key: 'status', align: 'start' as const },
-    { title: 'Actions', key: 'actions', sortable: false, align: 'end' as const },
+    { title: 'Actions', key: 'actions', sortable: false, align: 'center' as const },
 ];
 
-const dialog = ref(false);
 const deleteDialog = ref(false);
 const editedItem = ref<Currency | null>(null);
 
 onMounted(() => {
     currencyStore.fetchCurrencies();
 });
-
-function openDialog(item?: Currency) {
-    editedItem.value = item || null;
-    dialog.value = true;
-}
-
-async function saveItem(payload: any) {
-    if (editedItem.value) {
-        await currencyStore.updateCurrency(editedItem.value.id, payload);
-    } else {
-        await currencyStore.createCurrency(payload);
-    }
-    dialog.value = false;
-}
 
 function confirmDelete(item: Currency) {
     editedItem.value = item;

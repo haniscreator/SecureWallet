@@ -21,6 +21,9 @@ export const currencyApi = {
     getCurrencies() {
         return apiClient.get<Currency[]>('/currencies');
     },
+    getCurrency(id: number) {
+        return apiClient.get<{ data: Currency }>(`/currencies/${id}`);
+    },
     createCurrency(payload: CreateCurrencyPayload) {
         return apiClient.post<{ currency: Currency; message: string }>('/currencies', payload);
     },

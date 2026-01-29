@@ -54,6 +54,16 @@ const routes = [
                 component: () => import('@/modules/Currency/views/CurrencyList.vue'),
             },
             {
+                path: 'currencies/create',
+                name: 'CurrencyCreate',
+                component: () => import('@/modules/Currency/views/CurrencyForm.vue'),
+            },
+            {
+                path: 'currencies/:id/edit',
+                name: 'CurrencyEdit',
+                component: () => import('@/modules/Currency/views/CurrencyForm.vue'),
+            },
+            {
                 path: 'transactions',
                 name: 'Transactions',
                 component: () => import('@/shared/views/ComingSoon.vue'),
