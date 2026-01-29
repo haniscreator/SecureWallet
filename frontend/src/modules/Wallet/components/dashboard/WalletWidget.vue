@@ -1,23 +1,48 @@
 <template>
-  <v-card class="rounded-lg pa-3" elevation="0" border>
-    <div class="d-flex align-center mb-4">
-      <v-avatar 
-        rounded="0" 
-        size="32" 
-        :color="color" 
-        class="mr-3 rounded-sm"
-      >
-        <v-icon color="white" size="small">{{ icon }}</v-icon>
-      </v-avatar>
-      <span class="text-subtitle-1 font-weight-bold">{{ name }}</span>
-    </div>
-    
-    <div class="d-flex align-baseline">
-      <span class="text-h5 font-weight-bold mr-2">{{ symbol }}{{ amount }}</span>
-      <span class="text-caption text-grey font-weight-bold">{{ currency }}</span>
+  <v-card class="rounded-lg d-flex flex-row overflow-hidden wallet-card" elevation="0" border>
+    <!-- Left Color Strip -->
+    <div :class="`bg-${color || 'primary'}`" style="width: 6px; min-width: 6px;"></div>
+
+    <div class="flex-grow-1 d-flex flex-column">
+        <!-- Header -->
+        <div class="pa-4 pb-3 d-flex align-center">
+             <v-avatar 
+                rounded="lg" 
+                size="36" 
+                :color="color || 'primary'" 
+                variant="tonal"
+                class="mr-3"
+              >
+                <v-icon :color="color || 'primary'" size="small">{{ icon }}</v-icon>
+              </v-avatar>
+             <span class="text-subtitle-1 font-weight-bold">{{ name }}</span>
+        </div>
+        
+        <v-divider></v-divider>
+
+        <!-- Body -->
+        <div class="pa-4 pt-3 flex-grow-1 bg-grey-lighten-5 d-flex flex-column justify-center"> 
+             <div class="d-flex align-baseline mb-2">
+                 <span class="text-h4 font-weight-bold mr-1">{{ symbol }}{{ amount }}</span>
+                 <span class="text-caption text-grey-darken-1 font-weight-bold mt-1">{{ currency }}</span>
+             </div>
+             
+             <!-- Hardcoded Users Assigned -->
+             <div class="d-flex align-center text-caption text-grey-darken-1 mt-auto pt-2">
+                 <v-icon size="small" class="mr-1">mdi-account-group-outline</v-icon>
+                 <span class="font-weight-medium">3 Users Assigned</span>
+             </div>
+        </div>
     </div>
   </v-card>
 </template>
+
+<style scoped>
+.wallet-card {
+    min-height: 180px;
+    height: 100%;
+}
+</style>
 
 <script setup lang="ts">
 defineProps<{
