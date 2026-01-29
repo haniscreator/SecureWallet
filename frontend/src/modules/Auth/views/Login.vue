@@ -6,17 +6,6 @@
       </v-card-title>
       
       <v-card-text>
-        <v-alert
-          v-if="authStore.error"
-          type="error"
-          variant="tonal"
-          closable
-          class="mb-4"
-          @click:close="authStore.error = null"
-        >
-          {{ authStore.error }}
-        </v-alert>
-
         <v-form @submit.prevent="handleLogin" ref="form">
           <v-text-field
             v-model="email"

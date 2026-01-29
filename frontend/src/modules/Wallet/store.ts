@@ -13,11 +13,9 @@ export const useWalletStore = defineStore('wallet', () => {
         loading.value = true;
         try {
             const response = await walletApi.getWallets();
-            // Handle Laravel Resource response wrapping
-            const data = response.data as any;
+            // Using generic ApiResponse, data is already typed
+            const data = response.data as any; // Still need cast until api.ts is updated, but clearer intent
             wallets.value = Array.isArray(data) ? data : (data.data || []);
-        } catch (err: any) {
-            error.value = err.response?.data?.message || 'Failed to fetch wallets';
         } finally {
             loading.value = false;
         }
@@ -34,8 +32,6 @@ export const useWalletStore = defineStore('wallet', () => {
             const txResponse = await walletApi.getTransactions(id);
             const txData = txResponse.data as any;
             transactions.value = Array.isArray(txData) ? txData : (txData.data || []);
-        } catch (err: any) {
-            error.value = err.response?.data?.message || 'Failed to fetch wallet details';
         } finally {
             loading.value = false;
         }
@@ -46,9 +42,6 @@ export const useWalletStore = defineStore('wallet', () => {
         try {
             await walletApi.createWallet(payload);
             await fetchWallets(); // Refresh list
-        } catch (err: any) {
-            error.value = err.response?.data?.message || 'Failed to create wallet';
-            throw err; // Re-throw to handle in UI
         } finally {
             loading.value = false;
         }
@@ -58,9 +51,6 @@ export const useWalletStore = defineStore('wallet', () => {
         loading.value = true;
         try {
             await walletApi.assignUsers(walletId, userIds);
-        } catch (err: any) {
-            error.value = err.response?.data?.message || 'Failed to assign users';
-            throw err;
         } finally {
             loading.value = false;
         }

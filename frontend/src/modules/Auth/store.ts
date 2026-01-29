@@ -23,8 +23,6 @@ export const useAuthStore = defineStore('auth', () => {
 
             // Redirect to dashboard
             router.push('/dashboard');
-        } catch (err: any) {
-            error.value = err.response?.data?.message || 'Login failed';
         } finally {
             loading.value = false;
         }

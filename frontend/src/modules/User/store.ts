@@ -24,8 +24,6 @@ export const useUserStore = defineStore('user', () => {
             const response = await userApi.getMembers();
             const data = response.data as any;
             members.value = Array.isArray(data) ? data : (data.data || []);
-        } catch (err: any) {
-            error.value = err.response?.data?.message || 'Failed to fetch members';
         } finally {
             loading.value = false;
         }
@@ -36,9 +34,6 @@ export const useUserStore = defineStore('user', () => {
         try {
             await userApi.createMember(payload);
             await fetchMembers(); // Refresh list
-        } catch (err: any) {
-            error.value = err.response?.data?.message || 'Failed to create member';
-            throw err;
         } finally {
             loading.value = false;
         }
@@ -49,9 +44,6 @@ export const useUserStore = defineStore('user', () => {
         try {
             await userApi.deleteMember(id);
             await fetchMembers();
-        } catch (err: any) {
-            error.value = err.response?.data?.message || 'Failed to delete member';
-            throw err;
         } finally {
             loading.value = false;
         }
