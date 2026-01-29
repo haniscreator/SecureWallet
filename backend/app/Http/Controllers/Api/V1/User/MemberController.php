@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\Api\V1\User;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\User\StoreMemberRequest;
-use App\Http\Requests\User\UpdateMemberRequest;
+use App\Domain\User\Requests\StoreMemberRequest;
+use App\Domain\User\Requests\UpdateMemberRequest;
 use App\Domain\User\Actions\ListMembersAction;
 use App\Domain\User\Actions\CreateMemberAction;
 use App\Domain\User\Actions\UpdateMemberAction;

@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Api\V1\Auth;
 use App\Domain\Auth\Actions\LoginAction;
 use App\Domain\Auth\Actions\LogoutAction;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Auth\LoginRequest;
+use App\Domain\Auth\Requests\LoginRequest;
 use Illuminate\Http\Request;
 
 class AuthController extends Controller

@@ -1,21 +1,18 @@
 <?php
 
-namespace App\Http\Requests\User;
+namespace App\Domain\User\Requests;
 
 use App\Domain\User\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateMemberRequest extends FormRequest
+class StoreMemberRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        $userId = $this->route('id');
-        $user = User::findOrFail($userId);
-
-        return $this->user()->can('update', $user);
+        return $this->user()->can('create', User::class);
     }
 
     /**
@@ -26,10 +23,10 @@ class UpdateMemberRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'sometimes|required|string|max:255',
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8',
             'role' => 'nullable|string|in:user,admin',
-            // Email/Password updates usually handled separately or here with extra checks, 
-            // but keeping minimal based on current controller logic.
         ];
     }
 }

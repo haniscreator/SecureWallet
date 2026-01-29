@@ -1,17 +1,21 @@
 <?php
 
-namespace App\Http\Requests\Auth;
+namespace App\Domain\Wallet\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use App\Domain\Wallet\Models\Wallet;
 
-class LoginRequest extends FormRequest
+class AssignUserToWalletRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return true;
+        $walletId = $this->route('id');
+        $wallet = Wallet::findOrFail($walletId);
+
+        return $this->user()->can('assignMember', $wallet);
     }
 
     /**
@@ -22,8 +26,8 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => ['required', 'email'],
-            'password' => ['required', 'string'],
+            'user_ids' => 'required|array',
+            'user_ids.*' => 'exists:users,id',
         ];
     }
 }

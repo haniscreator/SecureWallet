@@ -7,8 +7,8 @@ use App\Domain\Currency\Models\Currency;
 use App\Domain\Currency\Resources\CurrencyResource;
 use Illuminate\Http\Request;
 
-use App\Http\Requests\Currency\StoreCurrencyRequest;
-use App\Http\Requests\Currency\UpdateCurrencyRequest;
+use App\Domain\Currency\Requests\StoreCurrencyRequest;
+use App\Domain\Currency\Requests\UpdateCurrencyRequest;
 use App\Domain\Currency\Actions\ListCurrenciesAction;
 use App\Domain\Currency\Actions\GetCurrencyAction;
 

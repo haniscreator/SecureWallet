@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Currency;
+namespace App\Domain\Currency\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreCurrencyRequest extends FormRequest
+class UpdateCurrencyRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,8 +22,7 @@ class StoreCurrencyRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'code' => 'required|string|unique:currencies,code|max:10',
-            'name' => 'required|string|max:255',
+            'name' => 'sometimes|string|max:255',
             'symbol' => 'nullable|string|max:10',
             'status' => 'sometimes|boolean',
         ];

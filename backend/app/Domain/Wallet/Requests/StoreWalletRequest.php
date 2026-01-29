@@ -1,21 +1,19 @@
 <?php
 
-namespace App\Http\Requests\Wallet;
+namespace App\Domain\Wallet\Requests;
 
-use Illuminate\Foundation\Http\FormRequest;
 use App\Domain\Wallet\Models\Wallet;
+use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateWalletStatusRequest extends FormRequest
+class StoreWalletRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        $walletId = $this->route('id');
-        $wallet = Wallet::findOrFail($walletId);
-
-        return $this->user()->can('freeze', $wallet);
+        // Check if user can create wallets via Policy
+        return $this->user()->can('create', Wallet::class);
     }
 
     /**
@@ -26,7 +24,9 @@ class UpdateWalletStatusRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'status' => 'required|boolean',
+            'name' => 'required|string|max:255',
+            'currency_id' => 'required|exists:currencies,id',
+            'initial_balance' => 'sometimes|numeric|min:0',
         ];
     }
 }

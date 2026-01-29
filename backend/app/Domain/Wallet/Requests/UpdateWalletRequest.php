@@ -1,18 +1,22 @@
 <?php
 
-namespace App\Http\Requests\User;
+namespace App\Domain\Wallet\Requests;
 
-use App\Domain\User\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
+use App\Domain\Wallet\Models\Wallet;
 
-class StoreMemberRequest extends FormRequest
+class UpdateWalletRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        return $this->user()->can('create', User::class);
+        // For 'update' endpoint, we need the wallet ID which is in the route
+        $walletId = $this->route('id');
+        $wallet = Wallet::findOrFail($walletId);
+
+        return $this->user()->can('update', $wallet);
     }
 
     /**
@@ -24,9 +28,6 @@ class StoreMemberRequest extends FormRequest
     {
         return [
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8',
-            'role' => 'nullable|string|in:user,admin',
         ];
     }
 }
