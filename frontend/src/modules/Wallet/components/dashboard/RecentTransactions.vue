@@ -73,7 +73,7 @@ const transactions = computed(() => {
     wallet: tx.wallet_name || 'Unknown Wallet',
     type: tx.type === 'credit' ? 'Credit' : 'Debit',
     amount: `${tx.type === 'debit' ? '-' : ''}${Number(tx.amount).toFixed(2)}`, 
-    reference: tx.description
+    reference: tx.reference
   })).slice(0, 10); // Limit to 10
 });
 

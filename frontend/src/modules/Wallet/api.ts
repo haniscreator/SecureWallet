@@ -17,7 +17,7 @@ export interface Transaction {
     id: number;
     amount: number;
     type: 'credit' | 'debit';
-    description: string;
+    reference: string;
     created_at: string;
 }
 
