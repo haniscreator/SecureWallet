@@ -1,5 +1,5 @@
 <template>
-  <v-container class="fill-height justify-center bg-grey-lighten-4">
+  <v-container fluid class="fill-height justify-center bg-grey-lighten-4">
     <v-card width="400" elevation="4" class="rounded-lg">
       <v-card-title class="text-h5 text-center py-6 font-weight-bold text-primary">
         Korporatio
