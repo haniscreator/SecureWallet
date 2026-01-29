@@ -41,7 +41,7 @@ const routes = [
             {
                 path: 'currencies',
                 name: 'Currencies',
-                component: () => import('@/shared/views/ComingSoon.vue'),
+                component: () => import('@/modules/Currency/views/CurrencyList.vue'),
             },
             {
                 path: 'transactions',
