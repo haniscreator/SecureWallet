@@ -2,6 +2,8 @@ import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import { userApi, type User, type CreateMemberPayload } from './api';
 
+import { useNotificationStore } from '@/shared/stores/notification';
+
 export const useUserStore = defineStore('user', () => {
     const currentUser = ref<User | null>(null);
     const members = ref<User[]>([]);
@@ -30,20 +32,24 @@ export const useUserStore = defineStore('user', () => {
     }
 
     async function createMember(payload: CreateMemberPayload) {
+        const notificationStore = useNotificationStore();
         loading.value = true;
         try {
             await userApi.createMember(payload);
             await fetchMembers(); // Refresh list
+            notificationStore.success('Member added successfully');
         } finally {
             loading.value = false;
         }
     }
 
     async function deleteMember(id: number) {
+        const notificationStore = useNotificationStore();
         loading.value = true;
         try {
             await userApi.deleteMember(id);
             await fetchMembers();
+            notificationStore.success('Member deleted successfully');
         } finally {
             loading.value = false;
         }

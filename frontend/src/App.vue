@@ -4,7 +4,7 @@
     <v-snackbar
       v-model="notificationStore.show"
       :color="notificationStore.color"
-      location="bottom right"
+      location="top"
       timeout="3000"
     >
       {{ notificationStore.message }}

@@ -2,6 +2,8 @@ import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import { walletApi, type Wallet, type Transaction, type CreateWalletPayload } from './api';
 
+import { useNotificationStore } from '@/shared/stores/notification';
+
 export const useWalletStore = defineStore('wallet', () => {
     const wallets = ref<Wallet[]>([]);
     const currentWallet = ref<Wallet | null>(null);
@@ -38,19 +40,23 @@ export const useWalletStore = defineStore('wallet', () => {
     }
 
     async function createWallet(payload: CreateWalletPayload) {
+        const notificationStore = useNotificationStore();
         loading.value = true;
         try {
             await walletApi.createWallet(payload);
             await fetchWallets(); // Refresh list
+            notificationStore.success('Wallet created successfully');
         } finally {
             loading.value = false;
         }
     }
 
     async function assignUsers(walletId: number, userIds: number[]) {
+        const notificationStore = useNotificationStore();
         loading.value = true;
         try {
             await walletApi.assignUsers(walletId, userIds);
+            notificationStore.success('Users assigned successfully');
         } finally {
             loading.value = false;
         }
