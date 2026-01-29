@@ -36,8 +36,7 @@ const routes = [
             {
                 path: 'members',
                 name: 'Members',
-                // component: () => import('@/modules/User/views/MemberList.vue')
-                component: () => import('@/modules/Wallet/views/Dashboard.vue') // Temp
+                component: () => import('@/modules/User/views/Team.vue')
             }
         ]
     },
