@@ -45,10 +45,18 @@ export const useWalletStore = defineStore('wallet', () => {
 
     // New Action: Fetch transactions for ALL wallets and merge them
     async function fetchAllTransactions() {
-        // Avoid infinite loading loop if called from fetchWallets, so we don't set global loading default
-        // or we manage it carefully. 
-        // Let's iterate all wallets.
         if (wallets.value.length === 0) return;
+
+        // Fetch currencies to map IDs if needed
+        let currencyMap: Record<number, any> = {};
+        try {
+            const curResponse = await import('@/modules/Currency/api').then(m => m.currencyApi.getCurrencies());
+            const curData = curResponse.data as any;
+            const currencies = Array.isArray(curData) ? curData : (curData.data || []);
+            currencies.forEach((c: any) => currencyMap[c.id] = c);
+        } catch (e) {
+            console.error('Failed to fetch currencies', e);
+        }
 
         const allTxs: (Transaction & { wallet_name: string })[] = [];
 
@@ -58,6 +66,22 @@ export const useWalletStore = defineStore('wallet', () => {
                 const response = await walletApi.getTransactions(wallet.id);
                 const data = response.data as any;
                 const txs = Array.isArray(data) ? data : (data.data || []);
+
+                // Calculate balance from transactions if not present
+                // Assuming initial balance is 0 or captured in transactions
+                let calculatedBalance = 0;
+                txs.forEach((tx: Transaction) => {
+                    if (tx.type === 'credit') calculatedBalance += Number(tx.amount);
+                    if (tx.type === 'debit') calculatedBalance -= Number(tx.amount);
+                });
+
+                // Update wallet with calculated balance and currency info
+                // We mutate the wallet in the list directly to update the UI
+                wallet.balance = calculatedBalance;
+
+                if (!wallet.currency && wallet.currency_id && currencyMap[wallet.currency_id]) {
+                    wallet.currency = currencyMap[wallet.currency_id];
+                }
 
                 // Tag with wallet name
                 return txs.map((tx: Transaction) => ({
@@ -103,16 +127,27 @@ export const useWalletStore = defineStore('wallet', () => {
     }
 
     // Getters
+    // Getters
     const totalBalanceByCurrency = computed(() => {
-        const totals: Record<string, number> = {};
+        const totals: Record<string, { amount: number, symbol: string }> = {};
 
         wallets.value.forEach(w => {
-            // Default to USD if no currency code, though API usually provides it
-            const currency = w.currency?.code || 'USD';
-            if (!totals[currency]) totals[currency] = 0;
-            // Handle potential string or number, default to 0 if missing
+            // Use code from currency object or fallback
+            // Note: Map ID to code manually if strictly needed and object is still missing
+            const currencyCode = w.currency?.code || (w.currency_id === 2 ? 'EUR' : 'USD');
+            const currencySymbol = w.currency?.symbol || '$'; // Fallback symbol
+
+            if (!totals[currencyCode]) {
+                totals[currencyCode] = { amount: 0, symbol: currencySymbol };
+            }
+
+            // If symbol was fallback, verify if we can update it now (in case mixed wallets)
+            if (totals[currencyCode].symbol === '$' && currencySymbol !== '$') {
+                totals[currencyCode].symbol = currencySymbol;
+            }
+
             const val = w.balance !== undefined && w.balance !== null ? w.balance : 0;
-            totals[currency] += Number(val);
+            totals[currencyCode].amount += Number(val);
         });
 
         return totals;

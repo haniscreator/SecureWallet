@@ -11,16 +11,17 @@
                    <v-avatar color="primary" variant="tonal" size="40" class="mr-3 rounded-lg">
                        <v-icon color="primary">mdi-wallet-bifold</v-icon>
                    </v-avatar>
-                   <div class="text-subtitle-1 font-weight-medium text-grey-darken-1">Total Balance</div>
+                   <div class="text-h6 font-weight-bold text-grey-darken-3">Total Balance</div>
               </div>
               <v-divider class="my-4"></v-divider>
               
               <div class="balance-list">
                 <template v-if="hasBalances">
-                    <div v-for="(amount, currency) in walletStore.totalBalanceByCurrency" :key="currency" class="d-flex align-baseline mb-1">
-                        <!-- Simple currency symbol mapping -->
-                        <span class="text-h5 font-weight-bold ml-1 mr-2 text-grey-darken-3">{{ currency }}</span>
-                        <span class="text-h3 font-weight-bold text-grey-darken-4">{{ amount.toLocaleString('en-US', { minimumFractionDigits: 2 }) }}</span>
+                    <div v-for="item in sortedBalances" :key="item.currency" class="d-flex align-baseline mb-2">
+                        <span class="text-h4 font-weight-bold text-grey-darken-4 mr-2">
+                            {{ item.symbol }}{{ item.amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
+                        </span>
+                        <span class="text-h6 font-weight-medium text-grey-darken-1">{{ item.currency }}</span>
                     </div>
                 </template>
                 <template v-else>
@@ -28,18 +29,9 @@
                 </template>
               </div>
           </div>
-
-          <div class="d-flex justify-space-between align-end mt-4">
-              <div class="d-flex gap-2">
-                  <v-chip size="small" color="success" variant="tonal" class="font-weight-medium">
-                      +12.5% <v-icon size="small" class="ml-1">mdi-arrow-up</v-icon>
-                  </v-chip>
-                  <span class="text-caption align-self-center text-grey ml-2">vs last month</span>
-              </div>
-              
-              <!-- Decorative chart line/vector -->
-              <v-icon size="64" class="chart-icon text-primary opacity-10">mdi-chart-timeline-variant</v-icon>
-          </div>
+          
+          <!-- Decorative chart line/vector -->
+          <v-icon size="64" class="chart-icon text-primary opacity-10">mdi-chart-timeline-variant</v-icon>
       </div>
   </v-card>
 </template>
@@ -53,6 +45,21 @@ const walletStore = useWalletStore();
 // Safe computed wrapper to avoid template errors during loading/HMR
 const hasBalances = computed(() => {
     return walletStore.totalBalanceByCurrency && Object.keys(walletStore.totalBalanceByCurrency).length > 0;
+});
+
+const sortedBalances = computed(() => {
+    if (!hasBalances.value) return [];
+    
+    // Convert dictionary to array
+    // Store returns Record<string, { amount: number, symbol: string }>
+    const balances = Object.entries(walletStore.totalBalanceByCurrency).map(([currency, data]) => ({
+        currency,
+        amount: data.amount,
+        symbol: data.symbol
+    }));
+
+    // Sort by amount descending
+    return balances.sort((a, b) => b.amount - a.amount);
 });
 </script>
 
