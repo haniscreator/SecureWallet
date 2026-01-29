@@ -16,6 +16,9 @@ const vuetify = createVuetify({
     directives,
 })
 
+// Global CSS
+import './assets/main.css';
+
 const app = createApp(App)
 const pinia = createPinia()
 

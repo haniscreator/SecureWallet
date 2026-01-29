@@ -1,0 +1,36 @@
+/* Import Google Font - Inter */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+    --font-primary: 'Inter', sans-serif;
+}
+
+body,
+.v-application {
+    font-family: var(--font-primary) !important;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Override Vuetify typography classes to clearer weights if needed */
+.text-h1,
+.text-h2,
+.text-h3,
+.text-h4,
+.text-h5,
+.text-h6 {
+    font-family: var(--font-primary) !important;
+    letter-spacing: -0.02em !important;
+    /* Tighter spacing for modern look */
+}
+
+.text-subtitle-1,
+.text-subtitle-2 {
+    font-family: var(--font-primary) !important;
+    letter-spacing: 0.01em !important;
+}
+
+/* Optional: Make inputs feel more modern */
+.v-field {
+    border-radius: 8px !important;
+}
