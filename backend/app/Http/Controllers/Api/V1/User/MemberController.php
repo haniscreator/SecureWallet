@@ -11,7 +11,7 @@ use App\Domain\User\Actions\UpdateMemberAction;
 use App\Domain\User\Actions\DeleteMemberAction;
 use App\Domain\User\Actions\GetMemberAction;
 
-use App\Http\Resources\UserResource;
+use App\Domain\User\Resources\UserResource;
 use Illuminate\Http\Request;
 
 class MemberController extends Controller

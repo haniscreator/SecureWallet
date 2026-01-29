@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api\V1\Currency;
 
 use App\Http\Controllers\Controller;
 use App\Domain\Currency\Models\Currency;
-use App\Http\Resources\CurrencyResource;
+use App\Domain\Currency\Resources\CurrencyResource;
 use Illuminate\Http\Request;
 
 use App\Http\Requests\Currency\StoreCurrencyRequest;

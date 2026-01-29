@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Api\V1\Wallet;
 use App\Http\Controllers\Controller;
 use App\Domain\Wallet\Models\Wallet;
 use App\Domain\Wallet\Services\TransactionService;
-use App\Http\Resources\TransactionResource;
+use App\Domain\Wallet\Resources\TransactionResource;
 use Illuminate\Http\Request;
 
 class TransactionController extends Controller

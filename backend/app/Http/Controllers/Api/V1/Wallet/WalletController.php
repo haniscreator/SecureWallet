@@ -15,7 +15,7 @@ use App\Http\Requests\Wallet\UpdateWalletStatusRequest;
 use App\Http\Requests\Wallet\AssignUserToWalletRequest;
 use App\Domain\Wallet\Actions\ListWalletsAction;
 use App\Domain\Wallet\Actions\GetWalletAction;
-use App\Http\Resources\WalletResource;
+use App\Domain\Wallet\Resources\WalletResource;
 
 class WalletController extends Controller
 {
