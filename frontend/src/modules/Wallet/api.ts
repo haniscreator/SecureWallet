@@ -25,11 +25,12 @@ export interface CreateWalletPayload {
     name: string;
     currency_id: number;
     initial_balance: number;
+    status?: boolean | number;
 }
 
 export interface UpdateWalletPayload {
     name?: string;
-    status?: boolean;
+    status?: boolean | number;
 }
 
 export const walletApi = {

@@ -9,7 +9,7 @@
             prepend-icon="mdi-plus"
             elevation="2"
             class="text-capitalize"
-            @click="openDialog()"
+            :to="{ name: 'WalletCreate' }"
           >
             Add Wallet
           </v-btn>
@@ -49,7 +49,7 @@
 
                 <!-- Actions Column -->
                 <template v-slot:item.actions="{ item }">
-                    <div class="d-flex gap-2">
+                    <div class="d-flex gap-2 justify-center">
                         <v-tooltip text="View Details" location="top">
                           <template v-slot:activator="{ props }">
                             <v-btn
@@ -73,7 +73,7 @@
                                 variant="text"
                                 size="small"
                                 color="primary"
-                                @click="openDialog(item)"
+                                :to="{ name: 'WalletEdit', params: { id: item.id } }"
                             >
                                 <v-icon>mdi-pencil</v-icon>
                             </v-btn>
@@ -92,23 +92,12 @@
         </v-card>
       </v-col>
     </v-row>
-
-    <!-- Form Dialog -->
-    <WalletFormDialog
-        v-model="dialog"
-        :item="editedItem"
-        :loading="walletStore.loading"
-        @save="saveItem"
-    />
-
   </v-container>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { onMounted } from 'vue';
 import { useWalletStore } from '../store';
-import type { Wallet } from '../api';
-import WalletFormDialog from '../components/WalletFormDialog.vue';
 
 const walletStore = useWalletStore();
 
@@ -118,27 +107,10 @@ const headers = [
     { title: 'Currency', key: 'currency', align: 'start' as const },
     { title: 'Balance', key: 'balance', align: 'end' as const },
     { title: 'Status', key: 'status', align: 'start' as const },
-    { title: 'Actions', key: 'actions', sortable: false, align: 'end' as const },
+    { title: 'Actions', key: 'actions', sortable: false, align: 'center' as const },
 ];
-
-const dialog = ref(false);
-const editedItem = ref<Wallet | null>(null);
 
 onMounted(() => {
     walletStore.fetchWallets();
 });
-
-function openDialog(item?: Wallet) {
-    editedItem.value = item || null;
-    dialog.value = true;
-}
-
-async function saveItem(payload: any) {
-    if (editedItem.value) {
-        await walletStore.updateWallet(editedItem.value.id, payload);
-    } else {
-        await walletStore.createWallet(payload);
-    }
-    dialog.value = false;
-}
 </script>

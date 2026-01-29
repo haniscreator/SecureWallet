@@ -28,6 +28,16 @@ const routes = [
                 component: () => import('@/modules/Wallet/views/WalletList.vue'),
             },
             {
+                path: 'wallets/create',
+                name: 'WalletCreate',
+                component: () => import('@/modules/Wallet/views/WalletForm.vue'),
+            },
+            {
+                path: 'wallets/:id/edit',
+                name: 'WalletEdit',
+                component: () => import('@/modules/Wallet/views/WalletForm.vue'),
+            },
+            {
                 path: 'wallet/:id',
                 name: 'WalletDetails',
                 component: () => import('@/modules/Wallet/views/WalletDetail.vue'),

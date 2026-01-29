@@ -27,6 +27,7 @@ class StoreWalletRequest extends FormRequest
             'name' => 'required|string|max:255',
             'currency_id' => 'required|exists:currencies,id',
             'initial_balance' => 'sometimes|numeric|min:0',
+            'status' => 'sometimes|boolean',
         ];
     }
 }
