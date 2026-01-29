@@ -54,6 +54,18 @@ export const useWalletStore = defineStore('wallet', () => {
         }
     }
 
+    async function assignUsers(walletId: number, userIds: number[]) {
+        loading.value = true;
+        try {
+            await walletApi.assignUsers(walletId, userIds);
+        } catch (err: any) {
+            error.value = err.response?.data?.message || 'Failed to assign users';
+            throw err;
+        } finally {
+            loading.value = false;
+        }
+    }
+
     return {
         wallets,
         currentWallet,
@@ -62,6 +74,7 @@ export const useWalletStore = defineStore('wallet', () => {
         error,
         fetchWallets,
         fetchWalletDetails,
-        createWallet
+        createWallet,
+        assignUsers
     };
 });

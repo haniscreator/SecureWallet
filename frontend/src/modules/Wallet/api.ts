@@ -39,5 +39,8 @@ export const walletApi = {
     },
     getTransactions(walletId: number, params?: { type?: string; from_date?: string }) {
         return apiClient.get<Transaction[]>(`/wallets/${walletId}/transactions`, { params });
+    },
+    assignUsers(walletId: number, userIds: number[]) {
+        return apiClient.post(`/wallets/${walletId}/users`, { user_ids: userIds });
     }
 };
