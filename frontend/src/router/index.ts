@@ -22,22 +22,32 @@ const routes = [
                 component: () => import('@/modules/Wallet/views/Dashboard.vue'),
             },
             {
-                path: 'wallets/:id',
-                name: 'WalletDetails',
-                component: () => import('@/modules/Wallet/views/WalletDetail.vue'),
-            },
-            // Placeholders for future modules
-            {
                 path: 'wallets',
                 name: 'Wallets',
-                // component: () => import('@/modules/Wallet/views/WalletList.vue')
-                component: () => import('@/modules/Wallet/views/Dashboard.vue') // Temp
+                // Redirect to dashboard for now as it lists wallets, or maybe create a dedicated list view later
+                component: () => import('@/modules/Wallet/views/Dashboard.vue'),
+            },
+            {
+                path: 'wallet/:id',
+                name: 'WalletDetails',
+                component: () => import('@/modules/Wallet/views/WalletDetail.vue'),
+                props: (route) => ({ id: Number(route.params.id) }),
             },
             {
                 path: 'members',
                 name: 'Members',
-                component: () => import('@/modules/User/views/Team.vue')
-            }
+                component: () => import('@/modules/User/views/Team.vue'),
+            },
+            {
+                path: 'currencies',
+                name: 'Currencies',
+                component: () => import('@/shared/views/ComingSoon.vue'),
+            },
+            {
+                path: 'transactions',
+                name: 'Transactions',
+                component: () => import('@/shared/views/ComingSoon.vue'),
+            },
         ]
     },
     {
