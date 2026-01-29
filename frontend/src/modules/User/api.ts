@@ -6,6 +6,7 @@ export interface User {
     email: string;
     role: 'admin' | 'user';
     created_at?: string;
+    company_name?: string;
 }
 
 export interface CreateMemberPayload {

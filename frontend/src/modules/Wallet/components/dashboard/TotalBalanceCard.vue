@@ -1,5 +1,10 @@
 <template>
-  <v-card class="total-balance-card rounded-xl overflow-hidden" elevation="0" border>
+  <v-card 
+    class="total-balance-card rounded-xl overflow-hidden h-100" 
+    elevation="0" 
+    border
+    style="border-left: 6px solid rgb(var(--v-theme-primary)) !important;"
+  >
       <div class="card-content pa-6 d-flex flex-column justify-space-between fill-height">
           <div>
               <div class="d-flex align-center mb-4">

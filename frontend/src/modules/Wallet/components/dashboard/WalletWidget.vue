@@ -1,7 +1,6 @@
 <template>
   <v-card class="rounded-lg d-flex flex-row overflow-hidden wallet-card" elevation="0" border>
-    <!-- Left Color Strip -->
-    <div :class="`bg-${color || 'primary'}`" style="width: 6px; min-width: 6px;"></div>
+    <!-- Left Color Strip Removed -->
 
     <div class="flex-grow-1 d-flex flex-column">
         <!-- Header -->
@@ -13,7 +12,8 @@
                 variant="tonal"
                 class="mr-3"
               >
-                <v-icon :color="color || 'primary'" size="small">{{ icon }}</v-icon>
+                <!-- Use wallet icon instead of currency symbol icon -->
+                <v-icon :color="color || 'primary'" size="small">mdi-wallet</v-icon>
               </v-avatar>
              <span class="text-subtitle-1 font-weight-bold">{{ name }}</span>
         </div>
