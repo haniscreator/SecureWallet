@@ -110,6 +110,26 @@ export const useWalletStore = defineStore('wallet', () => {
             await walletApi.createWallet(payload);
             await fetchWallets(); // Refresh list
             notificationStore.success('Wallet created successfully');
+        } catch (e: any) {
+            const msg = e.response?.data?.message || 'Failed to create wallet';
+            notificationStore.error(msg);
+            throw e;
+        } finally {
+            loading.value = false;
+        }
+    }
+
+    async function updateWallet(id: number, payload: any) {
+        const notificationStore = useNotificationStore();
+        loading.value = true;
+        try {
+            await walletApi.updateWallet(id, payload);
+            await fetchWallets(); // Refresh list
+            notificationStore.success('Wallet updated successfully');
+        } catch (e: any) {
+            const msg = e.response?.data?.message || 'Failed to update wallet';
+            notificationStore.error(msg);
+            throw e;
         } finally {
             loading.value = false;
         }
@@ -168,6 +188,7 @@ export const useWalletStore = defineStore('wallet', () => {
         fetchWallets,
         fetchWalletDetails,
         createWallet,
+        updateWallet,
         assignUsers,
         fetchAllTransactions,
         totalBalanceByCurrency,

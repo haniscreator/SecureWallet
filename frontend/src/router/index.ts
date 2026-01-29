@@ -25,7 +25,7 @@ const routes = [
                 path: 'wallets',
                 name: 'Wallets',
                 // Redirect to dashboard for now as it lists wallets, or maybe create a dedicated list view later
-                component: () => import('@/modules/Wallet/views/Dashboard.vue'),
+                component: () => import('@/modules/Wallet/views/WalletList.vue'),
             },
             {
                 path: 'wallet/:id',
