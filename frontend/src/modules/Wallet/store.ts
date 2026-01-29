@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { walletApi, type Wallet, type Transaction, type CreateWalletPayload } from './api';
 
 import { useNotificationStore } from '@/shared/stores/notification';
@@ -7,7 +7,8 @@ import { useNotificationStore } from '@/shared/stores/notification';
 export const useWalletStore = defineStore('wallet', () => {
     const wallets = ref<Wallet[]>([]);
     const currentWallet = ref<Wallet | null>(null);
-    const transactions = ref<Transaction[]>([]);
+    const transactions = ref<Transaction[]>([]); // Used in details view
+    const recentGlobalTransactions = ref<(Transaction & { wallet_name: string })[]>([]);
     const loading = ref(false);
     const error = ref<string | null>(null);
 
@@ -15,9 +16,12 @@ export const useWalletStore = defineStore('wallet', () => {
         loading.value = true;
         try {
             const response = await walletApi.getWallets();
-            // Using generic ApiResponse, data is already typed
-            const data = response.data as any; // Still need cast until api.ts is updated, but clearer intent
+            const data = response.data as any;
             wallets.value = Array.isArray(data) ? data : (data.data || []);
+
+            // After fetching wallets, let's fetch transactions for them to populate the dashboard
+            // In a real app, we might want to do this lazily or have a separate dashboard init
+            await fetchAllTransactions();
         } finally {
             loading.value = false;
         }
@@ -37,6 +41,42 @@ export const useWalletStore = defineStore('wallet', () => {
         } finally {
             loading.value = false;
         }
+    }
+
+    // New Action: Fetch transactions for ALL wallets and merge them
+    async function fetchAllTransactions() {
+        // Avoid infinite loading loop if called from fetchWallets, so we don't set global loading default
+        // or we manage it carefully. 
+        // Let's iterate all wallets.
+        if (wallets.value.length === 0) return;
+
+        const allTxs: (Transaction & { wallet_name: string })[] = [];
+
+        // Use Promise.all for parallel fetching
+        const promises = wallets.value.map(async (wallet) => {
+            try {
+                const response = await walletApi.getTransactions(wallet.id);
+                const data = response.data as any;
+                const txs = Array.isArray(data) ? data : (data.data || []);
+
+                // Tag with wallet name
+                return txs.map((tx: Transaction) => ({
+                    ...tx,
+                    wallet_name: wallet.name
+                }));
+            } catch (e) {
+                console.error(`Failed to fetch transactions for wallet ${wallet.id}`, e);
+                return [];
+            }
+        });
+
+        const results = await Promise.all(promises);
+        results.forEach(txList => allTxs.push(...txList));
+
+        // Sort by date desc
+        recentGlobalTransactions.value = allTxs.sort((a, b) =>
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        );
     }
 
     async function createWallet(payload: CreateWalletPayload) {
@@ -62,15 +102,40 @@ export const useWalletStore = defineStore('wallet', () => {
         }
     }
 
+    // Getters
+    const totalBalanceByCurrency = computed(() => {
+        const totals: Record<string, number> = {};
+
+        wallets.value.forEach(w => {
+            // Default to USD if no currency code, though API usually provides it
+            const currency = w.currency?.code || 'USD';
+            if (!totals[currency]) totals[currency] = 0;
+            // Handle potential string or number, default to 0 if missing
+            const val = w.balance !== undefined && w.balance !== null ? w.balance : 0;
+            totals[currency] += Number(val);
+        });
+
+        return totals;
+    });
+
+    const recentWallets = computed(() => {
+        // Return top 3, assuming list is somewhat ordered or just take first 3
+        return wallets.value.slice(0, 3);
+    });
+
     return {
         wallets,
         currentWallet,
         transactions,
+        recentGlobalTransactions, // Exposed for dashboard
         loading,
         error,
         fetchWallets,
         fetchWalletDetails,
         createWallet,
-        assignUsers
+        assignUsers,
+        fetchAllTransactions,
+        totalBalanceByCurrency,
+        recentWallets
     };
 });

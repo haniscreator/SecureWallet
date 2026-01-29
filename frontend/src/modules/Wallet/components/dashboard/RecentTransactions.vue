@@ -55,24 +55,33 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed } from 'vue';
+import { useWalletStore } from '@/modules/Wallet/store';
 
-const transactions = ref([
-  { id: 1, date: '12/10/2022', wallet: 'Main Wallet', type: 'Debit', amount: '-$500.00', reference: 'Invoice #123' },
-  { id: 2, date: '12/09/2022', wallet: 'EUR Wallet', type: 'Credit', amount: '€1,000.00', reference: 'Client Payment' },
-  { id: 3, date: '12/09/2022', wallet: 'Marketing Wallet', type: 'Debit', amount: '-$200.00', reference: 'Advertising' },
-  { id: 4, date: '12/07/2022', wallet: 'Main Wallet', type: 'Credit', amount: '€2,500.00', reference: 'Transfer' },
-]);
+const walletStore = useWalletStore();
+
+// Map store transactions to display format
+const transactions = computed(() => {
+  const txs = walletStore.recentGlobalTransactions || [];
+  return txs.map(tx => ({
+    id: tx.id,
+    date: new Date(tx.created_at).toLocaleDateString(),
+    wallet: tx.wallet_name || 'Unknown Wallet',
+    type: tx.type === 'credit' ? 'Credit' : 'Debit',
+    amount: `${tx.type === 'debit' ? '-' : ''}${Number(tx.amount).toFixed(2)}`, 
+    reference: tx.description
+  })).slice(0, 10); // Limit to 10
+});
 
 function getWalletColor(name: string) {
     if (name.includes('Main')) return 'blue-darken-2';
     if (name.includes('EUR')) return 'blue-darken-4';
-    return 'green-darken-3'; // Marketing
+    return 'green-darken-3'; // Default/Others
 }
 
 function getWalletIcon(name: string) {
-    if (name.includes('Main')) return 'mdi-wallet-outline';
     if (name.includes('EUR')) return 'mdi-currency-eur';
-    return 'mdi-currency-usd';
+    if (name.includes('GBP')) return 'mdi-currency-gbp';
+    return 'mdi-currency-usd'; // Default
 }
 </script>
