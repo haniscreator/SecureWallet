@@ -1,95 +1,94 @@
 <template>
-  <v-container>
-    <v-row class="mb-4">
-      <v-col cols="12">
-        <h1 class="text-h4 font-weight-bold">Dashboard</h1>
+  <v-container fluid class="pa-6 bg-grey-lighten-4 fill-height align-start">
+    <v-row class="mb-2">
+      <v-col cols="12" class="d-flex justify-space-between align-center">
+        <!-- Breadcrumb / Header -->
+        <div class="d-flex align-center">
+            <h1 class="text-h5 font-weight-regular text-grey-darken-1">Dashboard</h1>
+            <span class="mx-2 text-grey-lighten-1">|</span>
+            <span class="text-h5 font-weight-bold">Acme Corp</span>
+        </div>
       </v-col>
     </v-row>
 
-    <!-- Summary Cards -->
+    <!-- Top Row: Total Balance (Left) + Wallet Widgets (Right/Below) -->
+    <!-- Reference image shows Total Balance taking full width above or side-by-side? 
+         Image shows Total Balance is a large card on top, then 3 small cards below.
+         Actually looking at the description again: "Total Balance Card... Wallet Cards... Recent Transactions"
+         Let's stack them vertically as standard dashboard flow.
+    -->
+    
+    <!-- Total Balance Section -->
+    <v-row>
+      <v-col cols="12">
+        <TotalBalanceCard />
+      </v-col>
+    </v-row>
+
+    <!-- Wallet Summary Cards -->
     <v-row>
       <v-col cols="12" md="4">
-        <v-card color="primary" theme="dark">
-          <v-card-text>
-            <div class="text-overline mb-1">Total Balance (Est.)</div>
-            <div class="text-h4 font-weight-bold">$ {{ totalBalance.toFixed(2) }}</div>
-          </v-card-text>
-        </v-card>
+        <WalletWidget 
+            name="Main Wallet" 
+            amount="7,200.00" 
+            currency="USD"
+            symbol="$"
+            icon="mdi-wallet-outline"
+            color="blue"
+        />
+      </v-col>
+      <v-col cols="12" md="4">
+        <WalletWidget 
+            name="EUR Wallet" 
+            amount="4,500.00" 
+            currency="EUR"
+            symbol="€"
+            icon="mdi-currency-eur"
+            color="blue-darken-3"
+        />
+      </v-col>
+      <v-col cols="12" md="4">
+        <WalletWidget 
+            name="Marketing Wallet" 
+            amount="5,300.00" 
+            currency="USD"
+            symbol="$"
+            icon="mdi-bullhorn-outline"
+            color="green-darken-2"
+        />
       </v-col>
     </v-row>
 
-    <!-- Wallet List -->
-    <v-row class="mt-6">
-      <v-col cols="12" class="d-flex justify-space-between align-center">
-        <h2 class="text-h5">My Wallets</h2>
-        <v-btn color="primary" prepend-icon="mdi-plus" @click="showCreateDialog = true">
-          New Wallet
-        </v-btn>
-      </v-col>
-
-      <v-col v-if="walletStore.loading" cols="12" class="text-center">
-        <v-progress-circular indeterminate color="primary"></v-progress-circular>
-      </v-col>
-
-      <v-col 
-        v-else 
-        v-for="wallet in walletStore.wallets" 
-        :key="wallet.id" 
-        cols="12" 
-        md="6" 
-        lg="4"
-      >
-        <v-card 
-          variant="outlined" 
-          hover 
-          :to="{ name: 'WalletDetails', params: { id: wallet.id } }"
-        >
-          <v-card-item>
-            <v-card-title class="d-flex justify-space-between align-center">
-              {{ wallet.name }}
-              <v-chip :color="wallet.status ? 'success' : 'error'" size="small">
-                {{ wallet.status ? 'Active' : 'Inactive' }}
-              </v-chip>
-            </v-card-title>
-            <v-card-subtitle>{{ wallet.currency?.code || 'USD' }}</v-card-subtitle>
-          </v-card-item>
-
-          <v-card-text class="pt-4">
-            <div class="text-h5 font-weight-bold">
-              {{ wallet.currency?.symbol || '$' }} {{ Number(wallet.balance).toFixed(2) }}
-            </div>
-          </v-card-text>
-        </v-card>
-      </v-col>
-      
-      <v-col v-if="!walletStore.loading && walletStore.wallets.length === 0" cols="12">
-        <v-alert type="info" variant="tonal">
-          No wallets found. Create one to get started!
-        </v-alert>
+    <!-- Recent Transactions -->
+    <v-row>
+      <v-col cols="12">
+        <RecentTransactions />
       </v-col>
     </v-row>
-
-    <!-- Dialog -->
-    <CreateWalletDialog v-model="showCreateDialog" @created="walletStore.fetchWallets()" />
-
+    
+    <!-- Floating Action Button for Create Wallet (or keep it in sidebar?) 
+         User mentioned "Create Wallet button at bottom of sidebar".
+         Let's keep a button here too for convenience? 
+         Reference implies sidebar action. I will add a FAB just in case.
+    -->
+    <CreateWalletDialog v-model="showCreateDialog" @created="handleWalletCreated" />
   </v-container>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
-import { useWalletStore } from '@/modules/Wallet/store';
+import { ref } from 'vue';
+import TotalBalanceCard from '../components/dashboard/TotalBalanceCard.vue';
+import WalletWidget from '../components/dashboard/WalletWidget.vue';
+import RecentTransactions from '../components/dashboard/RecentTransactions.vue';
 import CreateWalletDialog from '@/modules/Wallet/components/CreateWalletDialog.vue';
+import { useWalletStore } from '@/modules/Wallet/store';
 
+// We import store just to have it ready for future API integration
 const walletStore = useWalletStore();
 const showCreateDialog = ref(false);
 
-const totalBalance = computed(() => {
-    // Simple sum for now, assuming 1:1 conversion or just base currency sum
-    // In real app we need conversation rates
-    return walletStore.wallets.reduce((acc, w) => acc + Number(w.balance), 0);
-});
-
-onMounted(() => {
-  walletStore.fetchWallets();
-});
+function handleWalletCreated() {
+    walletStore.fetchWallets();
+    // In future, this would refresh the widgets
+}
 </script>
