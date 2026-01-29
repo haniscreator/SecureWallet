@@ -4,7 +4,7 @@
       Recent Transactions
     </v-card-title>
     
-    <v-table class="pa-2">
+    <v-table class="pa-2 recent-transactions-table">
       <thead>
         <tr>
           <th class="text-left text-grey-darken-1 font-weight-medium">Date</th>
@@ -20,12 +20,14 @@
           <td>
             <div class="d-flex align-center">
               <v-avatar 
-                size="24" 
-                rounded="sm" 
+                size="36" 
+                rounded="lg" 
                 :color="getWalletColor(item.wallet)" 
-                class="mr-2"
+                variant="tonal"
+                class="mr-3"
               >
-                <v-icon size="x-small" color="white">{{ getWalletIcon(item.wallet) }}</v-icon>
+                <!-- Changed to wallet icon as requested -->
+                <v-icon size="small" :color="getWalletColor(item.wallet)">mdi-wallet-bifold</v-icon>
               </v-avatar>
               <span class="text-body-2 font-weight-medium">{{ item.wallet }}</span>
             </div>
@@ -34,7 +36,8 @@
             <span class="text-body-2">{{ item.type }}</span>
           </td>
           <td>
-            <span :class="['text-body-2 font-weight-bold', item.amount.startsWith('-') ? 'text-teal' : 'text-teal']">
+            <!-- Color logic: Teal for credit, Red for debit -->
+            <span :class="['text-body-2 font-weight-bold', item.amount.startsWith('-') ? 'text-red-darken-2' : 'text-teal-darken-2']">
               {{ item.amount }}
             </span>
           </td>
@@ -78,10 +81,13 @@ function getWalletColor(name: string) {
     if (name.includes('EUR')) return 'blue-darken-4';
     return 'green-darken-3'; // Default/Others
 }
-
-function getWalletIcon(name: string) {
-    if (name.includes('EUR')) return 'mdi-currency-eur';
-    if (name.includes('GBP')) return 'mdi-currency-gbp';
-    return 'mdi-currency-usd'; // Default
-}
 </script>
+
+<style scoped>
+.recent-transactions-table :deep(tbody tr:nth-of-type(odd)) {
+    background-color: #FAFAFA; /* Very light grey for odd rows */
+}
+.recent-transactions-table :deep(tbody tr:hover) {
+    background-color: #F5F5F5 !important;
+}
+</style>
