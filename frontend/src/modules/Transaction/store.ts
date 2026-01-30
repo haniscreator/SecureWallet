@@ -11,14 +11,15 @@ export const useTransactionStore = defineStore('transaction', () => {
     // Pagination state
     const page = ref(1);
     const totalItems = ref(0);
-    const itemsPerPage = ref(15);
+    const itemsPerPage = ref(10);
 
     async function fetchTransactions(filters: TransactionFilters = {}) {
         loading.value = true;
         try {
             const params = {
                 ...filters,
-                page: page.value
+                page: page.value,
+                per_page: itemsPerPage.value
             };
             const response = await transactionApi.getTransactions(params);
             const data = response.data;

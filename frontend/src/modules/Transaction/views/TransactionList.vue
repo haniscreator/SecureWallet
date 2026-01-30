@@ -137,7 +137,7 @@
             :loading="store.loading"
             @update:options="loadItems"
             hover
-            class="pa-2"
+            class="pa-2 transaction-table"
         >
             <!-- Date Column -->
             <template v-slot:item.created_at="{ item }">
@@ -319,7 +319,13 @@ function getCurrencySymbol(item: Transaction) {
     padding-right: 10px; /* Give some space from the icon if needed */
 }
 /* Ensure the icon stays on the right and doesn't look weird with right-aligned text */
+/* Ensure the icon stays on the right and well aligned */
 :deep(input[type="date"]::-webkit-calendar-picker-indicator) {
     margin-left: 10px;
+}
+
+/* Hide the items-per-page dropdown in the footer */
+:deep(.transaction-table .v-data-table-footer__items-per-page) {
+    display: none !important;
 }
 </style>

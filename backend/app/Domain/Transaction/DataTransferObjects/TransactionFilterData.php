@@ -10,7 +10,8 @@ readonly class TransactionFilterData
         public ?string $type,
         public ?string $from_date,
         public ?string $to_date,
-        public ?string $reference
+        public ?string $reference,
+        public ?int $per_page = 15
     ) {
     }
 
@@ -20,7 +21,8 @@ readonly class TransactionFilterData
             type: $request->input('type'),
             from_date: $request->input('from_date'),
             to_date: $request->input('to_date'),
-            reference: $request->input('reference')
+            reference: $request->input('reference'),
+            per_page: $request->input('per_page')
         );
     }
 

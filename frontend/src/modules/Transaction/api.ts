@@ -34,6 +34,7 @@ export interface TransactionFilters {
     page?: number;
     sort_by?: string;
     sort_dir?: 'asc' | 'desc';
+    per_page?: number;
 }
 
 export const transactionApi = {
