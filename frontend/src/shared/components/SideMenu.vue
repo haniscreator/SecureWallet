@@ -84,4 +84,10 @@ const filteredMenuItems = computed(() => {
 :deep(.v-field__outline) {
     --v-field-border-opacity: 0.15;
 }
+
+:deep(.v-list-item--active) {
+    border-left: 4px solid rgb(var(--v-theme-primary));
+    background: rgb(var(--v-theme-primary), 0.1);
+    color: rgb(var(--v-theme-primary)) !important;
+}
 </style>
