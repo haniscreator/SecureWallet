@@ -3,7 +3,7 @@
     <v-row>
       <v-col cols="12">
         <div class="d-flex justify-space-between align-center mb-6">
-          <h1 class="text-h4 font-weight-bold text-grey-darken-3">Wallets</h1>
+          <h1 class="text-h5 font-weight-regular text-grey-darken-1">Wallets - Korporatio</h1>
           <v-btn
             v-if="isAdmin"
             color="primary"
@@ -12,7 +12,7 @@
             class="text-capitalize"
             :to="{ name: 'WalletCreate' }"
           >
-            Add Wallet
+            Create Wallet
           </v-btn>
         </div>
 
@@ -98,7 +98,8 @@
                 :headers="headers"
                 :items="walletStore.wallets"
                 :loading="walletStore.loading"
-                :items-per-page="10"
+                :items-per-page="itemsPerPage"
+                v-model:page="page"
                 hover
                 class="pa-2 wallet-table"
             >
@@ -142,23 +143,17 @@
                     <span v-else class="text-grey text-caption">No users assigned</span>
                 </template>
 
-                <!-- Actions Column -->
                 <template v-slot:item.actions="{ item }">
                     <div class="d-flex gap-2 justify-center">
-                        <v-tooltip :text="isAdmin ? 'Edit Wallet' : 'View Wallet'" location="top">
-                          <template v-slot:activator="{ props }">
-                            <v-btn
-                                v-bind="props"
-                                icon
-                                variant="text"
-                                size="small"
-                                :color="isAdmin ? 'primary' : 'info'"
-                                :to="{ name: 'WalletEdit', params: { id: item.id } }"
-                            >
-                                <v-icon>{{ isAdmin ? 'mdi-pencil' : 'mdi-eye' }}</v-icon>
-                            </v-btn>
-                          </template>
-                        </v-tooltip>
+                         <v-btn
+                            variant="text"
+                            size="small"
+                            color="primary"
+                            class="font-weight-bold"
+                            :to="{ name: 'WalletEdit', params: { id: item.id } }"
+                        >
+                            EDIT <v-icon size="small" class="ml-1">mdi-pencil</v-icon>
+                        </v-btn>
                     </div>
                 </template>
                 
@@ -166,6 +161,23 @@
                 <template v-slot:no-data>
                     <div class="pa-4 text-center text-grey">
                         No wallets found.
+                    </div>
+                </template>
+                <template v-slot:bottom>
+                     <v-divider></v-divider>
+                     <div class="d-flex align-center justify-space-between pa-4">
+                        <div class="text-caption text-grey">Showing {{ currentCount }} of {{ totalCount }}</div>
+                        <div class="d-flex align-center">
+                            <v-pagination
+                                v-model="page"
+                                :length="totalPages"
+                                total-visible="3"
+                                density="compact"
+                                active-color="primary"
+                                variant="flat"
+                                class="details-pagination"
+                            ></v-pagination>
+                        </div>
                     </div>
                 </template>
             </v-data-table>
@@ -184,6 +196,15 @@ import { useUserStore } from '@/modules/User/store';
 const walletStore = useWalletStore();
 const userStore = useUserStore();
 const currencies = ref<Currency[]>([]);
+const page = ref(1);
+const itemsPerPage = 10;
+
+const totalCount = computed(() => walletStore.wallets.length);
+const totalPages = computed(() => Math.ceil(totalCount.value / itemsPerPage) || 1);
+const currentCount = computed(() => {
+    const remaining = totalCount.value - (page.value - 1) * itemsPerPage;
+    return remaining > 0 ? Math.min(itemsPerPage, remaining) : 0;
+});
 
 const isAdmin = computed(() => userStore.currentUser?.role === 'admin');
 
@@ -242,5 +263,14 @@ onMounted(async () => {
 /* Hide the items-per-page dropdown in the footer */
 :deep(.wallet-table .v-data-table-footer__items-per-page) {
     display: none !important;
+}
+
+.details-pagination :deep(.v-pagination__list) {
+    margin-bottom: 0;
+}
+
+.details-pagination :deep(.v-pagination__item--is-active) {
+    background-color: rgb(var(--v-theme-primary)) !important;
+    color: white !important;
 }
 </style>
