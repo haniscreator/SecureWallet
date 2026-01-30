@@ -174,8 +174,10 @@ export const useWalletStore = defineStore('wallet', () => {
     });
 
     const recentWallets = computed(() => {
-        // Return top 3, assuming list is somewhat ordered or just take first 3
-        return wallets.value.slice(0, 3);
+        // Return top 3, sorted by created_at desc
+        return [...wallets.value]
+            .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+            .slice(0, 3);
     });
 
     return {

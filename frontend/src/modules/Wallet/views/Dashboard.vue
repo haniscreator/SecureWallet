@@ -49,6 +49,7 @@
             :symbol="wallet.currency?.symbol || '$'"
             :icon="getWalletIcon(wallet.currency?.code || 'USD')"
             :color="getWalletColor(index)"
+            :users-count="wallet.users_count"
         />
       </v-col>
     </v-row>

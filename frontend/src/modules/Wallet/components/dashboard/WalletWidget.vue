@@ -27,11 +27,10 @@
                  <span class="text-caption text-grey-darken-1 font-weight-bold mt-1">{{ currency }}</span>
              </div>
              
-             <!-- Hardcoded Users Assigned -->
-             <div class="d-flex align-center text-caption text-grey-darken-1 mt-auto pt-2">
-                 <v-icon size="small" class="mr-1">mdi-account-group-outline</v-icon>
-                 <span class="font-weight-medium">3 Users Assigned</span>
-             </div>
+              <div class="d-flex align-center text-caption text-grey-darken-1 mt-auto pt-2">
+                  <v-icon size="small" class="mr-1">mdi-account-group-outline</v-icon>
+                  <span class="font-weight-medium">{{ usersCount || 0 }} Users Assigned</span>
+              </div>
         </div>
     </div>
   </v-card>
@@ -52,5 +51,6 @@ defineProps<{
   symbol: string;
   icon?: string;
   color?: string;
+  usersCount?: number;
 }>();
 </script>

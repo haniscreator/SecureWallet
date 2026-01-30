@@ -19,6 +19,7 @@ class WalletResource extends JsonResource
             'status' => $this->status,
             'balance' => $this->whenAppended('balance'),
             'users' => UserResource::collection($this->whenLoaded('users')),
+            'users_count' => $this->users_count ?? 0,
             'created_at' => $this->created_at->toIso8601String(),
             'updated_at' => $this->updated_at->toIso8601String(),
         ];

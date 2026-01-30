@@ -1,7 +1,15 @@
 <template>
   <v-card class="rounded-lg mt-6" elevation="0" border>
-    <v-card-title class="pa-4 text-h6 font-weight-bold">
+    <v-card-title class="pa-4 d-flex align-center justify-space-between text-h6 font-weight-bold">
       Recent Transactions
+      <v-btn
+        variant="text"
+        color="primary"
+        class="text-capitalize text-body-2"
+        @click="router.push('/transactions')"
+      >
+        View All
+      </v-btn>
     </v-card-title>
     <v-divider></v-divider>
     
@@ -46,22 +54,15 @@
         </tr>
       </tbody>
     </v-table>
-    
-    <div class="d-flex justify-end pa-4">
-        <!-- Pagination mockup -->
-        <v-pagination
-            :length="4"
-            density="compact"
-            active-color="primary"
-        ></v-pagination>
-    </div>
   </v-card>
 </template>
 
 <script setup lang="ts">
 import { computed } from 'vue';
+import { useRouter } from 'vue-router';
 import { useWalletStore } from '@/modules/Wallet/store';
 
+const router = useRouter();
 const walletStore = useWalletStore();
 
 // Map store transactions to display format

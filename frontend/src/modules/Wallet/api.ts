@@ -11,6 +11,7 @@ export interface Wallet {
         code: string;
         symbol: string;
     };
+    users_count?: number;
 }
 
 export interface Transaction {

@@ -13,11 +13,11 @@ class WalletService
     public function listWallets(User $user)
     {
         if ($user->role === 'admin') {
-            return Wallet::all();
+            return Wallet::withCount('users')->get();
         }
 
         // Return only assigned wallets for users
-        return $user->wallets;
+        return $user->wallets()->withCount('users')->get();
     }
 
     public function getWallet(Wallet $wallet)
@@ -37,7 +37,7 @@ class WalletService
 
             // Handle Initial Balance by creating a 'credit' transaction
             if ($data->initial_balance && $data->initial_balance > 0) {
-                \App\Domain\Wallet\Models\Transaction::create([
+                \App\Domain\Transaction\Models\Transaction::create([
                     'to_wallet_id' => $wallet->id,
                     'type' => 'credit',
                     'amount' => $data->initial_balance,
