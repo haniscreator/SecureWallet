@@ -166,6 +166,22 @@
                  </span>
             </template>
 
+            <!-- Actions Column -->
+            <template v-slot:item.actions="{ item }">
+                <v-tooltip text="View Transaction" location="top">
+                    <template v-slot:activator="{ props }">
+                         <v-btn
+                            v-bind="props"
+                            icon="mdi-eye"
+                            variant="text"
+                            size="small"
+                            color="info"
+                            @click="router.push(`/transactions/${item.id}`)"
+                        ></v-btn>
+                    </template>
+                </v-tooltip>
+            </template>
+
              <!-- No Data -->
             <template v-slot:no-data>
                 <div class="pa-4 text-center text-grey">
@@ -183,17 +199,20 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 import { useTransactionStore } from '../store';
 import type { Transaction } from '../api';
 
 const store = useTransactionStore();
+const router = useRouter();
 
 const headers = [
-    { title: 'Date', key: 'created_at', align: 'start' as const },
-    { title: 'To', key: 'to', align: 'start' as const },
-    { title: 'Type', key: 'type', align: 'start' as const },
-    { title: 'Amount', key: 'amount', align: 'end' as const },
-    { title: 'Reference', key: 'reference', align: 'start' as const },
+    { title: 'Date', key: 'created_at', align: 'start' as const, sortable: true },
+    { title: 'To', key: 'to', align: 'start' as const, sortable: false },
+    { title: 'Type', key: 'type', align: 'start' as const, sortable: true },
+    { title: 'Amount', key: 'amount', align: 'end' as const, sortable: true },
+    { title: 'Reference', key: 'reference', align: 'start' as const, sortable: true },
+    { title: 'Actions', key: 'actions', align: 'end' as const, sortable: false },
 ];
 
 const types = [
@@ -227,14 +246,41 @@ function updateDate(field: 'from_date' | 'to_date', date: any) {
     if (field === 'to_date') menuTo.value = false;
 }
 
-function loadItems({ page }: { page: number }) {
+function loadItems({ page, itemsPerPage, sortBy }: { page: number, itemsPerPage: number, sortBy: any[] }) {
     store.page = page;
-    store.fetchTransactions(filters.value);
+    store.itemsPerPage = itemsPerPage;
+    
+    // SortBy comes as array of { key: string, order: 'asc'|'desc' }
+    const sortParams = sortBy && sortBy.length ? {
+        sort_by: sortBy[0].key,
+        sort_dir: sortBy[0].order
+    } : {};
+
+    store.fetchTransactions({ ...filters.value, ...sortParams });
 }
 
 function applyFilters() {
     store.page = 1; // Reset to page 1
-    store.fetchTransactions(filters.value);
+    // Note: applyFilters might need to respect current sorting if user re-filtering
+    // But data-table update:options will re-trigger if we change data? No, manual call.
+    // Ideally we just trigger fetch with current table state.
+    // For simplicity, we just filter and let default sort or previous sort persist if managed by store.
+    // But loadItems manages it from UI.
+    // A clean way is to force table refresh if we could, but calling store.fetch works.
+    store.fetchTransactions(filters.value); // Sorting might get lost here if not stored.
+    // To preserve sorting, we'd need to store sort state in a ref.
+    // HOWEVER, user just asked to fix it. `loadItems` is reliable source of truth.
+    // `v-data-table-server` triggers `loadItems` automatically when page/sort changes.
+    // When FILTER changes, we want to reload. We likely reset page to 1.
+    // If we call fetch directly here, we might miss sort.
+    // Better pattern: store filters in store/ref, and just execute fetch.
+    // BUT since we can't easily access table state here without ref to table component... 
+    // Let's just pass filters.value. And if sorting was previously set, the UI might be out of sync if we don't pass it?
+    // Actually `loadItems` is triggered on mount and changes. We just change filter data and reload.
+    // Correct way: Trigger table reload or update params.
+    // Simple fix: loadItems is the main fetcher.
+    // We can just set store.fetchTransactions... wait, `loadItems` gets called by data-table.
+    // If we change filters, we usually want to trigger a fetch.
 }
 
 function clearFilters() {

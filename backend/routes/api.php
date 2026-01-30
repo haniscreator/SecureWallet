@@ -32,6 +32,7 @@ Route::prefix('v1')->group(function () {
 
         // Transactions
         Route::post('/transactions/search', [\App\Http\Controllers\Api\V1\Wallet\TransactionController::class, 'all']);
+        Route::get('/transactions/{id}', [\App\Http\Controllers\Api\V1\Wallet\TransactionController::class, 'show']);
         Route::post('/wallets/{id}/transactions/search', [\App\Http\Controllers\Api\V1\Wallet\TransactionController::class, 'index']);
 
         // Currencies

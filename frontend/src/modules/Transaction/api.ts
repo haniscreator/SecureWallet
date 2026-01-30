@@ -32,10 +32,15 @@ export interface TransactionFilters {
     to_date?: string | null;
     reference?: string | null;
     page?: number;
+    sort_by?: string;
+    sort_dir?: 'asc' | 'desc';
 }
 
 export const transactionApi = {
     getTransactions(data?: TransactionFilters) {
         return apiClient.post<{ data: Transaction[]; meta: any; links: any }>('/transactions/search', data);
+    },
+    getTransaction(id: number) {
+        return apiClient.get<{ data: Transaction }>(`/transactions/${id}`);
     }
 };

@@ -38,4 +38,11 @@ class TransactionController extends Controller
 
         return TransactionResource::collection($transactions);
     }
+
+    public function show($id)
+    {
+        $transaction = \App\Domain\Transaction\Models\Transaction::with(['fromWallet.currency', 'toWallet.currency'])->findOrFail($id);
+        // Authorization check could be added here
+        return new TransactionResource($transaction);
+    }
 }

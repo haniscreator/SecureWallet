@@ -4,6 +4,7 @@ import { transactionApi, type Transaction, type TransactionFilters } from './api
 
 export const useTransactionStore = defineStore('transaction', () => {
     const transactions = ref<Transaction[]>([]);
+    const currentTransaction = ref<Transaction | null>(null);
     const loading = ref(false);
     const error = ref<string | null>(null);
 
@@ -35,13 +36,30 @@ export const useTransactionStore = defineStore('transaction', () => {
         }
     }
 
+    async function fetchTransaction(id: number) {
+        loading.value = true;
+        error.value = null;
+        try {
+            const { data } = await transactionApi.getTransaction(id);
+            currentTransaction.value = data.data || data; // Handle wrapper
+        } catch (e: any) {
+            error.value = 'Failed to load transaction details';
+            console.error(e);
+            throw e;
+        } finally {
+            loading.value = false;
+        }
+    }
+
     return {
         transactions,
+        currentTransaction,
         loading,
         error,
         page,
         totalItems,
         itemsPerPage,
-        fetchTransactions
+        fetchTransactions,
+        fetchTransaction
     };
 });
