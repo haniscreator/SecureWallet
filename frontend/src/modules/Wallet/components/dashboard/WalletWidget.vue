@@ -21,7 +21,7 @@
         <v-divider></v-divider>
 
         <!-- Body -->
-        <div class="pa-4 pt-3 flex-grow-1 bg-grey-lighten-5 d-flex flex-column justify-center"> 
+        <div class="pa-4 pt-3 flex-grow-1 d-flex flex-column justify-center" style="background-color: #EFF0F3;"> 
              <div class="d-flex align-baseline mb-2">
                  <span class="text-h4 font-weight-bold mr-1">{{ symbol }}{{ amount }}</span>
                  <span class="text-caption text-grey-darken-1 font-weight-bold mt-1">{{ currency }}</span>

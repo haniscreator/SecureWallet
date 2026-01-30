@@ -2,7 +2,7 @@
   <v-card class="company-info-card rounded-xl overflow-hidden fill-height" elevation="0" border>
       <div class="d-flex fill-height">
           <!-- Left Side: Hero Icon Only -->
-          <div class="left-panel d-flex flex-column justify-center align-center px-6 py-4 bg-grey-lighten-5">
+          <div class="left-panel d-flex flex-column justify-center align-center px-6 py-4" style="background-color: #EFF0F3;">
               <div class="shield-icon-wrapper">
                  <v-icon color="#FF5252" size="24" class="shield-badge">mdi-shield-check</v-icon>
                  <v-icon color="primary" size="48">mdi-domain</v-icon>

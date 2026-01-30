@@ -14,7 +14,7 @@
       :is-mobile="isMobile" 
     />
 
-    <v-main class="bg-grey-lighten-5">
+    <v-main style="background-color: #EFF0F3;">
       <v-container fluid class="pa-6 fill-height align-start">
         <router-view></router-view>
       </v-container>

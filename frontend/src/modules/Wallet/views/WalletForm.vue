@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid class="fill-height align-start pa-6 bg-grey-lighten-4">
+  <v-container fluid class="fill-height align-start pa-6">
     <v-row justify="center">
       <v-col cols="12" md="8" lg="6">
         <v-card class="rounded-xl" elevation="0" border>
@@ -118,7 +118,7 @@
                         ></v-select>
 
                         <!-- Non-Admin: View Access -->
-                        <div v-else class="d-flex flex-wrap gap-2 pa-2 border rounded bg-grey-lighten-5">
+                        <div v-else class="d-flex flex-wrap gap-2 pa-2 border rounded" style="background-color: #EFF0F3;">
                             <v-chip
                                 v-for="user in assignedUsers"
                                 :key="user.id"

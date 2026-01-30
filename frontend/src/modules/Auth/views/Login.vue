@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid class="fill-height bg-grey-lighten-5">
+  <v-container fluid class="fill-height" style="background-color: #EFF0F3;">
     <v-row justify="center" align="center">
       <v-col cols="12" sm="8" md="6" lg="4">
         <!-- Modern Login Card -->

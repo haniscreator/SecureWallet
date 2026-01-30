@@ -16,7 +16,7 @@
     <!-- Right Side items -->
     <div class="d-flex align-center gap-4 mr-2 mr-md-4">
          <!-- Korporatio Label -->
-        <div class="py-2 px-4 border rounded-lg mr-2 d-none d-sm-flex align-center bg-grey-lighten-5">
+        <div class="py-2 px-4 border rounded-lg mr-2 d-none d-sm-flex align-center" style="background-color: #EFF0F3;">
             <span class="font-weight-bold text-body-2 text-grey-darken-2">Korporatio</span>
             <v-icon size="small" class="ml-2 text-grey">mdi-chevron-down</v-icon>
         </div>

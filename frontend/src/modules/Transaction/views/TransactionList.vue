@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid class="fill-height align-start pa-6 bg-grey-lighten-4">
+  <v-container fluid class="fill-height align-start pa-6">
     <v-row>
       <v-col cols="12">
         <!-- Filters -->

@@ -1,5 +1,5 @@
 <template>
-    <v-container fluid class="fill-height align-start pa-6 bg-grey-lighten-4">
+    <v-container fluid class="fill-height align-start pa-6">
         <v-row justify="center">
             <v-col cols="12" md="8" lg="6">
                 <!-- Header -->

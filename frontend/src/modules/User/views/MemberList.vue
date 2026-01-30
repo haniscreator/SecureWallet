@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid class="fill-height align-start pa-6 bg-grey-lighten-4">
+  <v-container fluid class="fill-height align-start pa-6">
     <v-row>
       <v-col cols="12" class="d-flex justify-space-between align-center mb-6">
         <h1 class="text-h4 font-weight-bold">Team Management</h1>

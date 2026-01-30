@@ -20,7 +20,7 @@
         class="search-input"
         rounded="lg"
         base-color="grey-lighten-2" 
-        bg-color="grey-lighten-5"
+        style="background-color: #EFF0F3;"
         placeholder="Menu..."
       ></v-text-field>
     </div>
