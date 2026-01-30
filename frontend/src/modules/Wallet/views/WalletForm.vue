@@ -94,6 +94,23 @@
                             <span class="ml-2 pt-1 font-weight-medium">{{ formData.status ? 'Active' : 'Inactive' }}</span>
                         </div>
                     </v-col>
+
+                    <!-- User Access -->
+                    <v-col cols="12">
+                        <div class="text-subtitle-2 font-weight-bold mb-2">User Access</div>
+                        <v-select
+                            v-model="formData.users"
+                            :items="userStore.members"
+                            item-title="name"
+                            item-value="id"
+                            multiple
+                            chips
+                            closable-chips
+                            variant="outlined"
+                            density="compact"
+                            placeholder="Select users to grant access"
+                        ></v-select>
+                    </v-col>
                 </v-row>
 
                 <div class="d-flex justify-end gap-2 mt-6">
@@ -128,11 +145,13 @@ import { ref, computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useWalletStore } from '../store';
 import { useCurrencyStore } from '@/modules/Currency/store';
+import { useUserStore } from '@/modules/User/store';
 
 const route = useRoute();
 const router = useRouter();
 const walletStore = useWalletStore();
 const currencyStore = useCurrencyStore();
+const userStore = useUserStore();
 
 const isEdit = computed(() => !!route.params.id);
 const loading = ref(false);
@@ -143,6 +162,7 @@ const formData = ref({
     currency_id: null as number | null,
     initial_balance: 0,
     status: true,
+    users: [] as number[],
 });
 
 // Display helpers for edit mode
@@ -154,6 +174,9 @@ onMounted(async () => {
     if (currencyStore.currencies.length === 0) {
         await currencyStore.fetchCurrencies();
     }
+    
+    // Load users for assignment
+    await userStore.fetchMembers();
 
     if (isEdit.value) {
         const id = Number(route.params.id);
@@ -167,6 +190,7 @@ onMounted(async () => {
                     currency_id: w.currency_id,
                     initial_balance: 0,
                     status: Boolean(w.status),
+                    users: (w as any).users ? (w as any).users.map((u: any) => u.id) : [],
                 };
                 
                 // Resolve Currency Code: Try wallet relation first, then store lookup
@@ -199,17 +223,24 @@ async function save() {
     
     try {
         if (isEdit.value) {
-            await walletStore.updateWallet(Number(route.params.id), {
+            const walletId = Number(route.params.id);
+            await walletStore.updateWallet(walletId, {
                 name: formData.value.name,
                 status: formData.value.status ? 1 : 0
             });
+            // Assign Users
+            await walletStore.assignUsers(walletId, formData.value.users);
         } else {
-            await walletStore.createWallet({
+            const res = await walletStore.createWallet({
                 name: formData.value.name,
                 currency_id: formData.value.currency_id!,
                 initial_balance: formData.value.initial_balance,
                 status: formData.value.status ? 1 : 0
             });
+            
+            if (res && res.wallet && formData.value.users.length > 0) {
+                 await walletStore.assignUsers(res.wallet.id, formData.value.users);
+            }
         }
         router.push({ name: 'Wallets' });
     } catch (e: any) {

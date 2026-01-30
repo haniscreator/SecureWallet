@@ -10,14 +10,28 @@ use App\Domain\Wallet\Actions\AssignWalletAction;
 
 class WalletService
 {
-    public function listWallets(User $user)
+    public function listWallets(User $user, array $filters = [])
     {
-        if ($user->role === 'admin') {
-            return Wallet::withCount('users')->get();
-        }
+        $query = ($user->role === 'admin')
+            ? Wallet::query()
+            : $user->wallets()->getQuery();
 
-        // Return only assigned wallets for users
-        return $user->wallets()->withCount('users')->get();
+        $query->when(isset($filters['name']), function ($q) use ($filters) {
+            $q->where('name', 'like', '%' . $filters['name'] . '%');
+        });
+
+        $query->when(isset($filters['currency_id']), function ($q) use ($filters) {
+            $q->where('currency_id', $filters['currency_id']);
+        });
+
+        $query->when(isset($filters['status']), function ($q) use ($filters) {
+            // Check if status is explicitly not null (to allow 0/false)
+            if ($filters['status'] !== null && $filters['status'] !== '') {
+                $q->where('status', filter_var($filters['status'], FILTER_VALIDATE_BOOLEAN));
+            }
+        });
+
+        return $query->with('currency')->withCount('users')->with('users')->get();
     }
 
     public function getWallet(Wallet $wallet)

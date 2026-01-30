@@ -35,7 +35,7 @@ class WalletController extends Controller
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
-        return WalletResource::collection($this->listWalletsAction->execute($request->user()));
+        return WalletResource::collection($this->listWalletsAction->execute($request->user(), $request->only(['name', 'currency_id', 'status'])));
     }
 
     public function show(Request $request, $id)

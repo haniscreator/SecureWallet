@@ -12,10 +12,10 @@ export const useWalletStore = defineStore('wallet', () => {
     const loading = ref(false);
     const error = ref<string | null>(null);
 
-    async function fetchWallets() {
+    async function fetchWallets(params?: any) {
         loading.value = true;
         try {
-            const response = await walletApi.getWallets();
+            const response = await walletApi.getWallets(params);
             const data = response.data as any;
             wallets.value = Array.isArray(data) ? data : (data.data || []);
 
@@ -107,9 +107,10 @@ export const useWalletStore = defineStore('wallet', () => {
         const notificationStore = useNotificationStore();
         loading.value = true;
         try {
-            await walletApi.createWallet(payload);
+            const response = await walletApi.createWallet(payload);
             await fetchWallets(); // Refresh list
             notificationStore.success('Wallet created successfully');
+            return response.data;
         } catch (e: any) {
             const msg = e.response?.data?.message || 'Failed to create wallet';
             notificationStore.error(msg);

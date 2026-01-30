@@ -12,6 +12,7 @@ export interface Wallet {
         symbol: string;
     };
     users_count?: number;
+    users?: { id: number; name: string }[];
 }
 
 export interface Transaction {
@@ -35,8 +36,8 @@ export interface UpdateWalletPayload {
 }
 
 export const walletApi = {
-    getWallets() {
-        return apiClient.get<Wallet[]>('/wallets');
+    getWallets(params?: { name?: string; currency_id?: number | null; status?: boolean | number | null }) {
+        return apiClient.get<Wallet[]>('/wallets', { params });
     },
     getWallet(id: number) {
         return apiClient.get<Wallet>(`/wallets/${id}`);

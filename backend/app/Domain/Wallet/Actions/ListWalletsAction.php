@@ -13,8 +13,8 @@ class ListWalletsAction
     ) {
     }
 
-    public function execute(User $user): Collection
+    public function execute(User $user, array $filters = []): Collection
     {
-        return $this->walletService->listWallets($user);
+        return $this->walletService->listWallets($user, $filters);
     }
 }

@@ -15,6 +15,83 @@
           </v-btn>
         </div>
 
+        <!-- Filters -->
+        <v-card class="rounded-xl mb-6" elevation="0" border>
+            <v-card-text class="pa-4">
+                <v-row align="start">
+                    <!-- Name Filter -->
+                    <v-col cols="12" md="4">
+                        <div class="text-subtitle-2 font-weight-bold mb-2">Name</div>
+                        <v-text-field
+                            v-model="filters.name"
+                            placeholder="Search Name..."
+                            variant="outlined"
+                            density="compact"
+                            hide-details
+                            append-inner-icon="mdi-magnify"
+                            @keyup.enter="applyFilters"
+                        ></v-text-field>
+                    </v-col>
+
+                    <!-- Currency Filter -->
+                    <v-col cols="12" md="3">
+                        <div class="text-subtitle-2 font-weight-bold mb-2">Currency</div>
+                         <v-select
+                            v-model="filters.currency_id"
+                            :items="currencies"
+                            item-title="code"
+                            item-value="id"
+                            placeholder="All"
+                            variant="outlined"
+                            density="compact"
+                            hide-details
+                            clearable
+                        ></v-select>
+                    </v-col>
+
+                    <!-- Status Filter -->
+                    <v-col cols="12" md="3">
+                        <div class="text-subtitle-2 font-weight-bold mb-2">Status</div>
+                         <v-select
+                            v-model="filters.status"
+                            :items="statusOptions"
+                            item-title="title"
+                            item-value="value"
+                            placeholder="All"
+                            variant="outlined"
+                            density="compact"
+                            hide-details
+                            clearable
+                        ></v-select>
+                    </v-col>
+
+                    <!-- Buttons -->
+                    <v-col cols="12" md="2" class="d-flex flex-column justify-end">
+                         <div class="text-subtitle-2 font-weight-bold mb-2" style="visibility: hidden">Spacer</div>
+                         <div class="d-flex">
+                             <v-btn
+                                variant="outlined"
+                                color="grey-darken-1"
+                                class="mr-2 text-capitalize flex-grow-1"
+                                @click="clearFilters"
+                            >
+                                Clear
+                            </v-btn>
+                            <v-btn
+                                color="primary"
+                                elevation="0"
+                                class="text-capitalize flex-grow-1"
+                                @click="applyFilters"
+                            >
+                                Filter
+                            </v-btn>
+                         </div>
+                    </v-col>
+                </v-row>
+            </v-card-text>
+        </v-card>
+
+        <!-- Wallets Table -->
         <v-card class="rounded-xl" elevation="0" border>
             <v-data-table
                 :headers="headers"
@@ -47,24 +124,26 @@
                     </v-chip>
                 </template>
 
+                <!-- User Access Column -->
+                <template v-slot:item.users="{ item }">
+                    <div v-if="item.users && item.users.length > 0">
+                        <!-- Show avatars or text list? Text list as requested "User Name who got access" -->
+                         <div class="d-flex flex-wrap gap-1">
+                            <v-chip v-for="user in item.users.slice(0, 3)" :key="user.id" size="x-small" density="comfortable">
+                                {{ user.name }}
+                            </v-chip>
+                            <v-chip v-if="item.users.length > 3" size="x-small" density="comfortable" variant="outlined">
+                                +{{ item.users.length - 3 }} more
+                            </v-chip>
+                         </div>
+                    </div>
+                    <span v-else class="text-grey text-caption">No users assigned</span>
+                </template>
+
                 <!-- Actions Column -->
                 <template v-slot:item.actions="{ item }">
                     <div class="d-flex gap-2 justify-center">
-                        <v-tooltip text="View Details" location="top">
-                          <template v-slot:activator="{ props }">
-                            <v-btn
-                                v-bind="props"
-                                icon
-                                variant="text"
-                                size="small"
-                                color="info"
-                                :to="{ name: 'WalletDetails', params: { id: item.id } }"
-                            >
-                                <v-icon>mdi-eye</v-icon>
-                            </v-btn>
-                          </template>
-                        </v-tooltip>
-
+                        <!-- Removed View Action -->
                         <v-tooltip text="Edit Wallet" location="top">
                           <template v-slot:activator="{ props }">
                             <v-btn
@@ -96,10 +175,12 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { ref, onMounted } from 'vue';
 import { useWalletStore } from '../store';
+import { currencyApi, type Currency } from '@/modules/Currency/api';
 
 const walletStore = useWalletStore();
+const currencies = ref<Currency[]>([]);
 
 const headers = [
     { title: 'ID', key: 'id', align: 'start' as const },
@@ -107,10 +188,46 @@ const headers = [
     { title: 'Currency', key: 'currency', align: 'start' as const },
     { title: 'Balance', key: 'balance', align: 'end' as const },
     { title: 'Status', key: 'status', align: 'start' as const },
+    { title: 'User Access', key: 'users', align: 'start' as const, sortable: false },
     { title: 'Actions', key: 'actions', sortable: false, align: 'center' as const },
 ];
 
+const statusOptions = [
+    { title: 'Active', value: true },
+    { title: 'Inactive', value: false },
+];
+
+const filters = ref({
+    name: '',
+    currency_id: null as number | null,
+    status: null as boolean | null,
+});
+
+async function fetchCurrencies() {
+    try {
+        const res = await currencyApi.getCurrencies();
+        const data = res.data as any;
+        currencies.value = Array.isArray(data) ? data : (data.data || []);
+    } catch (e) {
+        console.error('Failed to fetch currencies');
+    }
+}
+
+function applyFilters() {
+    walletStore.fetchWallets(filters.value);
+}
+
+function clearFilters() {
+    filters.value = {
+        name: '',
+        currency_id: null,
+        status: null,
+    };
+    applyFilters();
+}
+
 onMounted(() => {
-    walletStore.fetchWallets();
+    walletStore.fetchWallets(); // Initial fetch
+    fetchCurrencies();
 });
 </script>
