@@ -4,9 +4,7 @@
       <v-col cols="12" class="d-flex justify-space-between align-center">
         <!-- Breadcrumb / Header -->
         <div class="d-flex align-center">
-            <h1 class="text-h5 font-weight-regular text-grey-darken-1">Dashboard</h1>
-            <span class="mx-2 text-grey-lighten-1">|</span>
-            <span class="text-h5 font-weight-bold">Korporatio</span>
+            <h1 class="text-h5 font-weight-regular text-grey-darken-1">Dashboard - Korporatio</h1>
         </div>
       </v-col>
     </v-row>
@@ -30,9 +28,7 @@
 
     <!-- Wallet Summary Cards -->
     <v-row class="mb-6">
-      <v-col cols="12" class="mb-2">
-         <h2 class="text-h6 font-weight-medium text-grey-darken-2">My Wallets</h2>
-      </v-col>
+
       <v-col 
         v-for="(wallet, index) in walletStore.recentWallets" 
         :key="wallet.id" 

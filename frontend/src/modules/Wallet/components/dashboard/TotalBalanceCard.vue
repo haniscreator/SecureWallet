@@ -18,14 +18,14 @@
               <div class="balance-list">
                 <template v-if="hasBalances">
                     <div v-for="item in sortedBalances" :key="item.currency" class="d-flex align-baseline mb-2">
-                        <span class="text-h4 font-weight-bold text-grey-darken-4 mr-2">
+                        <span class="text-h5 font-weight-bold text-grey-darken-4 mr-2">
                             {{ item.symbol }}{{ item.amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
                         </span>
                         <span class="text-h6 font-weight-medium text-grey-darken-1">{{ item.currency }}</span>
                     </div>
                 </template>
                 <template v-else>
-                    <div class="text-h3 font-weight-bold text-grey-darken-4">$0.00</div>
+                    <div class="text-h4 font-weight-bold text-grey-darken-4">$0.00</div>
                 </template>
               </div>
           </div>
