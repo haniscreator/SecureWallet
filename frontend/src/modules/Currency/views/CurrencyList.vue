@@ -16,7 +16,7 @@
           </v-btn>
         </div>
 
-        <v-card class="rounded-xl" elevation="0" border>
+        <v-card class="rounded-0" elevation="0" border>
             <v-data-table
                 :headers="headers"
                 :items="currencyStore.currencies"
@@ -95,7 +95,7 @@
 
     <!-- Delete Confirmation Dialog -->
     <v-dialog v-model="deleteDialog" max-width="400">
-        <v-card class="rounded-xl">
+        <v-card class="rounded-0">
              <v-card-title class="text-h6 pa-4">Confirm Delete</v-card-title>
              <v-card-text class="pa-4 pt-0">
                  Are you sure you want to delete <strong>{{ editedItem?.name }}</strong>? This action cannot be undone.

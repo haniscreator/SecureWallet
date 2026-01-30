@@ -16,7 +16,7 @@
       </v-col>
 
       <v-col cols="12">
-        <v-card class="rounded-xl" elevation="0" border>
+        <v-card class="rounded-0" elevation="0" border>
             <v-data-table
                 :headers="headers"
                 :items="userStore.members"
@@ -123,7 +123,7 @@
 
     <!-- Simple Delete Confirmation -->
     <v-dialog v-model="showDeleteDialog" max-width="400">
-       <v-card class="rounded-xl">
+       <v-card class="rounded-0">
          <v-card-title class="pa-4 text-h6">Confirm Delete</v-card-title>
          <v-card-text class="pa-4 pt-0">
              Are you sure you want to remove <strong>{{ memberToDelete?.name }}</strong>?
@@ -142,8 +142,7 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
-import { useUserStore } from '@/modules/User/store';
-import type { User } from '@/modules/User/api'; 
+import { useUserStore } from '@/modules/User/store'; 
 
 const router = useRouter();
 const userStore = useUserStore();

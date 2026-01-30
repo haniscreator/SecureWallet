@@ -122,7 +122,7 @@
         v-if="store.error"
         type="error"
         variant="tonal"
-        class="mb-6 rounded-xl"
+        class="mb-6 rounded-0"
         closable
     >
         {{ store.error }}
@@ -230,16 +230,6 @@ const router = useRouter();
 const totalPages = computed(() => Math.ceil(store.totalItems / store.itemsPerPage) || 1);
 const currentCount = computed(() => {
     // For server-side, we calculate based on page and items per page, capped at total
-    const start = (store.page - 1) * store.itemsPerPage;
-    const countOnPage = store.transactions.length; // This is what we actually have
-    // Showing X of Y usually means "Showing 10 of 100" (meaning 1-10? or count?)
-    // User requested "Showing 10 of 20" which implies count displayed?
-    // In other components we did: Showing {{ transactions.length }} of {{ totalCount }}
-    // But since this is server side, transactions.length is just the current page count (e.g. 10).
-    // So "Showing 10 of 100" is correct if we mean "10 items are shown". 
-    // If we want range "Showing 1-10 of 100", that's different.
-    // Based on "RecentTransactions.vue": "Showing {{ transactions.length }} of {{ totalCount }}"
-    // So stick to length.
     return store.transactions.length;
 });
 
@@ -258,7 +248,12 @@ const types = [
     { title: 'Debit', value: 'debit' },
 ];
 
-const filters = ref({
+const filters = ref<{
+    type: string | null;
+    from_date: string | null;
+    to_date: string | null;
+    reference: string;
+}>({
     type: null,
     from_date: null,
     to_date: null,

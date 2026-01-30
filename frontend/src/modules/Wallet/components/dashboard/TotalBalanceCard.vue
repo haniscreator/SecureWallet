@@ -1,6 +1,6 @@
 <template>
   <v-card 
-    class="total-balance-card rounded-xl overflow-hidden h-100" 
+    class="total-balance-card rounded-0 overflow-hidden h-100" 
     elevation="0" 
     border
     style="border-left: 6px solid rgb(var(--v-theme-primary)) !important;"
@@ -8,7 +8,7 @@
       <div class="card-content pa-6 d-flex flex-column justify-space-between fill-height">
           <div>
               <div class="d-flex align-center">
-                   <v-avatar color="primary" variant="tonal" size="40" class="mr-3 rounded-lg">
+                   <v-avatar color="primary" variant="tonal" size="40" class="mr-3 rounded-0">
                        <v-icon color="primary">mdi-wallet-bifold</v-icon>
                    </v-avatar>
                    <div class="text-h6 font-weight-bold text-grey-darken-3">Total Balance</div>

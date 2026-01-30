@@ -1,5 +1,5 @@
 <template>
-  <v-card class="rounded-lg d-flex flex-row overflow-hidden wallet-card" elevation="0" border>
+  <v-card class="rounded-0 d-flex flex-row overflow-hidden wallet-card" elevation="0" border>
     <!-- Left Color Strip Removed -->
 
     <div class="flex-grow-1 d-flex flex-column">

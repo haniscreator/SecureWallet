@@ -17,7 +17,7 @@
         </div>
 
         <!-- Filters -->
-        <v-card class="rounded-xl mb-6" elevation="0" border>
+        <v-card class="rounded-0 mb-6" elevation="0" border>
             <v-card-text class="pa-4">
                 <v-row align="start">
                     <!-- Name Filter -->
@@ -93,7 +93,7 @@
         </v-card>
 
         <!-- Wallets Table -->
-        <v-card class="rounded-xl" elevation="0" border>
+        <v-card class="rounded-0" elevation="0" border>
             <v-data-table
                 :headers="headers"
                 :items="walletStore.wallets"

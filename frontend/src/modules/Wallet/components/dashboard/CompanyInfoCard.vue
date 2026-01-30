@@ -1,5 +1,5 @@
 <template>
-  <v-card class="company-info-card rounded-xl overflow-hidden fill-height" elevation="0" border>
+  <v-card class="company-info-card rounded-0 overflow-hidden fill-height" elevation="0" border>
       <div class="d-flex fill-height">
           <!-- Left Side: Hero Icon Only -->
           <div class="left-panel d-flex flex-column justify-center align-center px-6 py-4" style="background-color: #F6F6F9;">

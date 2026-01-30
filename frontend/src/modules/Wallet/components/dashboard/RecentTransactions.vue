@@ -1,5 +1,5 @@
 <template>
-  <v-card class="rounded-lg mt-6" elevation="0" border>
+  <v-card class="rounded-0 mt-6" elevation="0" border>
     <v-card-title class="pa-4 d-flex align-center justify-space-between text-h6 font-weight-bold">
       Recent Transactions
       <v-btn
