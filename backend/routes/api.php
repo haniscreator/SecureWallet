@@ -30,8 +30,8 @@ Route::prefix('v1')->group(function () {
         Route::put('/wallets/{id}/status', [\App\Http\Controllers\Api\V1\Wallet\WalletController::class, 'updateStatus']);
 
         // Transactions
-        Route::get('/transactions', [\App\Http\Controllers\Api\V1\Wallet\TransactionController::class, 'all']);
-        Route::get('/wallets/{id}/transactions', [\App\Http\Controllers\Api\V1\Wallet\TransactionController::class, 'index']);
+        Route::post('/transactions/search', [\App\Http\Controllers\Api\V1\Wallet\TransactionController::class, 'all']);
+        Route::post('/wallets/{id}/transactions/search', [\App\Http\Controllers\Api\V1\Wallet\TransactionController::class, 'index']);
 
         // Currencies
         Route::apiResource('currencies', \App\Http\Controllers\Api\V1\Currency\CurrencyController::class);

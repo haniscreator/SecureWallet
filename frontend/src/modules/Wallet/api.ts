@@ -46,8 +46,8 @@ export const walletApi = {
     updateWallet(id: number, payload: UpdateWalletPayload) {
         return apiClient.put<{ wallet: Wallet; message: string }>(`/wallets/${id}`, payload);
     },
-    getTransactions(walletId: number, params?: { type?: string; from_date?: string }) {
-        return apiClient.get<Transaction[]>(`/wallets/${walletId}/transactions`, { params });
+    getTransactions(walletId: number, data?: { type?: string; from_date?: string; reference?: string }) {
+        return apiClient.post<Transaction[]>(`/wallets/${walletId}/transactions/search`, data);
     },
     assignUsers(walletId: number, userIds: number[]) {
         return apiClient.post(`/wallets/${walletId}/users`, { user_ids: userIds });

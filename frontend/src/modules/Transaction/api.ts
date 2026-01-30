@@ -35,7 +35,7 @@ export interface TransactionFilters {
 }
 
 export const transactionApi = {
-    getTransactions(params?: TransactionFilters) {
-        return apiClient.get<{ data: Transaction[]; meta: any; links: any }>('/transactions', { params });
+    getTransactions(data?: TransactionFilters) {
+        return apiClient.post<{ data: Transaction[]; meta: any; links: any }>('/transactions/search', data);
     }
 };
