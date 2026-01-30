@@ -5,6 +5,7 @@
         <div class="d-flex justify-space-between align-center mb-6">
           <h1 class="text-h4 font-weight-bold text-grey-darken-3">Wallets</h1>
           <v-btn
+            v-if="isAdmin"
             color="primary"
             prepend-icon="mdi-plus"
             elevation="2"
@@ -143,18 +144,17 @@
                 <!-- Actions Column -->
                 <template v-slot:item.actions="{ item }">
                     <div class="d-flex gap-2 justify-center">
-                        <!-- Removed View Action -->
-                        <v-tooltip text="Edit Wallet" location="top">
+                        <v-tooltip :text="isAdmin ? 'Edit Wallet' : 'View Wallet'" location="top">
                           <template v-slot:activator="{ props }">
                             <v-btn
                                 v-bind="props"
                                 icon
                                 variant="text"
                                 size="small"
-                                color="primary"
+                                :color="isAdmin ? 'primary' : 'info'"
                                 :to="{ name: 'WalletEdit', params: { id: item.id } }"
                             >
-                                <v-icon>mdi-pencil</v-icon>
+                                <v-icon>{{ isAdmin ? 'mdi-pencil' : 'mdi-eye' }}</v-icon>
                             </v-btn>
                           </template>
                         </v-tooltip>
@@ -175,12 +175,16 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useWalletStore } from '../store';
 import { currencyApi, type Currency } from '@/modules/Currency/api';
+import { useUserStore } from '@/modules/User/store';
 
 const walletStore = useWalletStore();
+const userStore = useUserStore();
 const currencies = ref<Currency[]>([]);
+
+const isAdmin = computed(() => userStore.currentUser?.role === 'admin');
 
 const headers = [
     { title: 'ID', key: 'id', align: 'start' as const },
@@ -226,7 +230,8 @@ function clearFilters() {
     applyFilters();
 }
 
-onMounted(() => {
+onMounted(async () => {
+    await userStore.fetchCurrentUser();
     walletStore.fetchWallets(); // Initial fetch
     fetchCurrencies();
 });

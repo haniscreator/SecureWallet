@@ -4,7 +4,7 @@
       <v-col cols="12" md="8" lg="6">
         <v-card class="rounded-xl" elevation="0" border>
           <v-card-title class="pa-6 pb-0 text-h5 font-weight-bold">
-            {{ isEdit ? 'Edit Wallet' : 'New Wallet' }}
+            {{ !isAdmin ? 'View Wallet' : (isEdit ? 'Edit Wallet' : 'New Wallet') }}
           </v-card-title>
           
           <v-card-text class="pa-6">
@@ -13,13 +13,14 @@
             <v-form ref="form" @submit.prevent="save" validate-on="submit lazy">
                 <v-row>
                     <v-col cols="12">
-                        <div class="text-subtitle-2 font-weight-bold mb-2">Wallet Name <span class="text-error">*</span></div>
+                        <div class="text-subtitle-2 font-weight-bold mb-2">Wallet Name <span v-if="isAdmin" class="text-error">*</span></div>
                         <v-text-field
                             v-model="formData.name"
                             placeholder="Enter wallet name"
                             variant="outlined"
                             density="compact"
-                            :rules="[v => !!v || 'Name is required']"
+                            :readonly="!isAdmin"
+                            :rules="isAdmin ? [v => !!v || 'Name is required'] : []"
                         ></v-text-field>
                     </v-col>
 
@@ -82,7 +83,7 @@
 
                     <!-- Status (All Modes) -->
                     <v-col cols="12">
-                        <div class="text-subtitle-2 font-weight-bold mb-2">Status <span class="text-error">*</span></div>
+                        <div class="text-subtitle-2 font-weight-bold mb-2">Status <span v-if="isAdmin" class="text-error">*</span></div>
                         <div class="d-flex align-center">
                             <v-switch
                                 v-model="formData.status"
@@ -90,6 +91,8 @@
                                 hide-details
                                 density="compact"
                                 class="ma-0"
+                                :readonly="!isAdmin"
+                                :disabled="!isAdmin" 
                             ></v-switch>
                             <span class="ml-2 pt-1 font-weight-medium">{{ formData.status ? 'Active' : 'Inactive' }}</span>
                         </div>
@@ -98,7 +101,10 @@
                     <!-- User Access -->
                     <v-col cols="12">
                         <div class="text-subtitle-2 font-weight-bold mb-2">User Access</div>
+                        
+                        <!-- Admin: Edit Access -->
                         <v-select
+                            v-if="isAdmin"
                             v-model="formData.users"
                             :items="userStore.members"
                             item-title="name"
@@ -110,6 +116,20 @@
                             density="compact"
                             placeholder="Select users to grant access"
                         ></v-select>
+
+                        <!-- Non-Admin: View Access -->
+                        <div v-else class="d-flex flex-wrap gap-2 pa-2 border rounded bg-grey-lighten-5">
+                            <v-chip
+                                v-for="user in assignedUsers"
+                                :key="user.id"
+                                size="small"
+                                color="grey-darken-2"
+                                variant="tonal"
+                            >
+                                {{ user.name }}
+                            </v-chip>
+                            <span v-if="assignedUsers.length === 0" class="text-grey text-caption font-italic">No users assigned</span>
+                        </div>
                     </v-col>
                 </v-row>
 
@@ -120,9 +140,10 @@
                         :to="{ name: 'Wallets' }"
                         class="px-6"
                     >
-                        Cancel
+                        {{ isAdmin ? 'Cancel' : 'Back' }}
                     </v-btn>
                     <v-btn
+                        v-if="isAdmin"
                         color="primary"
                         type="submit"
                         variant="elevated"
@@ -154,6 +175,7 @@ const currencyStore = useCurrencyStore();
 const userStore = useUserStore();
 
 const isEdit = computed(() => !!route.params.id);
+const isAdmin = computed(() => userStore.currentUser?.role === 'admin');
 const loading = ref(false);
 const error = ref<string | null>(null);
 
@@ -168,15 +190,21 @@ const formData = ref({
 // Display helpers for edit mode
 const currentWalletCurrency = ref('');
 const currentWalletBalance = ref('');
+const assignedUsers = ref<{id: number, name: string}[]>([]); 
 
 onMounted(async () => {
+    // Ensure user loaded
+    await userStore.fetchCurrentUser();
+    
     // Load currencies if needed
     if (currencyStore.currencies.length === 0) {
         await currencyStore.fetchCurrencies();
     }
     
-    // Load users for assignment
-    await userStore.fetchMembers();
+    // Load users for assignment ONLY if admin
+    if (isAdmin.value) {
+        await userStore.fetchMembers();
+    }
 
     if (isEdit.value) {
         const id = Number(route.params.id);
@@ -193,6 +221,11 @@ onMounted(async () => {
                     users: (w as any).users ? (w as any).users.map((u: any) => u.id) : [],
                 };
                 
+                // Populate assigned users for view mode
+                if ((w as any).users) {
+                    assignedUsers.value = (w as any).users;
+                }
+
                 // Resolve Currency Code: Try wallet relation first, then store lookup
                 const currencyCode = w.currency?.code || 
                                      currencyStore.currencies.find(c => c.id === w.currency_id)?.code || 
@@ -214,6 +247,8 @@ onMounted(async () => {
 });
 
 async function save() {
+    if (!isAdmin.value) return; // Guard clause
+
     // Basic validation
     if (!formData.value.name) return;
     if (!isEdit.value && !formData.value.currency_id) return;
@@ -244,9 +279,7 @@ async function save() {
         }
         router.push({ name: 'Wallets' });
     } catch (e: any) {
-        // Notification store handles the popup, but we can also show inline error if needed
-        // The store throws, so we catch here to stop loading spinner
-        // error.value = e.message; 
+        // Notification store handles the popup
     } finally {
         loading.value = false;
     }
