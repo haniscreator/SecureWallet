@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Domain\Wallet\Resources;
+namespace App\Domain\Transaction\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;

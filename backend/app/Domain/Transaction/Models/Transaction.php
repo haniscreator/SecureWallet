@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Domain\Wallet\Models;
+namespace App\Domain\Transaction\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Domain\Wallet\Models\Wallet;
 
 class Transaction extends Model
 {

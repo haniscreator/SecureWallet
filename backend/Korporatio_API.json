@@ -535,7 +535,7 @@
                             }
                         ],
                         "url": {
-                            "raw": "{{base_url}}/api/v1/wallets/1/transactions?type=credit",
+                            "raw": "{{base_url}}/api/v1/wallets/1/transactions?type=credit&reference=Ref",
                             "host": [
                                 "{{base_url}}"
                             ],
@@ -549,6 +549,11 @@
                                     "key": "from_date",
                                     "value": "2024-01-01",
                                     "disabled": true
+                                },
+                                {
+                                    "key": "reference",
+                                    "value": "Ref",
+                                    "description": "Optional: partial match"
                                 }
                             ],
                             "path": [
@@ -556,6 +561,50 @@
                                 "v1",
                                 "wallets",
                                 "1",
+                                "transactions"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "List All Transactions (Admin)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/v1/transactions?type=credit",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "query": [
+                                {
+                                    "key": "type",
+                                    "value": "credit",
+                                    "description": "Optional: credit or debit"
+                                },
+                                {
+                                    "key": "from_date",
+                                    "value": "2024-01-01",
+                                    "disabled": true
+                                },
+                                {
+                                    "key": "reference",
+                                    "value": "",
+                                    "description": "Optional: partial match"
+                                }
+                            ],
+                            "path": [
+                                "api",
+                                "v1",
                                 "transactions"
                             ]
                         }

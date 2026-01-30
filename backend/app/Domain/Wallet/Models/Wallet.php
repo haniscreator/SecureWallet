@@ -5,7 +5,7 @@ namespace App\Domain\Wallet\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Domain\User\Models\User;
-use App\Domain\Wallet\Models\Transaction;
+use App\Domain\Transaction\Models\Transaction;
 
 class Wallet extends Model
 {

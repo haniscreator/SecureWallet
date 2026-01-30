@@ -4,18 +4,20 @@ namespace App\Http\Controllers\Api\V1\Wallet;
 
 use App\Http\Controllers\Controller;
 use App\Domain\Wallet\Models\Wallet;
-use App\Domain\Wallet\Services\TransactionService;
-use App\Domain\Wallet\Resources\TransactionResource;
+use App\Domain\Transaction\Requests\ListTransactionRequest;
+use App\Domain\Transaction\Actions\ListTransactionsAction;
+use App\Domain\Transaction\DataTransferObjects\TransactionFilterData;
+use App\Domain\Transaction\Resources\TransactionResource;
 use Illuminate\Http\Request;
 
 class TransactionController extends Controller
 {
     public function __construct(
-        protected TransactionService $transactionService
+        protected ListTransactionsAction $listTransactionsAction
     ) {
     }
 
-    public function index(Request $request, $walletId)
+    public function index(ListTransactionRequest $request, $walletId)
     {
         $wallet = Wallet::findOrFail($walletId);
 
@@ -23,35 +25,16 @@ class TransactionController extends Controller
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
-        $validated = $request->validate([
-            'type' => 'nullable|in:credit,debit',
-            'from_date' => 'nullable|date',
-            'to_date' => 'nullable|date',
-            'reference' => 'nullable|string',
-        ]);
-
-        $transactions = $this->transactionService->listTransactions($wallet, $validated);
+        $filters = TransactionFilterData::fromRequest($request);
+        $transactions = $this->listTransactionsAction->execute($request->user(), $filters, $wallet);
 
         return TransactionResource::collection($transactions);
     }
 
-    public function all(Request $request)
+    public function all(ListTransactionRequest $request)
     {
-        $validated = $request->validate([
-            'type' => 'nullable|in:credit,debit',
-            'from_date' => 'nullable|date',
-            'to_date' => 'nullable|date',
-            'reference' => 'nullable|string',
-        ]);
-
-        \Illuminate\Support\Facades\Log::info('TransactionController::all called', [
-            'user_id' => $request->user()->id,
-            'user_role' => $request->user()->role,
-            'filters' => $validated,
-            'raw_reference' => $request->input('reference'),
-        ]);
-
-        $transactions = $this->transactionService->listAllTransactions($request->user(), $validated);
+        $filters = TransactionFilterData::fromRequest($request);
+        $transactions = $this->listTransactionsAction->execute($request->user(), $filters);
 
         return TransactionResource::collection($transactions);
     }
