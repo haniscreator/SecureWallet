@@ -97,8 +97,11 @@ export const useWalletStore = defineStore('wallet', () => {
         const results = await Promise.all(promises);
         results.forEach(txList => allTxs.push(...txList));
 
+        // Deduplicate by ID (keep first occurrence)
+        const uniqueTxs = Array.from(new Map(allTxs.map(tx => [tx.id, tx])).values());
+
         // Sort by date desc
-        recentGlobalTransactions.value = allTxs.sort((a, b) =>
+        recentGlobalTransactions.value = uniqueTxs.sort((a, b) =>
             new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
         );
     }

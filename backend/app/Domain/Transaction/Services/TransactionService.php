@@ -33,7 +33,8 @@ class TransactionService
             $query->where('reference', 'like', '%' . $filters->reference . '%');
         }
 
-        return $query->latest()->paginate($filters->per_page ?? 15);
+        return $query->orderBy($filters->sort_by ?? 'created_at', $filters->sort_dir ?? 'desc')
+            ->paginate($filters->per_page ?? 15);
     }
 
     public function listAllTransactions(User $user, TransactionFilterData $filters): LengthAwarePaginator
@@ -71,6 +72,7 @@ class TransactionService
             $query->where('reference', 'like', '%' . $filters->reference . '%');
         }
 
-        return $query->latest()->paginate($filters->per_page ?? 15);
+        return $query->orderBy($filters->sort_by ?? 'created_at', $filters->sort_dir ?? 'desc')
+            ->paginate($filters->per_page ?? 15);
     }
 }

@@ -141,7 +141,7 @@
         >
             <!-- Date Column -->
             <template v-slot:item.created_at="{ item }">
-                {{ item.created_at.substring(0, 10) }}
+                {{ new Date(item.created_at).toLocaleDateString() }}
             </template>
 
             <!-- To Column (Wallet Name) -->

@@ -11,7 +11,9 @@ readonly class TransactionFilterData
         public ?string $from_date,
         public ?string $to_date,
         public ?string $reference,
-        public ?int $per_page = 15
+        public ?int $per_page = 15,
+        public ?string $sort_by = 'created_at',
+        public ?string $sort_dir = 'desc'
     ) {
     }
 
@@ -22,7 +24,9 @@ readonly class TransactionFilterData
             from_date: $request->input('from_date'),
             to_date: $request->input('to_date'),
             reference: $request->input('reference'),
-            per_page: $request->input('per_page')
+            per_page: $request->input('per_page'),
+            sort_by: $request->input('sort_by', 'created_at'),
+            sort_dir: $request->input('sort_dir', 'desc')
         );
     }
 
