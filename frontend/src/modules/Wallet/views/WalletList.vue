@@ -190,7 +190,7 @@ const isAdmin = computed(() => userStore.currentUser?.role === 'admin');
 const headers = [
     { title: 'ID', key: 'id', align: 'start' as const },
     { title: 'Name', key: 'name', align: 'start' as const },
-    { title: 'Currency', key: 'currency', align: 'start' as const },
+    { title: 'Currency', key: 'currency', align: 'start' as const, sortable: false },
     { title: 'Balance', key: 'balance', align: 'end' as const },
     { title: 'Status', key: 'status', align: 'start' as const },
     { title: 'User Access', key: 'users', align: 'start' as const, sortable: false },
