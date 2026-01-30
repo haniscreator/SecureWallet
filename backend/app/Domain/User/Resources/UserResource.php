@@ -15,6 +15,8 @@ class UserResource extends JsonResource
             'email' => $this->email,
             'role' => $this->role,
             'status' => $this->status,
+            'wallet_access' => $this->role === 'admin' ? ['All'] : $this->wallets->pluck('name'),
+            'wallet_ids' => $this->wallets->pluck('id'),
             'created_at' => $this->created_at->toIso8601String(),
             'updated_at' => $this->updated_at->toIso8601String(),
         ];

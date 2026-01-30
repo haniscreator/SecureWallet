@@ -27,6 +27,9 @@ class StoreMemberRequest extends FormRequest
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8',
             'role' => 'nullable|string|in:user,admin',
+            'status' => 'nullable|boolean',
+            'wallet_ids' => 'nullable|array',
+            'wallet_ids.*' => 'integer|exists:wallets,id',
         ];
     }
 }

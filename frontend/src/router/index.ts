@@ -49,6 +49,16 @@ const routes = [
                 component: () => import('@/modules/User/views/Team.vue'),
             },
             {
+                path: 'members/create',
+                name: 'MemberCreate',
+                component: () => import('@/modules/User/views/MemberForm.vue'),
+            },
+            {
+                path: 'members/:id/edit',
+                name: 'MemberEdit',
+                component: () => import('@/modules/User/views/MemberForm.vue'),
+            },
+            {
                 path: 'currencies',
                 name: 'Currencies',
                 component: () => import('@/modules/Currency/views/CurrencyList.vue'),

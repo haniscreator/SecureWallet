@@ -28,6 +28,9 @@ class UpdateMemberRequest extends FormRequest
         return [
             'name' => 'sometimes|required|string|max:255',
             'role' => 'nullable|string|in:user,admin',
+            'status' => 'nullable|boolean',
+            'wallet_ids' => 'nullable|array',
+            'wallet_ids.*' => 'integer|exists:wallets,id',
             // Email/Password updates usually handled separately or here with extra checks, 
             // but keeping minimal based on current controller logic.
         ];

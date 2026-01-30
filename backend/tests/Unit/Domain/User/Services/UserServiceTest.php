@@ -62,6 +62,41 @@ class UserServiceTest extends TestCase
         $this->assertCount(3, $users);
     }
 
+    public function test_create_user_with_wallets()
+    {
+        $wallet1 = \App\Domain\Wallet\Models\Wallet::factory()->create();
+        $wallet2 = \App\Domain\Wallet\Models\Wallet::factory()->create();
+
+        $data = new \App\Domain\User\DataTransferObjects\UserData(
+            name: 'Wallet User',
+            email: 'wallet@example.com',
+            password: 'password123',
+            wallet_ids: [$wallet1->id, $wallet2->id]
+        );
+
+        $user = $this->service->createUser($data);
+
+        $this->assertCount(2, $user->wallets);
+        $this->assertTrue($user->wallets->contains($wallet1));
+        $this->assertTrue($user->wallets->contains($wallet2));
+    }
+
+    public function test_update_user_synch_wallets()
+    {
+        $user = User::factory()->create();
+        $wallet = \App\Domain\Wallet\Models\Wallet::factory()->create();
+
+        $data = new \App\Domain\User\DataTransferObjects\UserData(
+            name: 'Updated User',
+            wallet_ids: [$wallet->id]
+        );
+
+        $updatedUser = $this->service->updateUser($user, $data);
+
+        $this->assertCount(1, $updatedUser->wallets);
+        $this->assertTrue($updatedUser->wallets->contains($wallet));
+    }
+
     public function test_update_user()
     {
         $user = User::factory()->create(['name' => 'Old Name', 'email' => 'old@example.com']);

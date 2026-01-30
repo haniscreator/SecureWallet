@@ -34,6 +34,17 @@ class MemberController extends Controller
         return UserResource::collection($this->listMembersAction->execute());
     }
 
+    public function show(Request $request, $id)
+    {
+        $user = $this->getMemberAction->execute($id);
+
+        if ($request->user()->cannot('view', $user)) {
+            return response()->json(['message' => 'Unauthorized'], 403);
+        }
+
+        return response()->json(['user' => new UserResource($user)]);
+    }
+
     public function store(StoreMemberRequest $request)
     {
         $user = $this->createMemberAction->execute(\App\Domain\User\DataTransferObjects\UserData::fromRequest($request->validated()));

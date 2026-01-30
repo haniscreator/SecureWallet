@@ -10,6 +10,7 @@ class UserData
         public readonly ?string $password = null,
         public readonly ?string $role = null,
         public readonly ?bool $status = null,
+        public readonly ?array $wallet_ids = null,
     ) {
     }
 
@@ -21,6 +22,7 @@ class UserData
             password: $data['password'] ?? null,
             role: $data['role'] ?? null,
             status: isset($data['status']) ? (bool) $data['status'] : null,
+            wallet_ids: $data['wallet_ids'] ?? null,
         );
     }
 

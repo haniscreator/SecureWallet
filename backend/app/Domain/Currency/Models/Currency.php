@@ -9,6 +9,11 @@ class Currency extends Model
 {
     use HasFactory;
 
+    protected static function newFactory()
+    {
+        return \Database\Factories\CurrencyFactory::new();
+    }
+
     protected $fillable = [
         'code',
         'name',
