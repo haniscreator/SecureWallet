@@ -5,6 +5,7 @@
         <div class="d-flex justify-space-between align-center mb-6">
           <h1 class="text-h4 font-weight-bold text-grey-darken-3">Currencies</h1>
           <v-btn
+            v-if="isAdmin"
             color="primary"
             prepend-icon="mdi-plus"
             elevation="2"
@@ -38,22 +39,24 @@
                 <!-- Actions Column -->
                 <template v-slot:item.actions="{ item }">
                     <div class="d-flex gap-2 justify-center">
-                        <v-tooltip text="Edit Currency" location="top">
+                        <!-- Edit / View Action -->
+                        <v-tooltip :text="isAdmin ? 'Edit Currency' : 'View Currency'" location="top">
                           <template v-slot:activator="{ props }">
                             <v-btn
                                 v-bind="props"
                                 icon
                                 variant="text"
                                 size="small"
-                                color="primary"
+                                :color="isAdmin ? 'primary' : 'info'"
                                 :to="{ name: 'CurrencyEdit', params: { id: item.id } }"
                             >
-                                <v-icon>mdi-pencil</v-icon>
+                                <v-icon>{{ isAdmin ? 'mdi-pencil' : 'mdi-eye' }}</v-icon>
                             </v-btn>
                           </template>
                         </v-tooltip>
 
-                         <v-tooltip text="Delete Currency" location="top">
+                        <!-- Delete Action (Admin Only) -->
+                         <v-tooltip v-if="isAdmin" text="Delete Currency" location="top">
                           <template v-slot:activator="{ props }">
                             <v-btn
                                 v-bind="props"
@@ -99,11 +102,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useCurrencyStore } from '../store';
+import { useUserStore } from '@/modules/User/store';
 import type { Currency } from '../api';
 
 const currencyStore = useCurrencyStore();
+const userStore = useUserStore();
+
+const isAdmin = computed(() => userStore.currentUser?.role === 'admin');
 
 const headers = [
     { title: 'ID', key: 'id', align: 'start' as const },
@@ -117,7 +124,9 @@ const headers = [
 const deleteDialog = ref(false);
 const editedItem = ref<Currency | null>(null);
 
-onMounted(() => {
+onMounted(async () => {
+    // Ensure user loaded
+    await userStore.fetchCurrentUser();
     currencyStore.fetchCurrencies();
 });
 

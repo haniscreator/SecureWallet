@@ -4,7 +4,7 @@
       <v-col cols="12" md="8" lg="6">
         <v-card class="rounded-xl" elevation="0" border>
           <v-card-title class="pa-6 pb-0 text-h5 font-weight-bold">
-            {{ isEdit ? 'Edit Currency' : 'New Currency' }}
+            {{ !isAdmin ? 'View Currency' : (isEdit ? 'Edit Currency' : 'New Currency') }}
           </v-card-title>
           
           <v-card-text class="pa-6">
@@ -13,41 +13,44 @@
             <v-form ref="form" @submit.prevent="save" validate-on="submit lazy">
                 <v-row>
                     <v-col cols="12">
-                        <div class="text-subtitle-2 font-weight-bold mb-2">Currency Name <span class="text-error">*</span></div>
+                        <div class="text-subtitle-2 font-weight-bold mb-2">Currency Name <span v-if="isAdmin" class="text-error">*</span></div>
                         <v-text-field
                             v-model="formData.name"
                             placeholder="Enter currency name"
                             variant="outlined"
                             density="compact"
-                            :rules="[v => !!v || 'Name is required']"
+                            :readonly="!isAdmin"
+                            :rules="isAdmin ? [v => !!v || 'Name is required'] : []"
                         ></v-text-field>
                     </v-col>
 
                     <v-col cols="12" md="6">
-                        <div class="text-subtitle-2 font-weight-bold mb-2">Code <span class="text-error">*</span></div>
+                        <div class="text-subtitle-2 font-weight-bold mb-2">Code <span v-if="isAdmin" class="text-error">*</span></div>
                         <v-text-field
                             v-model="formData.code"
                             placeholder="e.g. USD"
                             variant="outlined"
                             density="compact"
-                            :rules="[v => !!v || 'Code is required']"
+                            :readonly="!isAdmin"
+                            :rules="isAdmin ? [v => !!v || 'Code is required'] : []"
                         ></v-text-field>
                     </v-col>
 
                     <v-col cols="12" md="6">
-                        <div class="text-subtitle-2 font-weight-bold mb-2">Symbol <span class="text-error">*</span></div>
+                        <div class="text-subtitle-2 font-weight-bold mb-2">Symbol <span v-if="isAdmin" class="text-error">*</span></div>
                         <v-text-field
                             v-model="formData.symbol"
                             placeholder="e.g. $"
                             variant="outlined"
                             density="compact"
-                            :rules="[v => !!v || 'Symbol is required']"
+                            :readonly="!isAdmin"
+                            :rules="isAdmin ? [v => !!v || 'Symbol is required'] : []"
                         ></v-text-field>
                     </v-col>
 
                     <!-- Status (All Modes) -->
                     <v-col cols="12">
-                        <div class="text-subtitle-2 font-weight-bold mb-2">Status <span class="text-error">*</span></div>
+                        <div class="text-subtitle-2 font-weight-bold mb-2">Status <span v-if="isAdmin" class="text-error">*</span></div>
                         <div class="d-flex align-center">
                             <v-switch
                                 v-model="formData.status"
@@ -55,6 +58,8 @@
                                 hide-details
                                 density="compact"
                                 class="ma-0"
+                                :readonly="!isAdmin"
+                                :disabled="!isAdmin"
                             ></v-switch>
                             <span class="ml-2 pt-1 font-weight-medium">{{ formData.status ? 'Active' : 'Inactive' }}</span>
                         </div>
@@ -68,9 +73,10 @@
                         :to="{ name: 'Currencies' }"
                         class="px-6"
                     >
-                        Cancel
+                         {{ isAdmin ? 'Cancel' : 'Back' }}
                     </v-btn>
                     <v-btn
+                        v-if="isAdmin"
                         color="primary"
                         type="submit"
                         variant="elevated"
@@ -92,12 +98,15 @@
 import { ref, computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useCurrencyStore } from '../store';
+import { useUserStore } from '@/modules/User/store';
 
 const route = useRoute();
 const router = useRouter();
 const currencyStore = useCurrencyStore();
+const userStore = useUserStore();
 
 const isEdit = computed(() => !!route.params.id);
+const isAdmin = computed(() => userStore.currentUser?.role === 'admin');
 const loading = ref(false);
 const error = ref<string | null>(null);
 
@@ -106,9 +115,13 @@ const formData = ref({
     code: '',
     symbol: '',
     status: true,
+    users: []
 });
 
 onMounted(async () => {
+    // Ensure user loaded
+    await userStore.fetchCurrentUser();
+
     if (isEdit.value) {
         const id = Number(route.params.id);
         loading.value = true;
@@ -121,6 +134,7 @@ onMounted(async () => {
                     code: c.code,
                     symbol: c.symbol,
                     status: Boolean(c.status),
+                    users: []
                 };
             }
         } catch (e) {
@@ -132,29 +146,19 @@ onMounted(async () => {
 });
 
 async function save() {
+    if (!isAdmin.value) return; 
+
     // Basic validation
     if (!formData.value.name || !formData.value.code || !formData.value.symbol) return;
 
     loading.value = true;
     error.value = null;
     
-    // Prepare payload with explicit status 1/0 as preferred by backend interactions seen in Wallet
-    // Assuming similar backend logic for Currency request validation
     const payload = {
-        ...formData.value,
-        status: formData.value.status // Sending boolean is fine if request handles it, or 1/0 if needed. 
-                                     // Wallet needed 1/0. Let's assume Currency might too, OR try boolean first?
-                                     // The user said "database saving 1 or 0".
-                                     // Safe bet: status: formData.value.status ? 1 : 0 IF the backend API definition expects boolean|number.
-                                     // Looking at `CreateCurrencyPayload` in `api.ts`, it says `status: boolean`.
-                                     // I should update API interface if I send number. 
-                                     // Let's stick to boolean for now as the interface dictates, 
-                                     // BUT if it fails like Wallet, I'll know why.
-                                     // ACTUALLY, I'll check `CreateCurrencyPayload` again. It says boolean.
-                                     // But the Wallet fix required adding 'status' to validation.
-                                     // I should probably check backend CurrencyController/Requests too if I want 100% certainty.
-                                     // But let's proceed with boolean as defined in current frontend API, 
-                                     // and fix if user reports issue (or proactively check backend).
+        name: formData.value.name,
+        code: formData.value.code,
+        symbol: formData.value.symbol,
+        status: formData.value.status 
     };
 
     try {
