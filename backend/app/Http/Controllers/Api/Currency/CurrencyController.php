@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api\V1\Currency;
+namespace App\Http\Controllers\Api\Currency;
 
 use App\Http\Controllers\Controller;
 use App\Domain\Currency\Models\Currency;
