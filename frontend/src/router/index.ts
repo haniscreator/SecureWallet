@@ -66,7 +66,7 @@ const routes = [
             {
                 path: 'transactions',
                 name: 'Transactions',
-                component: () => import('@/shared/views/ComingSoon.vue'),
+                component: () => import('@/modules/Transaction/views/TransactionList.vue'),
             },
         ]
     },

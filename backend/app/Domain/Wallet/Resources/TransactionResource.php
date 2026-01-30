@@ -16,6 +16,18 @@ class TransactionResource extends JsonResource
             'reference' => $this->reference,
             'from_wallet_id' => $this->from_wallet_id,
             'to_wallet_id' => $this->to_wallet_id,
+            'from_wallet' => $this->fromWallet ? [
+                'name' => $this->fromWallet->name,
+                'currency' => [
+                    'symbol' => $this->fromWallet->currency->symbol ?? '$',
+                ]
+            ] : null,
+            'to_wallet' => $this->toWallet ? [
+                'name' => $this->toWallet->name,
+                'currency' => [
+                    'symbol' => $this->toWallet->currency->symbol ?? '$',
+                ]
+            ] : null,
             'created_at' => $this->created_at->toIso8601String(),
             'updated_at' => $this->updated_at->toIso8601String(),
         ];

@@ -27,9 +27,31 @@ class TransactionController extends Controller
             'type' => 'nullable|in:credit,debit',
             'from_date' => 'nullable|date',
             'to_date' => 'nullable|date',
+            'reference' => 'nullable|string',
         ]);
 
         $transactions = $this->transactionService->listTransactions($wallet, $validated);
+
+        return TransactionResource::collection($transactions);
+    }
+
+    public function all(Request $request)
+    {
+        $validated = $request->validate([
+            'type' => 'nullable|in:credit,debit',
+            'from_date' => 'nullable|date',
+            'to_date' => 'nullable|date',
+            'reference' => 'nullable|string',
+        ]);
+
+        \Illuminate\Support\Facades\Log::info('TransactionController::all called', [
+            'user_id' => $request->user()->id,
+            'user_role' => $request->user()->role,
+            'filters' => $validated,
+            'raw_reference' => $request->input('reference'),
+        ]);
+
+        $transactions = $this->transactionService->listAllTransactions($request->user(), $validated);
 
         return TransactionResource::collection($transactions);
     }
