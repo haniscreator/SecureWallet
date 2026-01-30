@@ -16,11 +16,11 @@
     <v-table class="pa-2 recent-transactions-table">
       <thead>
         <tr>
-          <th class="text-left text-grey-darken-1 font-weight-medium">Date</th>
-          <th class="text-left text-grey-darken-1 font-weight-medium">From/To</th>
-          <th class="text-left text-grey-darken-1 font-weight-medium">Type</th>
-          <th class="text-left text-grey-darken-1 font-weight-medium">Amount</th>
-          <th class="text-left text-grey-darken-1 font-weight-medium">Reference</th>
+          <th class="text-left text-grey-darken-1 font-weight-bold">Date</th>
+          <th class="text-left text-grey-darken-1 font-weight-bold">From/To</th>
+          <th class="text-left text-grey-darken-1 font-weight-bold">Type</th>
+          <th class="text-left text-grey-darken-1 font-weight-bold">Amount</th>
+          <th class="text-left text-grey-darken-1 font-weight-bold">Reference</th>
         </tr>
       </thead>
       <tbody>
@@ -57,19 +57,38 @@
           </tr>
       </tbody>
     </v-table>
+    
+    <v-divider></v-divider>
+    
+    <div class="d-flex align-center justify-space-between pa-4">
+        <div class="text-caption text-grey">Showing {{ transactions.length }} of {{ totalCount }}</div>
+        <div class="d-flex align-center">
+            <v-pagination
+                v-model="page"
+                :length="totalPages"
+                total-visible="3"
+                density="compact"
+                active-color="primary"
+                variant="flat"
+                class="details-pagination"
+            ></v-pagination>
+        </div>
+    </div>
   </v-card>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useWalletStore } from '@/modules/Wallet/store';
 
 const router = useRouter();
 const walletStore = useWalletStore();
+const page = ref(1);
+const itemsPerPage = 10;
 
-// Map store transactions to display format
-const transactions = computed(() => {
+// Map store transactions to display format (All of them)
+const allTransactions = computed(() => {
   const txs = walletStore.recentGlobalTransactions || [];
   return txs.map(tx => ({
     id: tx.id,
@@ -78,7 +97,17 @@ const transactions = computed(() => {
     type: tx.type === 'credit' ? 'Credit' : 'Debit',
     amount: `${tx.type === 'debit' ? '-' : ''}${getCurrencySymbol(tx)}${Number(tx.amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, 
     reference: tx.reference
-  })).slice(0, 10); // Limit to 10
+  }));
+});
+
+const totalCount = computed(() => allTransactions.value.length);
+const totalPages = computed(() => Math.ceil(totalCount.value / itemsPerPage) || 1);
+
+// Slice for current page
+const transactions = computed(() => {
+    const start = (page.value - 1) * itemsPerPage;
+    const end = start + itemsPerPage;
+    return allTransactions.value.slice(start, end);
 });
 
 function getCurrencySymbol(item: any) {
@@ -98,5 +127,14 @@ function getWalletColor(name: string) {
 }
 .recent-transactions-table :deep(tbody tr:hover) {
     background-color: #F5F5F5 !important;
+}
+
+.details-pagination :deep(.v-pagination__list) {
+    margin-bottom: 0;
+}
+
+.details-pagination :deep(.v-pagination__item--is-active) {
+    background-color: rgb(var(--v-theme-primary)) !important;
+    color: white !important;
 }
 </style>
