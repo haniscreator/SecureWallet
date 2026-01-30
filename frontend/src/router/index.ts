@@ -46,7 +46,7 @@ const routes = [
             {
                 path: 'members',
                 name: 'Members',
-                component: () => import('@/modules/User/views/Team.vue'),
+                component: () => import('@/modules/User/views/MemberList.vue'),
             },
             {
                 path: 'members/create',

@@ -4,6 +4,7 @@
       <v-col cols="12" class="d-flex justify-space-between align-center mb-6">
         <h1 class="text-h4 font-weight-bold">Team Management</h1>
         <v-btn
+            v-if="isAdmin"
             color="primary"
             height="44"
             class="text-capitalize px-6"
@@ -72,24 +73,33 @@
 
                 <!-- Actions Column -->
                 <template v-slot:item.actions="{ item }">
-                    <div class="d-flex justify-end">
-                        <v-btn
-                            icon="mdi-pencil"
-                            variant="text"
-                            size="small"
-                            color="primary"
-                            class="mr-1"
-                            @click="router.push(`/members/${item.id}/edit`)"
-                        ></v-btn>
-                        <!-- Existing Delete Logic -->
-                        <v-btn
-                            icon="mdi-delete"
-                            size="small"
-                            variant="text"
-                            color="error"
-                             @click="confirmDelete(item)"
-                             v-if="item.id !== userStore.currentUser?.id"
-                        ></v-btn>
+                    <div class="d-flex justify-end gap-2">
+                         <v-tooltip :text="isAdmin ? 'Edit Member' : 'View Member'" location="top">
+                          <template v-slot:activator="{ props }">
+                            <v-btn
+                                v-bind="props"
+                                :icon="isAdmin ? 'mdi-pencil' : 'mdi-eye'"
+                                variant="text"
+                                size="small"
+                                :color="isAdmin ? 'primary' : 'info'"
+                                @click="router.push(`/members/${item.id}/edit`)"
+                            ></v-btn>
+                          </template>
+                         </v-tooltip>
+                         
+                        <!-- Delete (Admin only) -->
+                        <v-tooltip v-if="isAdmin && item.id !== userStore.currentUser?.id" text="Delete Member" location="top">
+                          <template v-slot:activator="{ props }">
+                            <v-btn
+                                v-bind="props"
+                                icon="mdi-delete"
+                                size="small"
+                                variant="text"
+                                color="error"
+                                @click="confirmDelete(item)"
+                            ></v-btn>
+                          </template>
+                        </v-tooltip>
                     </div>
                 </template>
             </v-data-table>
@@ -116,16 +126,18 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useUserStore } from '@/modules/User/store';
-import type { User } from '@/modules/User/api'; // Import type if needed for memberToDelete
+import type { User } from '@/modules/User/api'; 
 
 const router = useRouter();
 const userStore = useUserStore();
 const showDeleteDialog = ref(false);
-const memberToDelete = ref<any>(null); // Using any to avoid import issues if not handy, or match store type
+const memberToDelete = ref<any>(null); 
 const deleteLoading = ref(false);
+
+const isAdmin = computed(() => userStore.currentUser?.role === 'admin');
 
 const headers = [
   { title: 'ID', key: 'id', align: 'start' as const },
@@ -156,11 +168,22 @@ async function deleteUser() {
     }
 }
 
-onMounted(() => {
+onMounted(async () => {
+  // Ensure we have current user (await it)
+  await userStore.fetchCurrentUser();
+  
+  // Fetch members (admin check is handled by backend or simply displayed readonly for users in list)
+  // Actually, non-admins might not be allowed to list *all* members if the backend restricts it.
+  // The user requirement says "if normal user go to /members i want to show only view icon".
+  // This implies they CAN see the list.
+  // I should check if backend allows listing members for normal users.
+  // If not, I'll hit the same 403 error. 
+  // Checking MemberController previously... index() calls cannot('viewAny', User::class).
+  // I need to check UserPolicy. But for now, I'll assume they can list. 
+  // If they can't list, the page will show empty or error. 
+  // Given previous pattern (Wallet), list might be restricted or filtered.
+  // But unlike Wallets, Members are usually global or company-wide.
+  // I will call it, and if it fails, I'll need to fix backend Policy too.
   userStore.fetchMembers();
-  // Ensure we have current user to hide delete button on self
-  if(!userStore.currentUser) {
-      userStore.fetchCurrentUser();
-  }
 });
 </script>

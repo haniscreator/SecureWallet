@@ -11,7 +11,7 @@
                         @click="router.back()"
                     ></v-btn>
                     <h1 class="text-h4 font-weight-bold">
-                        {{ isEditMode ? 'Edit Member' : 'Add New Member' }}
+                        {{ !isAdmin ? 'View Member' : (isEditMode ? 'Edit Member' : 'Add New Member') }}
                     </h1>
                 </div>
 
@@ -21,35 +21,36 @@
                             <v-row>
                                 <!-- Name -->
                                 <v-col cols="12">
-                                    <div class="text-subtitle-2 font-weight-bold mb-2">Full Name <span class="text-red ml-1">*</span></div>
+                                    <div class="text-subtitle-2 font-weight-bold mb-2">Full Name <span v-if="isAdmin" class="text-red ml-1">*</span></div>
                                     <v-text-field
                                         v-model="formData.name"
                                         placeholder="Enter full name"
                                         variant="outlined"
                                         density="comfortable"
-                                        :rules="[rules.required]"
+                                        :readonly="!isAdmin"
+                                        :rules="isAdmin ? [rules.required] : []"
                                     ></v-text-field>
                                 </v-col>
 
                                 <!-- Email -->
                                 <v-col cols="12">
-                                    <div class="text-subtitle-2 font-weight-bold mb-2">Email Address <span class="text-red ml-1">*</span></div>
+                                    <div class="text-subtitle-2 font-weight-bold mb-2">Email Address <span v-if="isAdmin" class="text-red ml-1">*</span></div>
                                     <v-text-field
                                         v-model="formData.email"
                                         placeholder="Enter email address"
                                         variant="outlined"
                                         density="comfortable"
                                         type="email"
-                                        :rules="[rules.required, rules.email]"
-                                        :disabled="isEditMode" 
+                                        :rules="isAdmin ? [rules.required, rules.email] : []"
+                                        :disabled="isEditMode || !isAdmin" 
                                     ></v-text-field>
-                                    <div v-if="isEditMode" class="text-caption text-grey mt-1">
+                                    <div v-if="isEditMode && isAdmin" class="text-caption text-grey mt-1">
                                         Email cannot be changed after creation.
                                     </div>
                                 </v-col>
 
-                                <!-- Password (Create Only) -->
-                                <v-col cols="12" v-if="!isEditMode">
+                                <!-- Password (Create Only & Admin Only) -->
+                                <v-col cols="12" v-if="!isEditMode && isAdmin">
                                     <div class="text-subtitle-2 font-weight-bold mb-2">Password <span class="text-red ml-1">*</span></div>
                                     <v-text-field
                                         v-model="formData.password"
@@ -63,7 +64,7 @@
 
                                 <!-- Role -->
                                 <v-col cols="12">
-                                    <div class="text-subtitle-2 font-weight-bold mb-2">Role <span class="text-red ml-1">*</span></div>
+                                    <div class="text-subtitle-2 font-weight-bold mb-2">Role <span v-if="isAdmin" class="text-red ml-1">*</span></div>
                                     <v-select
                                         v-model="formData.role"
                                         :items="roles"
@@ -72,7 +73,8 @@
                                         placeholder="Select role"
                                         variant="outlined"
                                         density="comfortable"
-                                        :rules="[rules.required]"
+                                        :readonly="!isAdmin"
+                                        :rules="isAdmin ? [rules.required] : []"
                                     ></v-select>
                                 </v-col>
 
@@ -90,6 +92,7 @@
                                         multiple
                                         chips
                                         closable-chips
+                                        :readonly="!isAdmin"
                                     ></v-select>
                                 </v-col>
 
@@ -100,6 +103,8 @@
                                         color="primary"
                                         label="Active Status"
                                         hide-details
+                                        :readonly="!isAdmin"
+                                        :disabled="!isAdmin"
                                     ></v-switch>
                                 </v-col>
 
@@ -112,9 +117,10 @@
                                         size="large"
                                         @click="router.back()"
                                     >
-                                        Cancel
+                                         {{ isAdmin ? 'Cancel' : 'Back' }}
                                     </v-btn>
                                     <v-btn
+                                        v-if="isAdmin"
                                         color="primary"
                                         type="submit"
                                         class="text-capitalize"
@@ -140,21 +146,24 @@ import { useRoute, useRouter } from 'vue-router';
 import { userApi } from '../api';
 import { walletApi, type Wallet } from '@/modules/Wallet/api';
 import { useNotificationStore } from '@/shared/stores/notification';
+import { useUserStore } from '@/modules/User/store';
 
 const router = useRouter();
 const route = useRoute();
 const notification = useNotificationStore();
+const userStore = useUserStore();
 
 const form = ref<any>(null);
 const loading = ref(false);
 const isEditMode = computed(() => route.params.id !== undefined);
+const isAdmin = computed(() => userStore.currentUser?.role === 'admin');
 const availableWallets = ref<Wallet[]>([]);
 
 const formData = ref({
     name: '',
     email: '',
     password: '',
-    role: null as 'admin' | 'user' | null, // Default to null (Select Role)
+    role: null as 'admin' | 'user' | null, 
     status: true,
     wallet_ids: [] as number[],
 });
@@ -171,9 +180,11 @@ const rules = {
 };
 
 onMounted(async () => {
+    // Ensure user loaded to check role
+    await userStore.fetchCurrentUser();
+
     try {
         const { data } = await walletApi.getWallets();
-        // Handle Resource Collection wrapper { data: [...] } or direct array
         availableWallets.value = (data as any).data || data;
     } catch (e) {
         console.error('Failed to fetch wallets', e);
@@ -190,7 +201,6 @@ async function loadMember() {
         const id = Number(route.params.id);
         const { data } = await userApi.getMember(id);
         
-        // Handle potentially wrapped response
         const user = data.user || (data as any).data || data;
 
         if (user) {
@@ -211,6 +221,8 @@ async function loadMember() {
 }
 
 async function submit() {
+    if (!isAdmin.value) return;
+
     const { valid } = await form.value.validate();
     if (!valid) return;
 
@@ -219,7 +231,7 @@ async function submit() {
         if (isEditMode.value) {
              await userApi.updateMember(Number(route.params.id), {
                  name: formData.value.name,
-                 role: formData.value.role || undefined, // undefined if null
+                 role: formData.value.role || undefined, 
                  status: formData.value.status,
                  wallet_ids: formData.value.wallet_ids,
              });
