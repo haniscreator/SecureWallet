@@ -6,8 +6,9 @@ use Tests\TestCase;
 use App\Domain\User\Models\User;
 use App\Domain\Wallet\Models\Wallet;
 use App\Domain\Currency\Models\Currency;
-use App\Domain\Wallet\Models\Transaction;
-use App\Domain\Wallet\Services\TransactionService;
+use App\Domain\Transaction\Models\Transaction;
+use App\Domain\Transaction\Services\TransactionService;
+use App\Domain\Transaction\DataTransferObjects\TransactionFilterData;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Carbon\Carbon;
 
@@ -67,7 +68,15 @@ class TransactionServiceTest extends TestCase
             'type' => 'credit',
         ]);
 
-        $transactions = $this->transactionService->listTransactions($this->wallet);
+        $transactions = $this->transactionService->listTransactions(
+            $this->wallet,
+            new TransactionFilterData(
+                type: null,
+                from_date: null,
+                to_date: null,
+                reference: null
+            )
+        );
 
         $this->assertEquals(2, $transactions->count());
         $this->assertTrue($transactions->contains('reference', 'Incoming'));
@@ -88,11 +97,27 @@ class TransactionServiceTest extends TestCase
             'type' => 'debit',
         ]);
 
-        $credits = $this->transactionService->listTransactions($this->wallet, ['type' => 'credit']);
+        $credits = $this->transactionService->listTransactions(
+            $this->wallet,
+            new TransactionFilterData(
+                type: 'credit',
+                from_date: null,
+                to_date: null,
+                reference: null
+            )
+        );
         $this->assertEquals(1, $credits->count());
         $this->assertEquals('credit', $credits->first()->type);
 
-        $debits = $this->transactionService->listTransactions($this->wallet, ['type' => 'debit']);
+        $debits = $this->transactionService->listTransactions(
+            $this->wallet,
+            new TransactionFilterData(
+                type: 'debit',
+                from_date: null,
+                to_date: null,
+                reference: null
+            )
+        );
         $this->assertEquals(1, $debits->count());
         $this->assertEquals('debit', $debits->first()->type);
     }
@@ -116,9 +141,15 @@ class TransactionServiceTest extends TestCase
         ]);
 
         // Filter for last 5 days
-        $recent = $this->transactionService->listTransactions($this->wallet, [
-            'from_date' => Carbon::now()->subDays(5)->toDateTimeString()
-        ]);
+        $recent = $this->transactionService->listTransactions(
+            $this->wallet,
+            new TransactionFilterData(
+                type: null,
+                from_date: Carbon::now()->subDays(5)->toDateTimeString(),
+                to_date: null,
+                reference: null
+            )
+        );
 
         $this->assertEquals(1, $recent->count());
         $this->assertEquals(200, $recent->first()->amount);
