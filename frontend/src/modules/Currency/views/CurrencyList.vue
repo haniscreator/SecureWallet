@@ -3,7 +3,7 @@
     <v-row>
       <v-col cols="12">
         <div class="d-flex justify-space-between align-center mb-6">
-          <h1 class="text-h4 font-weight-bold text-grey-darken-3">Currencies</h1>
+          <h1 class="text-h5 font-weight-regular text-grey-darken-1">Currencies - Korporatio</h1>
           <v-btn
             v-if="isAdmin"
             color="primary"
@@ -12,7 +12,7 @@
             class="text-capitalize"
             :to="{ name: 'CurrencyCreate' }"
           >
-            Add Currency
+            Create Currency
           </v-btn>
         </div>
 
@@ -21,7 +21,8 @@
                 :headers="headers"
                 :items="currencyStore.currencies"
                 :loading="currencyStore.loading"
-                :items-per-page="10"
+                :items-per-page="itemsPerPage"
+                v-model:page="page"
                 hover
                 class="pa-2 currency-table"
             >
@@ -40,34 +41,34 @@
                 <!-- Actions Column -->
                 <template v-slot:item.actions="{ item }">
                     <div class="d-flex gap-2 justify-center">
-                        <!-- Edit / View Action -->
+                        <!-- Edit -->
                         <v-tooltip :text="isAdmin ? 'Edit Currency' : 'View Currency'" location="top">
                           <template v-slot:activator="{ props }">
                             <v-btn
                                 v-bind="props"
-                                icon
                                 variant="text"
                                 size="small"
                                 :color="isAdmin ? 'primary' : 'info'"
+                                class="font-weight-bold"
                                 :to="{ name: 'CurrencyEdit', params: { id: item.id } }"
                             >
-                                <v-icon>{{ isAdmin ? 'mdi-pencil' : 'mdi-eye' }}</v-icon>
+                                {{ isAdmin ? 'EDIT' : 'VIEW' }} <v-icon size="small" class="ml-1">{{ isAdmin ? 'mdi-pencil' : 'mdi-eye' }}</v-icon>
                             </v-btn>
                           </template>
                         </v-tooltip>
 
-                        <!-- Delete Action (Admin Only) -->
+                        <!-- Delete -->
                          <v-tooltip v-if="isAdmin" text="Delete Currency" location="top">
                           <template v-slot:activator="{ props }">
                             <v-btn
                                 v-bind="props"
-                                icon
                                 variant="text"
                                 size="small"
                                 color="error"
+                                class="font-weight-bold"
                                 @click="confirmDelete(item)"
                             >
-                                <v-icon>mdi-delete</v-icon>
+                                DELETE <v-icon size="small" class="ml-1">mdi-delete</v-icon>
                             </v-btn>
                           </template>
                         </v-tooltip>
@@ -78,6 +79,23 @@
                 <template v-slot:no-data>
                     <div class="pa-4 text-center text-grey">
                         No currencies found.
+                    </div>
+                </template>
+                <template v-slot:bottom>
+                     <v-divider></v-divider>
+                     <div class="d-flex align-center justify-space-between pa-4">
+                        <div class="text-caption text-grey">Showing {{ currentCount }} of {{ totalCount }}</div>
+                        <div class="d-flex align-center">
+                            <v-pagination
+                                v-model="page"
+                                :length="totalPages"
+                                total-visible="3"
+                                density="compact"
+                                active-color="primary"
+                                variant="flat"
+                                class="details-pagination"
+                            ></v-pagination>
+                        </div>
                     </div>
                 </template>
             </v-data-table>
@@ -110,6 +128,15 @@ import type { Currency } from '../api';
 
 const currencyStore = useCurrencyStore();
 const userStore = useUserStore();
+const page = ref(1);
+const itemsPerPage = 10;
+
+const totalCount = computed(() => currencyStore.currencies.length);
+const totalPages = computed(() => Math.ceil(totalCount.value / itemsPerPage) || 1);
+const currentCount = computed(() => {
+    const remaining = totalCount.value - (page.value - 1) * itemsPerPage;
+    return remaining > 0 ? Math.min(itemsPerPage, remaining) : 0;
+});
 
 const isAdmin = computed(() => userStore.currentUser?.role === 'admin');
 
@@ -149,5 +176,14 @@ async function deleteItem() {
 /* Hide the items-per-page dropdown in the footer */
 :deep(.currency-table .v-data-table-footer__items-per-page) {
     display: none !important;
+}
+
+.details-pagination :deep(.v-pagination__list) {
+    margin-bottom: 0;
+}
+
+.details-pagination :deep(.v-pagination__item--is-active) {
+    background-color: rgb(var(--v-theme-primary)) !important;
+    color: white !important;
 }
 </style>
