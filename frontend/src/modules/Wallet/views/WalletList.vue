@@ -98,8 +98,9 @@
                 :headers="headers"
                 :items="walletStore.wallets"
                 :loading="walletStore.loading"
+                :items-per-page="10"
                 hover
-                class="pa-2"
+                class="pa-2 wallet-table"
             >
                 <!-- Currency Column -->
                 <template v-slot:item.currency="{ item }">
@@ -236,3 +237,10 @@ onMounted(async () => {
     fetchCurrencies();
 });
 </script>
+
+<style scoped>
+/* Hide the items-per-page dropdown in the footer */
+:deep(.wallet-table .v-data-table-footer__items-per-page) {
+    display: none !important;
+}
+</style>

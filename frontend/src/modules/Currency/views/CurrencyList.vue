@@ -21,8 +21,9 @@
                 :headers="headers"
                 :items="currencyStore.currencies"
                 :loading="currencyStore.loading"
+                :items-per-page="10"
                 hover
-                class="pa-2"
+                class="pa-2 currency-table"
             >
                 <!-- Status Column -->
                 <template v-slot:item.status="{ item }">
@@ -143,3 +144,10 @@ async function deleteItem() {
     }
 }
 </script>
+
+<style scoped>
+/* Hide the items-per-page dropdown in the footer */
+:deep(.currency-table .v-data-table-footer__items-per-page) {
+    display: none !important;
+}
+</style>
