@@ -2,8 +2,12 @@
   <v-container fluid class="fill-height align-start pa-6">
     <v-row>
       <v-col cols="12">
+        <div class="d-flex justify-space-between align-center mb-6">
+          <h1 class="text-h5 font-weight-regular text-grey-darken-1">Transaction - Korporatio</h1>
+        </div>
+
         <!-- Filters -->
-        <v-card class="rounded-xl mb-6" elevation="0" border>
+        <v-card class="rounded-0 mb-6" elevation="0" border>
         <v-card-text class="pa-4">
             <v-row align="start">
                  <v-col cols="12" md="4">
@@ -15,6 +19,7 @@
                         density="compact"
                         hide-details
                         append-inner-icon="mdi-magnify"
+                        @keyup.enter="applyFilters"
                     ></v-text-field>
                 </v-col>
                 <v-col cols="12" md="2">
@@ -124,7 +129,7 @@
     </v-alert>
 
     <!-- Transactions List -->
-    <v-card class="rounded-xl" elevation="0" border>
+    <v-card class="rounded-0" elevation="0" border>
         <v-card-title class="pa-4 text-h6 font-weight-bold border-b">
             Transactions List
         </v-card-title>
@@ -168,18 +173,17 @@
 
             <!-- Actions Column -->
             <template v-slot:item.actions="{ item }">
-                <v-tooltip text="View Transaction" location="top">
-                    <template v-slot:activator="{ props }">
-                         <v-btn
-                            v-bind="props"
-                            icon="mdi-eye"
-                            variant="text"
-                            size="small"
-                            color="info"
-                            @click="router.push(`/transactions/${item.id}`)"
-                        ></v-btn>
-                    </template>
-                </v-tooltip>
+                <div class="d-flex justify-end gap-2">
+                     <v-btn
+                        variant="text"
+                        size="small"
+                        color="info"
+                        class="font-weight-bold"
+                        @click="router.push(`/transactions/${item.id}`)"
+                    >
+                        VIEW <v-icon size="small" class="ml-1">mdi-eye</v-icon>
+                    </v-btn>
+                </div>
             </template>
 
              <!-- No Data -->
@@ -189,6 +193,23 @@
                 </div>
             </template>
 
+            <template v-slot:bottom>
+                 <v-divider></v-divider>
+                 <div class="d-flex align-center justify-space-between pa-4">
+                    <div class="text-caption text-grey">Showing {{ currentCount }} of {{ store.totalItems }}</div>
+                    <div class="d-flex align-center">
+                        <v-pagination
+                            v-model="store.page"
+                            :length="totalPages"
+                            total-visible="3"
+                            density="compact"
+                            active-color="primary"
+                            variant="flat"
+                            class="details-pagination"
+                        ></v-pagination>
+                    </div>
+                </div>
+            </template>
         </v-data-table-server>
     </v-card>
 
@@ -198,13 +219,29 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useTransactionStore } from '../store';
 import type { Transaction } from '../api';
 
 const store = useTransactionStore();
 const router = useRouter();
+
+const totalPages = computed(() => Math.ceil(store.totalItems / store.itemsPerPage) || 1);
+const currentCount = computed(() => {
+    // For server-side, we calculate based on page and items per page, capped at total
+    const start = (store.page - 1) * store.itemsPerPage;
+    const countOnPage = store.transactions.length; // This is what we actually have
+    // Showing X of Y usually means "Showing 10 of 100" (meaning 1-10? or count?)
+    // User requested "Showing 10 of 20" which implies count displayed?
+    // In other components we did: Showing {{ transactions.length }} of {{ totalCount }}
+    // But since this is server side, transactions.length is just the current page count (e.g. 10).
+    // So "Showing 10 of 100" is correct if we mean "10 items are shown". 
+    // If we want range "Showing 1-10 of 100", that's different.
+    // Based on "RecentTransactions.vue": "Showing {{ transactions.length }} of {{ totalCount }}"
+    // So stick to length.
+    return store.transactions.length;
+});
 
 const headers = [
     { title: 'Date', key: 'created_at', align: 'start' as const, sortable: true },
@@ -327,5 +364,18 @@ function getCurrencySymbol(item: Transaction) {
 /* Hide the items-per-page dropdown in the footer */
 :deep(.transaction-table .v-data-table-footer__items-per-page) {
     display: none !important;
+}
+
+:deep(.transaction-table .v-data-table-footer) {
+    display: none !important; 
+}
+
+.details-pagination :deep(.v-pagination__list) {
+    margin-bottom: 0;
+}
+
+.details-pagination :deep(.v-pagination__item--is-active) {
+    background-color: rgb(var(--v-theme-primary)) !important;
+    color: white !important;
 }
 </style>

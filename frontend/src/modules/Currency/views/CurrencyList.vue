@@ -42,10 +42,7 @@
                 <template v-slot:item.actions="{ item }">
                     <div class="d-flex gap-2 justify-center">
                         <!-- Edit -->
-                        <v-tooltip :text="isAdmin ? 'Edit Currency' : 'View Currency'" location="top">
-                          <template v-slot:activator="{ props }">
                             <v-btn
-                                v-bind="props"
                                 variant="text"
                                 size="small"
                                 :color="isAdmin ? 'primary' : 'info'"
@@ -54,14 +51,9 @@
                             >
                                 {{ isAdmin ? 'EDIT' : 'VIEW' }} <v-icon size="small" class="ml-1">{{ isAdmin ? 'mdi-pencil' : 'mdi-eye' }}</v-icon>
                             </v-btn>
-                          </template>
-                        </v-tooltip>
 
                         <!-- Delete -->
-                         <v-tooltip v-if="isAdmin" text="Delete Currency" location="top">
-                          <template v-slot:activator="{ props }">
                             <v-btn
-                                v-bind="props"
                                 variant="text"
                                 size="small"
                                 color="error"
@@ -70,8 +62,6 @@
                             >
                                 DELETE <v-icon size="small" class="ml-1">mdi-delete</v-icon>
                             </v-btn>
-                          </template>
-                        </v-tooltip>
                     </div>
                 </template>
                 

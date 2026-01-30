@@ -2,7 +2,7 @@
   <v-container fluid class="fill-height align-start pa-6">
     <v-row>
       <v-col cols="12" class="d-flex justify-space-between align-center mb-6">
-        <h1 class="text-h4 font-weight-bold">Team Management</h1>
+        <h1 class="text-h5 font-weight-regular text-grey-darken-1">Team Members - Korporatio</h1>
         <v-btn
             v-if="isAdmin"
             color="primary"
@@ -21,7 +21,8 @@
                 :headers="headers"
                 :items="userStore.members"
                 :loading="userStore.loading"
-                :items-per-page="10"
+                :items-per-page="itemsPerPage"
+                v-model:page="page"
                 hover
                 class="pa-2 member-table"
             >
@@ -33,12 +34,13 @@
                 <!-- Role Column -->
                 <template v-slot:item.role="{ item }">
                     <v-chip
-                        :color="item.role === 'admin' ? 'purple-lighten-4' : 'blue-lighten-4'"
-                        :text-color="item.role === 'admin' ? 'purple-darken-2' : 'blue-darken-2'"
+                        :color="item.role === 'admin' ? '#EBEBEF' : '#D6E3F7'"
+                        :text-color="item.role === 'admin' ? '#333' : '#1976D2'"
                         class="font-weight-bold text-capitalize"
                         size="small"
                         label
                         variant="flat"
+                        style="color: inherit"
                     >
                         {{ item.role === 'admin' ? 'Admin' : 'User' }}
                     </v-chip>
@@ -51,8 +53,8 @@
                              <v-chip
                                 v-for="(access, i) in item.wallet_access"
                                 :key="i"
-                                color="grey-lighten-3"
-                                class="text-grey-darken-3 font-weight-medium mr-1 my-1"
+                                color="#DBE8E3"
+                                class="text-grey-darken-3 font-weight-bold mr-1 my-1"
                                 size="small"
                                 label
                                 variant="flat"
@@ -75,32 +77,43 @@
                 <!-- Actions Column -->
                 <template v-slot:item.actions="{ item }">
                     <div class="d-flex justify-end gap-2">
-                         <v-tooltip :text="isAdmin ? 'Edit Member' : 'View Member'" location="top">
-                          <template v-slot:activator="{ props }">
                             <v-btn
-                                v-bind="props"
-                                :icon="isAdmin ? 'mdi-pencil' : 'mdi-eye'"
                                 variant="text"
                                 size="small"
                                 :color="isAdmin ? 'primary' : 'info'"
+                                class="font-weight-bold"
                                 @click="router.push(`/members/${item.id}/edit`)"
-                            ></v-btn>
-                          </template>
-                         </v-tooltip>
+                            >
+                                {{ isAdmin ? 'EDIT' : 'VIEW' }} <v-icon size="small" class="ml-1">{{ isAdmin ? 'mdi-pencil' : 'mdi-eye' }}</v-icon>
+                            </v-btn>
                          
                         <!-- Delete (Admin only) -->
-                        <v-tooltip v-if="isAdmin && item.id !== userStore.currentUser?.id" text="Delete Member" location="top">
-                          <template v-slot:activator="{ props }">
                             <v-btn
-                                v-bind="props"
-                                icon="mdi-delete"
                                 size="small"
                                 variant="text"
                                 color="error"
+                                class="font-weight-bold"
                                 @click="confirmDelete(item)"
-                            ></v-btn>
-                          </template>
-                        </v-tooltip>
+                            >
+                                DELETE <v-icon size="small" class="ml-1">mdi-delete</v-icon>
+                            </v-btn>
+                    </div>
+                </template>
+                 <template v-slot:bottom>
+                     <v-divider></v-divider>
+                     <div class="d-flex align-center justify-space-between pa-4">
+                        <div class="text-caption text-grey">Showing {{ currentCount }} of {{ totalCount }}</div>
+                        <div class="d-flex align-center">
+                            <v-pagination
+                                v-model="page"
+                                :length="totalPages"
+                                total-visible="3"
+                                density="compact"
+                                active-color="primary"
+                                variant="flat"
+                                class="details-pagination"
+                            ></v-pagination>
+                        </div>
                     </div>
                 </template>
             </v-data-table>
@@ -137,6 +150,15 @@ const userStore = useUserStore();
 const showDeleteDialog = ref(false);
 const memberToDelete = ref<any>(null); 
 const deleteLoading = ref(false);
+const page = ref(1);
+const itemsPerPage = 10;
+
+const totalCount = computed(() => userStore.members.length);
+const totalPages = computed(() => Math.ceil(totalCount.value / itemsPerPage) || 1);
+const currentCount = computed(() => {
+    const remaining = totalCount.value - (page.value - 1) * itemsPerPage;
+    return remaining > 0 ? Math.min(itemsPerPage, remaining) : 0;
+});
 
 const isAdmin = computed(() => userStore.currentUser?.role === 'admin');
 
@@ -146,7 +168,6 @@ const headers = [
   { title: 'Email', key: 'email', align: 'start' as const },
   { title: 'Role', key: 'role', align: 'start' as const },
   { title: 'Wallet Access', key: 'wallet_access', align: 'start' as const },
-  { title: 'Joined', key: 'created_at', align: 'start' as const },
   { title: 'Actions', key: 'actions', align: 'end' as const, sortable: false },
 ];
 
@@ -193,5 +214,14 @@ onMounted(async () => {
 /* Hide the items-per-page dropdown in the footer */
 :deep(.member-table .v-data-table-footer__items-per-page) {
     display: none !important;
+}
+
+.details-pagination :deep(.v-pagination__list) {
+    margin-bottom: 0;
+}
+
+.details-pagination :deep(.v-pagination__item--is-active) {
+    background-color: rgb(var(--v-theme-primary)) !important;
+    color: white !important;
 }
 </style>
