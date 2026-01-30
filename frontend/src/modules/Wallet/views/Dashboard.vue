@@ -6,7 +6,7 @@
         <div class="d-flex align-center">
             <h1 class="text-h5 font-weight-regular text-grey-darken-1">Dashboard</h1>
             <span class="mx-2 text-grey-lighten-1">|</span>
-            <span class="text-h5 font-weight-bold">Acme Corp</span>
+            <span class="text-h5 font-weight-bold">Korporatio</span>
         </div>
       </v-col>
     </v-row>

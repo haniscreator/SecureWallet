@@ -24,34 +24,37 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="item in transactions" :key="item.id">
-          <td class="text-body-2 text-grey-darken-2">{{ item.date }}</td>
-          <td>
-            <div class="d-flex align-center">
-              <v-avatar 
-                size="36" 
-                rounded="lg" 
-                :color="getWalletColor(item.wallet)" 
-                variant="tonal"
-                class="mr-3"
-              >
-                <!-- Changed to wallet icon as requested -->
-                <v-icon size="small" :color="getWalletColor(item.wallet)">mdi-wallet-bifold</v-icon>
-              </v-avatar>
-              <span class="text-body-2 font-weight-medium">{{ item.wallet }}</span>
-            </div>
-          </td>
-          <td>
-            <span class="text-body-2">{{ item.type }}</span>
-          </td>
-          <td>
-            <!-- Color logic: Teal for credit, Red for debit -->
-            <span :class="['text-body-2 font-weight-bold', item.amount.startsWith('-') ? 'text-red-darken-2' : 'text-teal-darken-2']">
-              {{ item.amount }}
-            </span>
-          </td>
-          <td class="text-body-2 text-grey-darken-1">{{ item.reference }}</td>
-        </tr>
+          <tr v-for="item in transactions" :key="item.id">
+            <td class="text-body-2 text-grey-darken-2">{{ item.date }}</td>
+            <td>
+              <div class="d-flex align-center">
+                <v-avatar 
+                  size="36" 
+                  rounded="lg" 
+                  :color="getWalletColor(item.wallet)" 
+                  variant="tonal"
+                  class="mr-3"
+                >
+                  <!-- Changed to wallet icon as requested -->
+                  <v-icon size="small" :color="getWalletColor(item.wallet)">mdi-wallet-bifold</v-icon>
+                </v-avatar>
+                <span class="text-body-2 font-weight-medium">{{ item.wallet }}</span>
+              </div>
+            </td>
+            <td>
+              <span class="text-body-2">{{ item.type }}</span>
+            </td>
+            <td>
+              <!-- Color logic: Teal for credit, Red for debit -->
+              <span :class="['text-body-2 font-weight-bold', item.amount.startsWith('-') ? 'text-red-darken-2' : 'text-teal-darken-2']">
+                {{ item.amount }}
+              </span>
+            </td>
+            <td class="text-body-2 text-grey-darken-1">{{ item.reference }}</td>
+          </tr>
+          <tr v-if="transactions.length === 0">
+              <td colspan="5" class="text-center pa-6 text-grey text-body-2">No recent transactions</td>
+          </tr>
       </tbody>
     </v-table>
   </v-card>
@@ -73,10 +76,14 @@ const transactions = computed(() => {
     date: new Date(tx.created_at).toLocaleDateString(),
     wallet: tx.wallet_name || 'Unknown Wallet',
     type: tx.type === 'credit' ? 'Credit' : 'Debit',
-    amount: `${tx.type === 'debit' ? '-' : ''}${Number(tx.amount).toFixed(2)}`, 
+    amount: `${tx.type === 'debit' ? '-' : ''}${getCurrencySymbol(tx)}${Number(tx.amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, 
     reference: tx.reference
   })).slice(0, 10); // Limit to 10
 });
+
+function getCurrencySymbol(item: any) {
+    return item.to_wallet?.currency?.symbol || item.from_wallet?.currency?.symbol || '$';
+}
 
 function getWalletColor(name: string) {
     if (name.includes('Main')) return 'blue-darken-2';

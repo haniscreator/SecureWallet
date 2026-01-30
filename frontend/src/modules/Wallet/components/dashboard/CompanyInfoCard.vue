@@ -17,7 +17,7 @@
                   
                   <!-- Column 2: Stats -->
                   <v-col cols="12" md="4" class="d-flex flex-column justify-center pr-4 border-end-sm">
-                      <div class="text-h6 font-weight-bold text-grey-darken-3">Company Overview</div>
+                      <div class="text-h6 font-weight-bold text-grey-darken-3">Company</div>
                       <v-divider class="my-4"></v-divider>
                       
                       <div class="stats-column d-flex flex-column gap-2">
@@ -88,7 +88,7 @@ const authStore = useAuthStore();
 const totalWallets = computed(() => walletStore.wallets.length);
 const totalUsers = computed(() => userStore.members.length); 
 const totalCurrencies = computed(() => Object.keys(walletStore.totalBalanceByCurrency).length);
-const companyName = computed(() => authStore.user?.company_name || 'Acme Corp');
+const companyName = computed(() => authStore.user?.company_name || 'Korporatio');
 const companyEmail = computed(() => authStore.user?.email || 'admin@korporatio.com');
 
 const totalTxCount = computed(() => {
