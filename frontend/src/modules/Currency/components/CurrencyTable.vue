@@ -37,6 +37,7 @@
 
                     <!-- Delete -->
                         <v-btn
+                            v-if="isAdmin"
                             variant="text"
                             size="small"
                             color="error"

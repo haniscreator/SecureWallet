@@ -72,6 +72,7 @@
                         
                     <!-- Delete (Admin only) -->
                         <v-btn
+                            v-if="isAdmin"
                             size="small"
                             variant="text"
                             color="error"

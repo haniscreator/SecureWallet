@@ -73,14 +73,14 @@
 
             <template v-slot:item.actions="{ item }">
                 <div class="d-flex gap-2 justify-center">
-                        <v-btn
+                    <v-btn
                         variant="text"
                         size="small"
-                        color="primary"
+                        :color="isAdmin ? 'primary' : 'info'"
                         class="font-weight-bold"
                         @click="$router.push({ name: 'WalletEdit', params: { id: item.id } })"
                     >
-                        EDIT <v-icon size="small" class="ml-1">mdi-pencil</v-icon>
+                        {{ isAdmin ? 'EDIT' : 'VIEW' }} <v-icon size="small" class="ml-1">{{ isAdmin ? 'mdi-pencil' : 'mdi-eye' }}</v-icon>
                     </v-btn>
                 </div>
             </template>
@@ -114,11 +114,16 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
+import { useUserStore } from '@/modules/User/store';
 
 const props = defineProps<{
     wallets: any[];
     loading: boolean;
 }>();
+
+const userStore = useUserStore();
+
+const isAdmin = computed(() => userStore.currentUser?.role === 'admin');
 
 const page = ref(1);
 const itemsPerPage = 10;
