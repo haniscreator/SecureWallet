@@ -1,6 +1,7 @@
 <template>
     <v-card class="rounded-0 mb-6" elevation="0" border>
-        <v-card-text class="pa-4">
+        <!-- Inputs Section with Gray Background -->
+        <div style="background-color: #F5F6F9;" class="pa-4">
             <v-row align="start">
                 <!-- Name Filter -->
                 <v-col cols="12" md="4">
@@ -11,13 +12,14 @@
                         variant="outlined"
                         density="compact"
                         hide-details
+                        bg-color="white"
                         append-inner-icon="mdi-magnify"
                         @keyup.enter="applyFilters"
                     ></v-text-field>
                 </v-col>
 
                 <!-- Currency Filter -->
-                <v-col cols="12" md="3">
+                <v-col cols="12" md="4">
                     <div class="text-subtitle-2 font-weight-bold mb-2">Currency</div>
                         <v-select
                         v-model="filters.currency_id"
@@ -28,12 +30,13 @@
                         variant="outlined"
                         density="compact"
                         hide-details
+                        bg-color="white"
                         clearable
                     ></v-select>
                 </v-col>
 
                 <!-- Status Filter -->
-                <v-col cols="12" md="3">
+                <v-col cols="12" md="4">
                     <div class="text-subtitle-2 font-weight-bold mb-2">Status</div>
                         <v-select
                         v-model="filters.status"
@@ -44,34 +47,36 @@
                         variant="outlined"
                         density="compact"
                         hide-details
+                        bg-color="white"
                         clearable
                     ></v-select>
                 </v-col>
-
-                <!-- Buttons -->
-                <v-col cols="12" md="2" class="d-flex flex-column justify-end">
-                        <div class="text-subtitle-2 font-weight-bold mb-2" style="visibility: hidden">Spacer</div>
-                        <div class="d-flex">
-                            <v-btn
-                            variant="outlined"
-                            color="grey-darken-1"
-                            class="mr-2 text-capitalize flex-grow-1"
-                            @click="clearFilters"
-                        >
-                            Clear
-                        </v-btn>
-                        <v-btn
-                            color="primary"
-                            elevation="0"
-                            class="text-capitalize flex-grow-1"
-                            @click="applyFilters"
-                        >
-                            Filter
-                        </v-btn>
-                        </div>
-                </v-col>
             </v-row>
-        </v-card-text>
+        </div>
+
+        <v-divider></v-divider>
+
+        <!-- Buttons Section with White Background -->
+        <div class="pa-4 bg-white d-flex justify-end">
+            <v-btn
+                variant="outlined"
+                color="grey-darken-1"
+                class="mr-2 text-capitalize"
+                width="100"
+                @click="clearFilters"
+            >
+                Clear
+            </v-btn>
+            <v-btn
+                color="primary"
+                elevation="0"
+                class="text-capitalize"
+                width="100"
+                @click="applyFilters"
+            >
+                Filter
+            </v-btn>
+        </div>
     </v-card>
 </template>
 

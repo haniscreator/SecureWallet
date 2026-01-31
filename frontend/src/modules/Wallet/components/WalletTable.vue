@@ -9,6 +9,16 @@
             hover
             class="wallet-table"
         >
+            <!-- ID Column -->
+            <template v-slot:item.id="{ item }">
+                <span class="font-weight-bold">{{ item.id }}</span>
+            </template>
+
+            <!-- Name Column -->
+            <template v-slot:item.name="{ item }">
+                <span class="font-weight-bold">{{ item.name }}</span>
+            </template>
+
             <!-- Currency Column -->
             <template v-slot:item.currency="{ item }">
                 <span class="font-weight-medium">{{ item.currency?.code || 'N/A' }}</span>
@@ -16,20 +26,33 @@
 
                 <!-- Balance Column -->
             <template v-slot:item.balance="{ item }">
-                <span :class="Number(item.balance) < 0 ? 'text-error' : 'text-success'" class="font-weight-bold">
+                <span class="font-weight-bold text-black">
                     {{ item.currency?.symbol || '' }}{{ Number(item.balance).toLocaleString('en-US', { minimumFractionDigits: 2 }) }}
                 </span>
             </template>
 
             <!-- Status Column -->
             <template v-slot:item.status="{ item }">
+                <!-- Active: No border radius, bold -->
                 <v-chip
-                    :color="item.status ? 'success' : 'grey'"
+                    v-if="item.status"
+                    color="success"
                     size="small"
                     variant="tonal"
-                    class="font-weight-medium"
+                    class="font-weight-bold rounded-0"
                 >
-                    {{ item.status ? 'Active' : 'Inactive' }}
+                    Active
+                </v-chip>
+                <!-- Inactive: No border, bold, bg #D2E1F5 -->
+                <v-chip
+                    v-else
+                    color="#D2E1F5"
+                    size="small"
+                    variant="flat"
+                    class="font-weight-bold rounded-0"
+                    style="color: #386DB1;"
+                >
+                    Inactive
                 </v-chip>
             </template>
 
