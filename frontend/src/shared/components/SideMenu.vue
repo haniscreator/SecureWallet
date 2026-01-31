@@ -25,7 +25,7 @@
       ></v-text-field>
     </div>
 
-    <v-list density="comfortable" nav class="px-3">
+    <v-list density="compact" nav class="px-3">
       <template v-if="filteredMenuItems.length > 0">
         <v-list-item 
           v-for="item in filteredMenuItems"
@@ -36,7 +36,7 @@
           :value="item.value"
           active-color="primary"
           rounded="lg"
-          class="mb-1 font-weight-medium text-body-2 mb-2"
+          class="mb-1 font-weight-bold text-body-2"
         ></v-list-item>
       </template>
       <template v-else>
@@ -88,6 +88,16 @@ const filteredMenuItems = computed(() => {
 :deep(.v-list-item--active) {
     border-left: 4px solid rgb(var(--v-theme-primary));
     background: rgb(var(--v-theme-primary), 0.1);
+    color: rgb(var(--v-theme-primary)) !important;
+    font-weight: bold !important;
+}
+
+:deep(.v-list-item-title) {
+    font-weight: 700 !important;
+    color: #505050 !important;
+}
+
+:deep(.v-list-item--active .v-list-item-title) {
     color: rgb(var(--v-theme-primary)) !important;
 }
 </style>
