@@ -156,7 +156,7 @@
             :loading="store.loading"
             @update:options="loadItems"
             hover
-            class="pa-2 transaction-table"
+            class="transaction-table"
         >
             <!-- Date Column -->
             <template v-slot:item.created_at="{ item }">

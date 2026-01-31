@@ -24,7 +24,7 @@
                 :items-per-page="itemsPerPage"
                 v-model:page="page"
                 hover
-                class="pa-2 member-table"
+                class="member-table"
             >
                 <!-- Name Column -->
                 <template v-slot:item.name="{ item }">
@@ -222,5 +222,10 @@ onMounted(async () => {
 .details-pagination :deep(.v-pagination__item--is-active) {
     background-color: rgb(var(--v-theme-primary)) !important;
     color: white !important;
+}
+
+/* Header Background Color */
+:deep(.member-table thead tr th) {
+    background-color: #F5F6F9 !important;
 }
 </style>

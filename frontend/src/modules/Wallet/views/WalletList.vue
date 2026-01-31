@@ -101,7 +101,7 @@
                 :items-per-page="itemsPerPage"
                 v-model:page="page"
                 hover
-                class="pa-2 wallet-table"
+                class="wallet-table"
             >
                 <!-- Currency Column -->
                 <template v-slot:item.currency="{ item }">
@@ -272,5 +272,10 @@ onMounted(async () => {
 .details-pagination :deep(.v-pagination__item--is-active) {
     background-color: rgb(var(--v-theme-primary)) !important;
     color: white !important;
+}
+
+/* Header Background Color */
+:deep(.wallet-table thead tr th) {
+    background-color: #F5F6F9 !important;
 }
 </style>
