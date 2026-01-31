@@ -92,7 +92,7 @@ const emit = defineEmits(['apply-filter']);
 
 const statusOptions = [
     { title: 'Active', value: true },
-    { title: 'Inactive', value: false },
+    { title: 'Frozen', value: false },
 ];
 
 const filters = ref({

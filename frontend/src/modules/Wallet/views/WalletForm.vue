@@ -200,7 +200,7 @@ const assignedUsers = ref<{id: number, name: string}[]>([]);
 
 const statusOptions = [
     { title: 'Active', value: true },
-    { title: 'Inactive', value: false }
+    { title: 'Frozen', value: false }
 ];
 
 const selectedCurrencyCode = computed(() => {

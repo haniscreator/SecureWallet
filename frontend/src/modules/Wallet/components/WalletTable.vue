@@ -52,7 +52,7 @@
                     class="font-weight-bold rounded-0"
                     style="color: #386DB1;"
                 >
-                    Inactive
+                    Frozen
                 </v-chip>
             </template>
 
