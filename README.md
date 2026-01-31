@@ -1,94 +1,55 @@
-# SecureWallet - Tech Assignment
+# Secure Business Wallet Management
 
-This is the SecureWallet project, consisting of a Laravel backend and a Vue 3 frontend.
+This repository contains a simplified internal wallet management system for a fintech use case. It provides admin tools for wallet control, transaction visibility, and team access management. The current scope supports one company, with a design that enables future scalability.
+
+![Demo](screenshots/demo.png)
 
 ## Tech Stack
 
-- **Backend**: Laravel 12 (PHP 8.2+)
-- **Frontend**: Vue 3 + Vuetify (Node.js LTS)
-- **Database**: SQLite (for development/testing)
+- **Backend**: Laravel (latest stable)
+- **Frontend**: Vue 3 + Vuetify
+- **API Style**: REST (JSON)
+- **Auth**: Token-based (Laravel Sanctum preferred)
+- **Database**: MySQL
 
-## Prerequisites
+## Demo
 
-- PHP 8.2 or higher
-- Composer
-- Node.js & NPM
-- Docker & Docker Compose (for Docker deployment)
+- **Live Demo**: [https://secure-wallet-jet.vercel.app/](https://secure-wallet-jet.vercel.app/)
 
-## Docker Deployment (Recommended)
+## User Access for Testing
 
-To run the application using Docker, follow these steps:
+You can use the following credentials for both local and live environments:
 
-1. **Start Services**:
-   ```bash
-   docker-compose up --build -d
-   ```
-   This will spin up the backend, frontend, and database services. The database will be automatically seeded with the provided dummy data on the first run.
-   - `-d`: Runs the containers in the background (detached mode).
-   - `--build`: Rebuilds the images (recommended for first run).
+Admin Account
+- **Email**: `admin@gmail.com`
+- **Password**: `12345678`
 
-2. **Access Application**:
-   - **Frontend**: [http://localhost:3000](http://localhost:3000)
-   - **Backend**: [http://localhost:8000](http://localhost:8000)
+User Account
+- **Email**: `euuser@gmail.com`
+- **Password**: `12345678`
 
-## Manual Setup Instructions
+## Docker (Up & Running on Local)
 
-### Backend
+As an industry best practice, this project comes pre-configured with Docker for easy development for both backend and frontend.
 
-1. Navigate to the backend directory:
-   ```bash
-   cd backend
-   ```
-2. Install dependencies:
-   ```bash
-   composer install
-   ```
-3. Set up environment:
-   ```bash
-   cp .env.example .env
-   php artisan key:generate
-   ```
-4. Run migrations:
-   ```bash
-   touch database/database.sqlite
-   php artisan migrate
-   ```
-5. Serve the application:
-   ```bash
-   php artisan serve
-   ```
+For detailed setup instructions, including prerequisites, commands, and troubleshooting, please refer to:
+👉 **[Docker Setup Guide](docs/docker-setup.md)**
 
-### Frontend
+## Documentation & Architecture
 
-1. Navigate to the frontend directory:
-   ```bash
-   cd frontend
-   ```
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-3. Run the development server:
-   ```bash
-   npm run dev
-   ```
+I have provided detailed documentation for each part of the system:
 
-## Running Tests
+### 1. Backend
+- **[Backend Readme](backend/README.md)**: Detailed information about the backend technology, project structure, and how it works.
 
-### Backend Tests
-```bash
-cd backend
-php artisan test
-```
+### 2. Frontend
+- **[Frontend Readme](frontend/README.md)**: Detailed information about the frontend technology, project structure, and how it works.
 
-### Frontend Tests
-```bash
-cd frontend
-npm run test:unit
-```
+### 3. API Documentation
+- **[API Setup](docs/api-setup.md)**: Instructions on how to import the Postman collection and explore available APIs.
 
-## CI/CD Service
+### 4. System Design
+- **[System Design Overview](docs/system-design.md)**: Sequence diagrams and class diagrams explaining the core architecture.
 
-This project uses GitHub Actions for Continuous Integration.
-- **Backend Workflow**: Runs Laravel tests on every push/PR to `main`.
-- **Frontend Workflow**: Runs Vue unit tests on every push/PR to `main`.
+### 5. Database Schema
+- **[ER Diagram](docs/er-diagram.md)**: Entity Relationship Diagram showing the database structure.
