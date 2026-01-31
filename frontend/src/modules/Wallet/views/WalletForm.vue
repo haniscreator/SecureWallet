@@ -2,10 +2,11 @@
   <v-container fluid class="fill-height align-start pa-6">
     <v-row justify="center">
       <v-col cols="12" md="8" lg="6">
-        <v-card class="rounded-xl" elevation="0" border>
-          <v-card-title class="pa-6 pb-0 text-h5 font-weight-bold">
-            {{ !isAdmin ? 'View Wallet' : (isEdit ? 'Edit Wallet' : 'New Wallet') }}
+        <v-card class="rounded-0" elevation="0" border>
+          <v-card-title class="pa-6 pb-4 text-h5 font-weight-bold">
+            {{ !isAdmin ? 'View Wallet' : (isEdit ? 'Edit Wallet' : 'Create New Wallet for Korporatio') }}
           </v-card-title>
+          <v-divider></v-divider>
           
           <v-card-text class="pa-6">
              <v-alert v-if="error" type="error" class="mb-6" closable @click:close="error = null">{{ error }}</v-alert>
@@ -53,7 +54,11 @@
                                 variant="outlined"
                                 density="compact"
                                 min="0"
-                            ></v-text-field>
+                            >
+                                <template v-slot:append-inner>
+                                    <span class="text-grey-darken-1 font-weight-bold pl-2" style="font-size: 0.9rem; align-self: center;">{{ selectedCurrencyCode }}</span>
+                                </template>
+                            </v-text-field>
                         </v-col>
                     </template>
                     
@@ -82,24 +87,23 @@
                     </template>
 
                     <!-- Status (All Modes) -->
-                    <v-col cols="12">
+                    <v-col cols="12" md="6">
                         <div class="text-subtitle-2 font-weight-bold mb-2">Status <span v-if="isAdmin" class="text-error">*</span></div>
-                        <div class="d-flex align-center">
-                            <v-switch
-                                v-model="formData.status"
-                                color="primary"
-                                hide-details
-                                density="compact"
-                                class="ma-0"
-                                :readonly="!isAdmin"
-                                :disabled="!isAdmin" 
-                            ></v-switch>
-                            <span class="ml-2 pt-1 font-weight-medium">{{ formData.status ? 'Active' : 'Inactive' }}</span>
-                        </div>
+                        <v-select
+                            v-model="formData.status"
+                            :items="statusOptions"
+                            item-title="title"
+                            item-value="value"
+                            variant="outlined"
+                            density="compact"
+                            :readonly="!isAdmin"
+                            hide-details
+                            placeholder="Select Status"
+                        ></v-select>
                     </v-col>
 
                     <!-- User Access -->
-                    <v-col cols="12">
+                    <v-col cols="12" md="6">
                         <div class="text-subtitle-2 font-weight-bold mb-2">User Access</div>
                         
                         <!-- Admin: Edit Access -->
@@ -133,7 +137,9 @@
                     </v-col>
                 </v-row>
 
-                <div class="d-flex justify-end gap-2 mt-6">
+                <v-divider class="mt-6 mb-6"></v-divider>
+
+                <div class="d-flex justify-end gap-2">
                     <v-btn
                         variant="text"
                         color="grey-darken-1"
@@ -191,6 +197,17 @@ const formData = ref({
 const currentWalletCurrency = ref('');
 const currentWalletBalance = ref('');
 const assignedUsers = ref<{id: number, name: string}[]>([]); 
+
+const statusOptions = [
+    { title: 'Active', value: true },
+    { title: 'Inactive', value: false }
+];
+
+const selectedCurrencyCode = computed(() => {
+    if (!formData.value.currency_id) return '';
+    const c = currencyStore.currencies.find(c => c.id === formData.value.currency_id);
+    return c ? c.code : '';
+}); 
 
 onMounted(async () => {
     // Ensure user loaded
