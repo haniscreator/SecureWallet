@@ -58,4 +58,30 @@ describe('TotalBalanceCard', () => {
 
         expect(wrapper.text()).toContain('$0.00')
     })
+
+    it('shows skeleton loader when loading', () => {
+        const wrapper = mount(TotalBalanceCard, {
+            global: {
+                plugins: [
+                    vuetify,
+                    createTestingPinia({
+                        createSpy: vi.fn,
+                        initialState: {
+                            wallet: {
+                                loading: true,
+                                wallets: [] // Even if empty, loading takes precedence
+                            }
+                        }
+                    })
+                ]
+            }
+        })
+
+        // Check for skeleton loader presence
+        // Vuetify skeleton loader usually renders a class .v-skeleton-loader
+        expect(wrapper.find('.v-skeleton-loader').exists()).toBe(true)
+
+        // Ensure $0.00 or other text is not shown
+        expect(wrapper.text()).not.toContain('$0.00')
+    })
 })

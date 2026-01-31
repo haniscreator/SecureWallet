@@ -16,7 +16,11 @@
               <v-divider class="my-4"></v-divider>
               
               <div class="balance-list">
-                <template v-if="hasBalances">
+                <template v-if="walletStore.loading">
+                    <v-skeleton-loader type="text" width="120" color="transparent"></v-skeleton-loader>
+                    <v-skeleton-loader type="text" width="80" color="transparent"></v-skeleton-loader>
+                </template>
+                <template v-else-if="hasBalances">
                     <div v-for="item in sortedBalances" :key="item.currency" class="d-flex align-baseline mb-2">
                         <span class="text-h5 font-weight-bold text-grey-darken-4 mr-2">
                             {{ item.symbol }}{{ item.amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
