@@ -41,3 +41,23 @@ User Account
 - **Email**: `euuser@gmail.com`
 - **Password**: `12345678`
 
+## Useful Commands
+
+### Stop Containers
+To stop and remove the containers, networks, and volumes:
+```bash
+docker-compose down
+```
+
+### View Logs
+To view logs for all services:
+```bash
+docker-compose logs -f
+```
+
+### Rebuild and Restart
+If you make changes and need to rebuild:
+```bash
+docker-compose up --build -d
+```
+
