@@ -17,11 +17,12 @@ export const useWalletStore = defineStore('wallet', () => {
         try {
             const response = await walletApi.getWallets(params);
             const data = response.data as any;
-            wallets.value = Array.isArray(data) ? data : (data.data || []);
+            const fetchedWallets = Array.isArray(data) ? data : (data.data || []);
 
-            // After fetching wallets, let's fetch transactions for them to populate the dashboard
-            // In a real app, we might want to do this lazily or have a separate dashboard init
-            await fetchAllTransactions();
+            // Fetch transactions and calculate balances BEFORE updating state
+            await fetchAllTransactions(fetchedWallets);
+
+            wallets.value = fetchedWallets;
         } finally {
             loading.value = false;
         }
@@ -44,8 +45,9 @@ export const useWalletStore = defineStore('wallet', () => {
     }
 
     // New Action: Fetch transactions for ALL wallets and merge them
-    async function fetchAllTransactions() {
-        if (wallets.value.length === 0) return;
+    async function fetchAllTransactions(targetWallets?: Wallet[]) {
+        const walletsToProcess = targetWallets || wallets.value;
+        if (walletsToProcess.length === 0) return;
 
         // Fetch currencies to map IDs if needed
         let currencyMap: Record<number, any> = {};
@@ -61,7 +63,8 @@ export const useWalletStore = defineStore('wallet', () => {
         const allTxs: (Transaction & { wallet_name: string })[] = [];
 
         // Use Promise.all for parallel fetching
-        const promises = wallets.value.map(async (wallet) => {
+        // We map over the walletsToProcess, forcing TS inference if needed (though it should be fine)
+        const promises = (walletsToProcess as any[]).map(async (wallet) => {
             try {
                 const response = await walletApi.getTransactions(wallet.id);
                 const data = response.data as any;
