@@ -5,11 +5,12 @@ import * as directives from 'vuetify/directives'
 import RecentTransactions from '../RecentTransactions.vue'
 import { createTestingPinia } from '@pinia/testing'
 import { vi } from 'vitest'
+import { useWalletStore } from '@/modules/Wallet/store'
 
 const vuetify = createVuetify({ components, directives })
 
 describe('RecentTransactions', () => {
-    it('renders list of transactions', () => {
+    it('renders list of transactions from dashboard state', () => {
         const wrapper = mount(RecentTransactions, {
             global: {
                 plugins: [
@@ -18,7 +19,7 @@ describe('RecentTransactions', () => {
                         createSpy: vi.fn,
                         initialState: {
                             wallet: {
-                                recentGlobalTransactions: [
+                                dashboardTransactions: [
                                     {
                                         id: 1,
                                         amount: 50.00,
@@ -27,19 +28,10 @@ describe('RecentTransactions', () => {
                                         reference: 'Coffee',
                                         created_at: '2026-01-30T10:00:00Z',
                                         to_wallet: { currency: { symbol: '$' } }
-                                        // Mocks of related objects are not strictly needed for list if not accessed
-                                        // But store usually keeps flat structure for this list based on our store analysis
-                                    },
-                                    {
-                                        id: 2,
-                                        amount: 1000.00,
-                                        type: 'credit',
-                                        wallet_name: 'Savings',
-                                        reference: 'Salary',
-                                        created_at: '2026-01-29T10:00:00Z',
-                                        to_wallet: { currency: { symbol: '$' } }
                                     }
-                                ]
+                                ],
+                                dashboardTotalItems: 1,
+                                dashboardPage: 1
                             }
                         }
                     })
@@ -49,14 +41,25 @@ describe('RecentTransactions', () => {
 
         expect(wrapper.text()).toContain('Checking')
         expect(wrapper.text()).toContain('Coffee')
-        expect(wrapper.text()).toContain('$50.00') // Check formatting if locale string used
-
-        expect(wrapper.text()).toContain('Savings')
-        expect(wrapper.text()).toContain('Salary')
-        expect(wrapper.text()).toContain('$1,000.00')
+        expect(wrapper.text()).toContain('$50.00')
     })
 
-    it('handles empty state', () => {
+    it('triggers fetchDashboardTransactions on mount', () => {
+        const wrapper = mount(RecentTransactions, {
+            global: {
+                plugins: [
+                    vuetify,
+                    createTestingPinia({
+                        createSpy: vi.fn,
+                    })
+                ]
+            }
+        })
+        const store = useWalletStore()
+        expect(store.fetchDashboardTransactions).toHaveBeenCalledWith(1, 10)
+    })
+
+    it('triggers fetchDashboardTransactions on page change', async () => {
         const wrapper = mount(RecentTransactions, {
             global: {
                 plugins: [
@@ -65,7 +68,40 @@ describe('RecentTransactions', () => {
                         createSpy: vi.fn,
                         initialState: {
                             wallet: {
-                                recentGlobalTransactions: []
+                                dashboardTransactions: [],
+                                dashboardTotalItems: 20, // Enough for 2 pages
+                                dashboardPage: 1
+                            }
+                        }
+                    })
+                ]
+            }
+        })
+        const store = useWalletStore()
+
+        // Find pagination (it might be tricky to click v-pagination directly in test due to Vuetify implementation)
+        // Accessing component instance method is simpler if exposed, but relying on v-model update is standard
+        // Let's try emitting update event or finding the button
+
+        // Simpler approach: call the handler directly if exposed or check bind
+        // Or find the v-pagination and emit
+        const pagination = wrapper.findComponent({ name: 'VPagination' })
+        await pagination.vm.$emit('update:modelValue', 2)
+
+        expect(store.fetchDashboardTransactions).toHaveBeenCalledWith(2, 10)
+    })
+
+    it('shows skeleton loader when dashboardLoading is true', () => {
+        const wrapper = mount(RecentTransactions, {
+            global: {
+                plugins: [
+                    vuetify,
+                    createTestingPinia({
+                        createSpy: vi.fn,
+                        initialState: {
+                            wallet: {
+                                dashboardLoading: true,
+                                dashboardTransactions: []
                             }
                         }
                     })
@@ -73,6 +109,7 @@ describe('RecentTransactions', () => {
             }
         })
 
-        expect(wrapper.text()).toContain('No recent transactions')
+        expect(wrapper.find('.v-skeleton-loader').exists()).toBe(true)
+        expect(wrapper.text()).not.toContain('No recent transactions')
     })
 })

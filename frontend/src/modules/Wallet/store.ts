@@ -183,12 +183,43 @@ export const useWalletStore = defineStore('wallet', () => {
             .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
             .slice(0, 3);
     });
+    // Dashboard Pagination State
+    const dashboardTransactions = ref<any[]>([]);
+    const dashboardTotalItems = ref(0);
+    const dashboardPage = ref(1);
+    const dashboardItemsPerPage = ref(10);
+    const dashboardLoading = ref(false);
+
+    async function fetchDashboardTransactions(page = 1, itemsPerPage = 10) {
+        dashboardLoading.value = true;
+        dashboardPage.value = page;
+        dashboardItemsPerPage.value = itemsPerPage;
+
+        try {
+            const response = await walletApi.getGlobalTransactions({
+                page,
+                per_page: itemsPerPage,
+                sort_by: 'created_at',
+                sort_dir: 'desc'
+            });
+            const data = response.data as any; // Cast because backend returns standard paginated structure
+
+            // Backend returns { data: [], links: {}, meta: {} }
+            dashboardTransactions.value = data.data || [];
+            dashboardTotalItems.value = data.meta?.total || 0;
+
+        } catch (e) {
+            console.error('Failed to fetch dashboard transactions', e);
+        } finally {
+            dashboardLoading.value = false;
+        }
+    }
 
     return {
         wallets,
         currentWallet,
         transactions,
-        recentGlobalTransactions, // Exposed for dashboard
+        recentGlobalTransactions, // Exposed for dashboard (legacy/fallback)
         loading,
         error,
         fetchWallets,
@@ -198,6 +229,14 @@ export const useWalletStore = defineStore('wallet', () => {
         assignUsers,
         fetchAllTransactions,
         totalBalanceByCurrency,
-        recentWallets
+        recentWallets,
+
+        // Dashboard Pagination
+        dashboardTransactions,
+        dashboardTotalItems,
+        dashboardPage,
+        dashboardItemsPerPage,
+        dashboardLoading,
+        fetchDashboardTransactions
     };
 });

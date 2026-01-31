@@ -53,5 +53,8 @@ export const walletApi = {
     },
     assignUsers(walletId: number, userIds: number[]) {
         return apiClient.post(`/wallets/${walletId}/users`, { user_ids: userIds });
+    },
+    getGlobalTransactions(params?: any) {
+        return apiClient.post<{ data: Transaction[], meta: any }>('/transactions/search', params);
     }
 };

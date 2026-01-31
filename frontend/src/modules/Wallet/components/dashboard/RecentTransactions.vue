@@ -24,6 +24,14 @@
         </tr>
       </thead>
       <tbody>
+          <template v-if="walletStore.dashboardLoading">
+               <tr v-for="n in 5" :key="n">
+                   <td colspan="5">
+                       <v-skeleton-loader type="list-item-avatar-two-line" height="50" color="transparent"></v-skeleton-loader>
+                   </td>
+               </tr>
+          </template>
+          <template v-else>
           <tr v-for="item in transactions" :key="item.id">
             <td class="text-body-2 text-grey-darken-2">{{ item.date }}</td>
             <td>
@@ -55,22 +63,25 @@
           <tr v-if="transactions.length === 0">
               <td colspan="5" class="text-center pa-6 text-grey text-body-2">No recent transactions</td>
           </tr>
+          </template>
       </tbody>
     </v-table>
     
     <v-divider></v-divider>
     
     <div class="d-flex align-center justify-space-between pa-4">
-        <div class="text-caption text-grey">Showing {{ transactions.length }} of {{ totalCount }}</div>
+        <div class="text-caption text-grey">Showing {{ transactions.length }} of {{ walletStore.dashboardTotalItems }}</div>
         <div class="d-flex align-center">
             <v-pagination
-                v-model="page"
-                :length="totalPages"
+                :model-value="walletStore.dashboardPage"
+                @update:model-value="handlePageChange"
+                :length="Math.ceil(walletStore.dashboardTotalItems / 10)"
                 total-visible="3"
                 density="compact"
                 active-color="primary"
                 variant="flat"
                 class="details-pagination"
+                :disabled="walletStore.dashboardLoading"
             ></v-pagination>
         </div>
     </div>
@@ -78,43 +89,46 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
+import { computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useWalletStore } from '@/modules/Wallet/store';
 
 const router = useRouter();
 const walletStore = useWalletStore();
-const page = ref(1);
-const itemsPerPage = 10;
 
-// Map store transactions to display format (All of them)
-const allTransactions = computed(() => {
-  const txs = walletStore.recentGlobalTransactions || [];
+onMounted(() => {
+    // Initial fetch for dashboard
+    walletStore.fetchDashboardTransactions(1, 10);
+});
+
+// Map customized transactions
+const transactions = computed(() => {
+  const txs = walletStore.dashboardTransactions || [];
   return txs.map(tx => ({
     id: tx.id,
     date: new Date(tx.created_at).toLocaleDateString(),
-    wallet: tx.wallet_name || 'Unknown Wallet',
+    wallet: tx.wallet_name || getWalletName(tx),
     type: tx.type === 'credit' ? 'Credit' : 'Debit',
     amount: `${tx.type === 'debit' ? '-' : ''}${getCurrencySymbol(tx)}${Number(tx.amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, 
     reference: tx.reference
   }));
 });
 
-const totalCount = computed(() => allTransactions.value.length);
-const totalPages = computed(() => Math.ceil(totalCount.value / itemsPerPage) || 1);
-
-// Slice for current page
-const transactions = computed(() => {
-    const start = (page.value - 1) * itemsPerPage;
-    const end = start + itemsPerPage;
-    return allTransactions.value.slice(start, end);
-});
+function handlePageChange(newPage: number) {
+    walletStore.fetchDashboardTransactions(newPage, 10);
+}
 
 function getCurrencySymbol(item: any) {
     return item.to_wallet?.currency?.symbol || item.from_wallet?.currency?.symbol || '$';
 }
 
+function getWalletName(item: any) {
+    // Fallback if wallet_name is not direct property (it comes from backend usually, but let's be safe)
+    return item.to_wallet?.name || item.from_wallet?.name || 'Unknown Wallet';
+}
+
 function getWalletColor(name: string) {
+    if (!name) return 'grey';
     if (name.includes('Main')) return 'blue-darken-2';
     if (name.includes('EUR')) return 'blue-darken-4';
     return 'green-darken-3'; // Default/Others
