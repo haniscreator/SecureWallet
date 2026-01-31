@@ -10,7 +10,11 @@
           <v-card-text class="pa-6">
              <v-alert v-if="error" type="error" class="mb-6" closable @click:close="error = null">{{ error }}</v-alert>
 
-            <v-form ref="form" @submit.prevent="save" validate-on="submit lazy">
+            <div v-if="isFetching" class="d-flex justify-center pa-12">
+                 <v-progress-circular indeterminate color="primary"></v-progress-circular>
+            </div>
+
+            <v-form v-else ref="form" @submit.prevent="save" validate-on="submit lazy">
                 <v-row>
                     <v-col cols="12">
                         <div class="text-subtitle-2 font-weight-bold mb-2">Currency Name <span v-if="isAdmin" class="text-error">*</span></div>
@@ -108,6 +112,7 @@ const userStore = useUserStore();
 const isEdit = computed(() => !!route.params.id);
 const isAdmin = computed(() => userStore.currentUser?.role === 'admin');
 const loading = ref(false);
+const isFetching = ref(true);
 const error = ref<string | null>(null);
 
 const formData = ref({
@@ -119,13 +124,13 @@ const formData = ref({
 });
 
 onMounted(async () => {
-    // Ensure user loaded
-    await userStore.fetchCurrentUser();
+    isFetching.value = true;
+    try {
+        // Ensure user loaded
+        await userStore.fetchCurrentUser();
 
-    if (isEdit.value) {
-        const id = Number(route.params.id);
-        loading.value = true;
-        try {
+        if (isEdit.value) {
+            const id = Number(route.params.id);
             await currencyStore.fetchCurrency(id);
             const c = currencyStore.currentCurrency;
             if (c) {
@@ -137,11 +142,11 @@ onMounted(async () => {
                     users: []
                 };
             }
-        } catch (e) {
-            error.value = 'Failed to load currency details';
-        } finally {
-            loading.value = false;
         }
+    } catch (e) {
+        error.value = 'Failed to load currency details';
+    } finally {
+        isFetching.value = false;
     }
 });
 
