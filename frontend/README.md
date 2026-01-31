@@ -48,6 +48,14 @@ src/
 └── main.ts             # Entry point
 ```
 
+## Testing Coverage
+
+This frontend includes UI tests for dashboard widgets using Vitest.
+Test execution is enforced during the Git push process to ensure UI stability. The application is ready for CI/CD pipelines and server deployment.
+
+![Build Status](https://github.com/haniscreator/SecureWallet/actions/workflows/frontend-ci.yml/badge.svg)
+
+
 ## How It Works
 
 - **Views**: Each page corresponds to a View component in its respective module.

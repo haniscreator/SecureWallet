@@ -53,6 +53,13 @@ app/
 └── Providers/              # Service Providers
 ```
 
+## Testing Coverage
+
+This project includes comprehensive unit testing for all service functions using PHPUnit. Test execution is enforced during the Git push process to ensure code quality. The application is fully configured for CI/CD pipelines and server deployment.
+
+![Build Status](https://github.com/haniscreator/SecureWallet/actions/workflows/backend-ci.yml/badge.svg)
+
+
 ## How It Works
 
 ### Architecture Flow
