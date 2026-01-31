@@ -52,11 +52,13 @@ const filters = ref<{
     from_date: string | null;
     to_date: string | null;
     reference: string;
+    timezone: string;
 }>({
     type: null,
     from_date: null,
     to_date: null,
     reference: '',
+    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
 });
 
 function onApplyFilter(newFilters: any) {

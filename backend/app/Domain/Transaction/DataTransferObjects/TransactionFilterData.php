@@ -13,7 +13,8 @@ readonly class TransactionFilterData
         public ?string $reference,
         public ?int $per_page = 15,
         public ?string $sort_by = 'created_at',
-        public ?string $sort_dir = 'desc'
+        public ?string $sort_dir = 'desc',
+        public ?string $timezone = 'UTC'
     ) {
     }
 
@@ -26,7 +27,8 @@ readonly class TransactionFilterData
             reference: $request->input('reference'),
             per_page: $request->input('per_page'),
             sort_by: $request->input('sort_by', 'created_at'),
-            sort_dir: $request->input('sort_dir', 'desc')
+            sort_dir: $request->input('sort_dir', 'desc'),
+            timezone: $request->input('timezone', 'UTC')
         );
     }
 
@@ -37,6 +39,7 @@ readonly class TransactionFilterData
             'from_date' => $this->from_date,
             'to_date' => $this->to_date,
             'reference' => $this->reference,
+            'timezone' => $this->timezone,
         ], fn($v) => !is_null($v) && $v !== '');
     }
 }

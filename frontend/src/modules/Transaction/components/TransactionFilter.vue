@@ -140,11 +140,13 @@ const filters = ref<{
   from_date: string | null;
   to_date: string | null;
   reference: string;
+  timezone: string;
 }>({
   type: null,
   from_date: null,
   to_date: null,
   reference: '',
+  timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
 });
 
 const menuFrom = ref(false);
@@ -153,12 +155,10 @@ const menuTo = ref(false);
 function updateDate(field: 'from_date' | 'to_date', date: any) {
   if (date) {
     const d = new Date(date);
-    if (field === 'from_date') {
-        d.setHours(0, 0, 0, 0);
-    } else {
-        d.setHours(23, 59, 59, 999);
-    }
-    filters.value[field] = d.toISOString();
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    filters.value[field] = `${year}-${month}-${day}`;
   } else {
     filters.value[field] = null;
   }
@@ -177,6 +177,7 @@ function clearFilters() {
     from_date: null,
     to_date: null,
     reference: '',
+    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
   };
   applyFilters();
 }

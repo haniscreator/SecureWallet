@@ -7,6 +7,7 @@ use App\Domain\Transaction\Models\Transaction;
 use App\Domain\User\Models\User;
 use App\Domain\Wallet\Models\Wallet;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Carbon;
 
 class TransactionService
 {
@@ -22,11 +23,13 @@ class TransactionService
         }
 
         if (!empty($filters->from_date)) {
-            $query->where('created_at', '>=', $filters->from_date);
+            $start = Carbon::parse($filters->from_date, $filters->timezone)->startOfDay()->setTimezone('UTC');
+            $query->where('created_at', '>=', $start);
         }
 
         if (!empty($filters->to_date)) {
-            $query->where('created_at', '<=', $filters->to_date);
+            $end = Carbon::parse($filters->to_date, $filters->timezone)->endOfDay()->setTimezone('UTC');
+            $query->where('created_at', '<=', $end);
         }
 
         if (!empty($filters->reference)) {
@@ -61,11 +64,13 @@ class TransactionService
         }
 
         if (!empty($filters->from_date)) {
-            $query->where('created_at', '>=', $filters->from_date);
+            $start = Carbon::parse($filters->from_date, $filters->timezone)->startOfDay()->setTimezone('UTC');
+            $query->where('created_at', '>=', $start);
         }
 
         if (!empty($filters->to_date)) {
-            $query->where('created_at', '<=', $filters->to_date);
+            $end = Carbon::parse($filters->to_date, $filters->timezone)->endOfDay()->setTimezone('UTC');
+            $query->where('created_at', '<=', $end);
         }
 
         if (!empty($filters->reference)) {
