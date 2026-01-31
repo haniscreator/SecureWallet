@@ -8,114 +8,128 @@
 
         <!-- Filters -->
         <v-card class="rounded-0 mb-6" elevation="0" border>
-        <v-card-text class="pa-4">
-            <v-row align="start">
-                 <v-col cols="12" md="4">
-                    <div class="text-subtitle-2 font-weight-bold mb-2">Reference</div>
-                    <v-text-field
-                        v-model="filters.reference"
-                        placeholder="Search Reference..."
-                        variant="outlined"
-                        density="compact"
-                        hide-details
-                        append-inner-icon="mdi-magnify"
-                        @keyup.enter="applyFilters"
-                    ></v-text-field>
-                </v-col>
-                <v-col cols="12" md="2">
-                    <div class="text-subtitle-2 font-weight-bold mb-2">Date From</div>
-                    <v-menu
-                        v-model="menuFrom"
-                        :close-on-content-click="false"
-                        transition="scale-transition"
-                        offset-y
-                        min-width="auto"
-                    >
-                        <template v-slot:activator="{ props }">
-                            <v-text-field
-                                v-bind="props"
-                                :model-value="filters.from_date"
-                                placeholder="YYYY-MM-DD"
-                                variant="outlined"
-                                density="compact"
-                                hide-details
-                                append-inner-icon="mdi-calendar"
-                                readonly
-                            ></v-text-field>
-                        </template>
-                        <v-date-picker
-                            color="primary"
-                            :model-value="filters.from_date ? new Date(filters.from_date) : null"
-                            @update:model-value="(date) => updateDate('from_date', date)"
-                        ></v-date-picker>
-                    </v-menu>
-                </v-col>
-                <v-col cols="12" md="2">
-                    <div class="text-subtitle-2 font-weight-bold mb-2">Date To</div>
-                     <v-menu
-                        v-model="menuTo"
-                        :close-on-content-click="false"
-                        transition="scale-transition"
-                        offset-y
-                        min-width="auto"
-                    >
-                        <template v-slot:activator="{ props }">
-                            <v-text-field
-                                v-bind="props"
-                                :model-value="filters.to_date"
-                                placeholder="YYYY-MM-DD"
-                                variant="outlined"
-                                density="compact"
-                                hide-details
-                                append-inner-icon="mdi-calendar"
-                                readonly
-                            ></v-text-field>
-                        </template>
-                        <v-date-picker
-                            color="primary"
-                            :model-value="filters.to_date ? new Date(filters.to_date) : null"
-                            @update:model-value="(date) => updateDate('to_date', date)"
-                        ></v-date-picker>
-                    </v-menu>
-                </v-col>
-                <v-col cols="12" md="2">
-                    <div class="text-subtitle-2 font-weight-bold mb-2">Type</div>
-                     <v-select
-                        v-model="filters.type"
-                        :items="types"
-                        item-title="title"
-                        item-value="value"
-                        placeholder="All"
-                        variant="outlined"
-                        density="compact"
-                        hide-details
-                    ></v-select>
-                </v-col>
-                <v-col cols="12" md="2" class="d-flex flex-column justify-end">
-                     <!-- Spacer to align with inputs that have labels -->
-                     <div class="text-subtitle-2 font-weight-bold mb-2" style="visibility: hidden">Spacer</div>
-                     <div class="d-flex">
-                         <v-btn
+            <!-- Inputs Section with Gray Background -->
+            <div style="background-color: #F5F6F9;" class="pa-4">
+                <v-row>
+                    <!-- Reference -->
+                    <v-col cols="12" md="3">
+                         <div class="text-subtitle-2 font-weight-bold mb-2">Reference</div>
+                        <v-text-field
+                            v-model="filters.reference"
+                            placeholder="Search Reference..."
                             variant="outlined"
-                            color="grey-darken-1"
-                            class="mr-2 text-capitalize flex-grow-1"
-                            @click="clearFilters"
+                            density="compact"
+                            hide-details
+                            bg-color="white"
+                            append-inner-icon="mdi-magnify"
+                            @keyup.enter="applyFilters"
+                        ></v-text-field>
+                    </v-col>
+
+                    <!-- Date From -->
+                    <v-col cols="12" md="3">
+                        <div class="text-subtitle-2 font-weight-bold mb-2">Date From</div>
+                        <v-menu
+                            v-model="menuFrom"
+                            :close-on-content-click="false"
+                            transition="scale-transition"
+                            offset-y
+                            min-width="auto"
                         >
-                            Clear
-                        </v-btn>
-                        <v-btn
-                            color="primary"
-                            elevation="0"
-                            class="text-capitalize flex-grow-1"
-                            @click="applyFilters"
+                            <template v-slot:activator="{ props }">
+                                <v-text-field
+                                    v-bind="props"
+                                    :model-value="filters.from_date"
+                                    placeholder="Select Date"
+                                    variant="outlined"
+                                    density="compact"
+                                    hide-details
+                                    bg-color="white"
+                                    append-inner-icon="mdi-calendar"
+                                    readonly
+                                ></v-text-field>
+                            </template>
+                            <v-date-picker
+                                color="primary"
+                                :model-value="filters.from_date ? new Date(filters.from_date) : null"
+                                @update:model-value="(date) => updateDate('from_date', date)"
+                            ></v-date-picker>
+                        </v-menu>
+                    </v-col>
+                    
+                    <!-- Date To -->
+                    <v-col cols="12" md="3">
+                        <div class="text-subtitle-2 font-weight-bold mb-2">Date To</div>
+                         <v-menu
+                            v-model="menuTo"
+                            :close-on-content-click="false"
+                            transition="scale-transition"
+                            offset-y
+                            min-width="auto"
                         >
-                            Filter
-                        </v-btn>
-                     </div>
-                </v-col>
-            </v-row>
-        </v-card-text>
-    </v-card>
+                            <template v-slot:activator="{ props }">
+                                <v-text-field
+                                    v-bind="props"
+                                    :model-value="filters.to_date"
+                                    placeholder="Select Date"
+                                    variant="outlined"
+                                    density="compact"
+                                    hide-details
+                                    bg-color="white"
+                                    append-inner-icon="mdi-calendar"
+                                    readonly
+                                ></v-text-field>
+                            </template>
+                            <v-date-picker
+                                color="primary"
+                                :model-value="filters.to_date ? new Date(filters.to_date) : null"
+                                @update:model-value="(date) => updateDate('to_date', date)"
+                            ></v-date-picker>
+                        </v-menu>
+                    </v-col>
+
+                    <!-- Type -->
+                    <v-col cols="12" md="3">
+                        <div class="text-subtitle-2 font-weight-bold mb-2">Type</div>
+                         <v-select
+                            v-model="filters.type"
+                            :items="types"
+                            item-title="title"
+                            item-value="value"
+                            placeholder="All"
+                            variant="outlined"
+                            density="compact"
+                            hide-details
+                            bg-color="white"
+                        ></v-select>
+                    </v-col>
+                </v-row>
+            </div>
+            
+            <v-divider></v-divider>
+
+            <!-- Buttons Section with White Background -->
+            <div class="pa-4 bg-white d-flex justify-end">
+                 <v-btn
+                    variant="outlined"
+                    color="grey-darken-1"
+                    class="mr-2 text-capitalize"
+                    width="100"
+                    @click="clearFilters"
+                >
+                    Clear
+                </v-btn>
+                <v-btn
+                    color="primary"
+                    elevation="0"
+                    class="text-capitalize"
+                    width="100"
+                    @click="applyFilters"
+                >
+                    Filter
+                </v-btn>
+            </div>
+        </v-card>
 
     <!-- Error Alert -->
     <v-alert
@@ -196,7 +210,7 @@
             <template v-slot:bottom>
                  <v-divider></v-divider>
                  <div class="d-flex align-center justify-space-between pa-4">
-                    <div class="text-caption text-grey">Showing {{ currentCount }} of {{ store.totalItems }}</div>
+                    <div class="text-caption text-grey">Showing {{ currentCount }} of {{ store.totalItems }} Transactions</div>
                     <div class="d-flex align-center">
                         <v-pagination
                             v-model="store.page"
@@ -372,5 +386,10 @@ function getCurrencySymbol(item: Transaction) {
 .details-pagination :deep(.v-pagination__item--is-active) {
     background-color: rgb(var(--v-theme-primary)) !important;
     color: white !important;
+}
+
+/* Header Background Color */
+:deep(.transaction-table thead tr th) {
+    background-color: #F5F6F9 !important;
 }
 </style>
