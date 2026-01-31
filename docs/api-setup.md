@@ -7,12 +7,12 @@ The backend provides a RESTful API built with Laravel. You can explore and test 
 We have provided a comprehensive Postman collection to help you get started quickly.
 
 1. **Locate the Collection File**:
-   The Postman collection file is located at `backend/Korporatio_API.json`.
+   The Postman collection file is located at `Korporatio_API.json`.
 
 2. **Import**:
    - Open Postman.
    - Click the **"Import"** button in the top left corner.
-   - Drag and drop the `backend/Korporatio_API.json` file into the import window, or select it from the file dialog.
+   - Drag and drop the `Korporatio_API.json` file into the import window, or select it from the file dialog.
 
 3. **Environment Variables**:
    The collection uses environment variables for the base URL and authentication token.

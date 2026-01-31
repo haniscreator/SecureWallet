@@ -17,7 +17,7 @@
                                 "value": "Bearer {{token}}"
                             }
                         ],
-                        "url": "{{base_url}}/api/v1/currencies"
+                        "url": "{{base_url}}/api/currencies"
                     }
                 },
                 {
@@ -38,7 +38,7 @@
                             "mode": "raw",
                             "raw": "{\n    \"code\": \"GBP\",\n    \"name\": \"British Pound\",\n    \"symbol\": \"£\"\n}"
                         },
-                        "url": "{{base_url}}/api/v1/currencies"
+                        "url": "{{base_url}}/api/currencies"
                     }
                 },
                 {
@@ -55,7 +55,7 @@
                                 "value": "application/json"
                             }
                         ],
-                        "url": "{{base_url}}/api/v1/currencies/1"
+                        "url": "{{base_url}}/api/currencies/1"
                     }
                 },
                 {
@@ -76,7 +76,7 @@
                                 "value": "application/json"
                             }
                         ],
-                        "url": "{{base_url}}/api/v1/currencies/1",
+                        "url": "{{base_url}}/api/currencies/1",
                         "body": {
                             "mode": "raw",
                             "raw": "{\n    \"name\": \"British Pound Updated\",\n    \"status\": true\n}"
@@ -97,7 +97,7 @@
                                 "value": "application/json"
                             }
                         ],
-                        "url": "{{base_url}}/api/v1/currencies/1"
+                        "url": "{{base_url}}/api/currencies/1"
                     }
                 }
             ]
@@ -120,7 +120,7 @@
                             }
                         ],
                         "url": {
-                            "raw": "{{base_url}}/api/v1/login",
+                            "raw": "{{base_url}}/api/login",
                             "host": [
                                 "{{base_url}}"
                             ],
@@ -151,7 +151,7 @@
                             }
                         ],
                         "url": {
-                            "raw": "{{base_url}}/api/v1/logout",
+                            "raw": "{{base_url}}/api/logout",
                             "host": [
                                 "{{base_url}}"
                             ],
@@ -183,7 +183,7 @@
                             }
                         ],
                         "url": {
-                            "raw": "{{base_url}}/api/v1/user",
+                            "raw": "{{base_url}}/api/user",
                             "host": [
                                 "{{base_url}}"
                             ],
@@ -214,7 +214,7 @@
                             }
                         ],
                         "url": {
-                            "raw": "{{base_url}}/api/v1/members",
+                            "raw": "{{base_url}}/api/members",
                             "host": [
                                 "{{base_url}}"
                             ],
@@ -245,7 +245,7 @@
                             }
                         ],
                         "url": {
-                            "raw": "{{base_url}}/api/v1/members",
+                            "raw": "{{base_url}}/api/members",
                             "host": [
                                 "{{base_url}}"
                             ],
@@ -276,7 +276,7 @@
                             }
                         ],
                         "url": {
-                            "raw": "{{base_url}}/api/v1/members/2",
+                            "raw": "{{base_url}}/api/members/2",
                             "host": [
                                 "{{base_url}}"
                             ],
@@ -308,7 +308,7 @@
                             }
                         ],
                         "url": {
-                            "raw": "{{base_url}}/api/v1/members/3",
+                            "raw": "{{base_url}}/api/members/3",
                             "host": [
                                 "{{base_url}}"
                             ],
@@ -341,7 +341,7 @@
                             }
                         ],
                         "url": {
-                            "raw": "{{base_url}}/api/v1/wallets",
+                            "raw": "{{base_url}}/api/wallets",
                             "host": [
                                 "{{base_url}}"
                             ],
@@ -372,7 +372,7 @@
                             }
                         ],
                         "url": {
-                            "raw": "{{base_url}}/api/v1/wallets",
+                            "raw": "{{base_url}}/api/wallets",
                             "host": [
                                 "{{base_url}}"
                             ],
@@ -410,7 +410,7 @@
                             "mode": "raw",
                             "raw": "{\n    \"name\": \"Updated Wallet Name\"\n}"
                         },
-                        "url": "{{base_url}}/api/v1/wallets/1"
+                        "url": "{{base_url}}/api/wallets/1"
                     }
                 },
                 {
@@ -428,7 +428,7 @@
                             }
                         ],
                         "url": {
-                            "raw": "{{base_url}}/api/v1/wallets/1",
+                            "raw": "{{base_url}}/api/wallets/1",
                             "host": [
                                 "{{base_url}}"
                             ],
@@ -460,7 +460,7 @@
                             }
                         ],
                         "url": {
-                            "raw": "{{base_url}}/api/v1/wallets/1/status",
+                            "raw": "{{base_url}}/api/wallets/1/status",
                             "host": [
                                 "{{base_url}}"
                             ],
@@ -497,7 +497,7 @@
                             }
                         ],
                         "url": {
-                            "raw": "{{base_url}}/api/v1/wallets/1/users",
+                            "raw": "{{base_url}}/api/wallets/1/users",
                             "host": [
                                 "{{base_url}}"
                             ],
@@ -539,7 +539,7 @@
                             }
                         ],
                         "url": {
-                            "raw": "{{base_url}}/api/v1/wallets/1/transactions/search",
+                            "raw": "{{base_url}}/api/wallets/1/transactions/search",
                             "host": [
                                 "{{base_url}}"
                             ],
@@ -577,7 +577,7 @@
                             }
                         ],
                         "url": {
-                            "raw": "{{base_url}}/api/v1/transactions/search",
+                            "raw": "{{base_url}}/api/transactions/search",
                             "host": [
                                 "{{base_url}}"
                             ],

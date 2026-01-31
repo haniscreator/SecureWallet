@@ -6,12 +6,12 @@ This repository contains a simplified internal wallet management system for a fi
 
 ## Tech Stack
 
-- **Backend**: Laravel (latest stable)
+- **Backend**: Laravel 12 (PHP 8.4+)
 - **Frontend**: Vue 3 + Vuetify
 - **API Style**: REST (JSON)
-- **Auth**: Token-based (Laravel Sanctum preferred)
-- **Database**: MySQL
-
+- **Auth**: Laravel Sanctum (Token-based)
+- **Database**: MySQL / SQLite (for unit testing)
+- **Testing**: PHPUnit, Vitest
 ## Demo
 
 - **Live Demo**: [https://secure-wallet-jet.vercel.app/](https://secure-wallet-jet.vercel.app/)

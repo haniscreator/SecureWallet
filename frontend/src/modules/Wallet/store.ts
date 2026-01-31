@@ -147,7 +147,7 @@ export const useWalletStore = defineStore('wallet', () => {
         loading.value = true;
         try {
             await walletApi.assignUsers(walletId, userIds);
-            notificationStore.success('Users assigned successfully');
+            notificationStore.success('Wallet updated successfully.');
         } finally {
             loading.value = false;
         }

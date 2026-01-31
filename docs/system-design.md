@@ -22,7 +22,7 @@ sequenceDiagram
     participant Model as Wallet (Model)
     participant DB as Database
 
-    Client->>Controller: POST /api/v1/wallets (JSON)
+    Client->>Controller: POST /api/wallets (JSON)
     Note over Controller: Validates Request (StoreWalletRequest)
     
     Controller->>DTO: fromRequest($validatedData)

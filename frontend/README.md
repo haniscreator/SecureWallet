@@ -7,8 +7,9 @@
 - **Framework**: Vue 3 (Composition API)
 - **Tooling**: Vite
 - **UI Component Library**: Vuetify 3
-- **State Management**: Pinia (if applicable, or Composition API refs)
+- **State Management**: Pinia
 - **Language**: TypeScript
+- **Testing**: Vitest
 
 ## Up & Running (Local)
 

@@ -4,10 +4,11 @@
 
 ## Tech Stack
 
-- **Framework**: Laravel 12 (PHP 8.2+)
+- **Framework**: Laravel 12 (PHP 8.4+)
 - **Database**: MySQL / SQLite (for unit testing)
 - **Architecture**: Domain-Driven Design (DDD)
 - **Authentication**: Laravel Sanctum
+- **Testing**: PHPUnit
 
 ## Up & Running (Local)
 

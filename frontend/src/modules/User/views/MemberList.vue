@@ -6,12 +6,12 @@
         <v-btn
             v-if="isAdmin"
             color="primary"
-            height="44"
-            class="text-capitalize px-6"
-            elevation="0"
+            prepend-icon="mdi-plus"
+            elevation="2"
+            class="text-capitalize"
             @click="router.push('/members/create')"
         >
-          + Add Member
+          Add Member
         </v-btn>
       </v-col>
 
