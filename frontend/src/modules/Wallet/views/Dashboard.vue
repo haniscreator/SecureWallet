@@ -28,26 +28,45 @@
 
     <!-- Wallet Summary Cards -->
     <v-row class="mb-6">
+      
+      <!-- Loading State -->
+      <template v-if="walletStore.loading">
+          <v-col 
+            v-for="n in 3" 
+            :key="`skeleton-${n}`" 
+            cols="12" 
+            sm="6"
+            md="4"
+            lg="4"
+            xl="4"
+          >
+            <WalletWidget loading />
+          </v-col>
+      </template>
 
-      <v-col 
-        v-for="(wallet, index) in walletStore.recentWallets" 
-        :key="wallet.id" 
-        cols="12" 
-        sm="6"
-        md="4"
-        lg="4"
-        xl="4"
-      >
-        <WalletWidget 
-            :name="wallet.name" 
-            :amount="Number(wallet.balance || 0).toLocaleString('en-US', { minimumFractionDigits: 2 })" 
-            :currency="wallet.currency?.code || 'USD'"
-            :symbol="wallet.currency?.symbol || '$'"
-            :icon="getWalletIcon(wallet.currency?.code || 'USD')"
-            :color="getWalletColor(index)"
-            :users-count="wallet.users_count"
-        />
-      </v-col>
+      <!-- Data State -->
+      <template v-else>
+          <v-col 
+            v-for="(wallet, index) in walletStore.recentWallets" 
+            :key="wallet.id" 
+            cols="12" 
+            sm="6"
+            md="4"
+            lg="4"
+            xl="4"
+          >
+            <WalletWidget 
+                :name="wallet.name" 
+                :amount="Number(wallet.balance || 0).toLocaleString('en-US', { minimumFractionDigits: 2 })" 
+                :currency="wallet.currency?.code || 'USD'"
+                :symbol="wallet.currency?.symbol || '$'"
+                :icon="getWalletIcon(wallet.currency?.code || 'USD')"
+                :color="getWalletColor(index)"
+                :users-count="wallet.users_count"
+            />
+          </v-col>
+      </template>
+
     </v-row>
 
     <!-- Recent Transactions -->
