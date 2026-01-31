@@ -187,7 +187,7 @@ const userStore = useUserStore();
 const isEdit = computed(() => !!route.params.id);
 const isAdmin = computed(() => userStore.currentUser?.role === 'admin');
 const loading = ref(false);
-const isFetching = ref(false);
+const isFetching = ref(true);
 const error = ref<string | null>(null);
 
 const formData = ref({
@@ -215,23 +215,23 @@ const selectedCurrencyCode = computed(() => {
 }); 
 
 onMounted(async () => {
-    // Ensure user loaded
-    await userStore.fetchCurrentUser();
-    
-    // Load currencies if needed
-    if (currencyStore.currencies.length === 0) {
-        await currencyStore.fetchCurrencies();
-    }
-    
-    // Load users for assignment ONLY if admin
-    if (isAdmin.value) {
-        await userStore.fetchMembers();
-    }
+    isFetching.value = true;
+    try {
+        // Ensure user loaded
+        await userStore.fetchCurrentUser();
+        
+        // Load currencies if needed
+        if (currencyStore.currencies.length === 0) {
+            await currencyStore.fetchCurrencies();
+        }
+        
+        // Load users for assignment ONLY if admin
+        if (isAdmin.value) {
+            await userStore.fetchMembers();
+        }
 
-    if (isEdit.value) {
-        const id = Number(route.params.id);
-        isFetching.value = true;
-        try {
+        if (isEdit.value) {
+            const id = Number(route.params.id);
             await walletStore.fetchWalletDetails(id);
             const w = walletStore.currentWallet;
             if (w) {
@@ -260,11 +260,11 @@ onMounted(async () => {
                 currentWalletCurrency.value = currencyCode;
                 currentWalletBalance.value = `${currencySymbol}${Number(w.balance).toLocaleString('en-US')}`;
             }
-        } catch (e) {
-            error.value = 'Failed to load wallet details';
-        } finally {
-            isFetching.value = false;
         }
+    } catch (e) {
+        error.value = 'Failed to load wallet details';
+    } finally {
+        isFetching.value = false;
     }
 });
 
