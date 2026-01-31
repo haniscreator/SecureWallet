@@ -13,8 +13,25 @@ This is the SecureWallet project, consisting of a Laravel backend and a Vue 3 fr
 - PHP 8.2 or higher
 - Composer
 - Node.js & NPM
+- Docker & Docker Compose (for Docker deployment)
 
-## Setup Instructions
+## Docker Deployment (Recommended)
+
+To run the application using Docker, follow these steps:
+
+1. **Start Services**:
+   ```bash
+   docker-compose up --build -d
+   ```
+   This will spin up the backend, frontend, and database services. The database will be automatically seeded with the provided dummy data on the first run.
+   - `-d`: Runs the containers in the background (detached mode).
+   - `--build`: Rebuilds the images (recommended for first run).
+
+2. **Access Application**:
+   - **Frontend**: [http://localhost:3000](http://localhost:3000)
+   - **Backend**: [http://localhost:8000](http://localhost:8000)
+
+## Manual Setup Instructions
 
 ### Backend
 

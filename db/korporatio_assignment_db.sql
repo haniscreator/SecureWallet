@@ -185,21 +185,12 @@ CREATE TABLE `personal_access_tokens` (
 -- Dumping data for table `personal_access_tokens`
 --
 
-INSERT INTO `personal_access_tokens` (`id`, `tokenable_type`, `tokenable_id`, `name`, `token`, `abilities`, `last_used_at`, `expires_at`, `created_at`, `updated_at`) VALUES
-(2, 'App\\Domain\\User\\Models\\User', 2, 'auth_token', '19bc84e79ad6d74717bf61e56bc64280359cfc3ef2717b26617986ee4dfc5ecc', '[\"*\"]', '2026-01-28 01:51:38', NULL, '2026-01-28 01:50:47', '2026-01-28 01:51:38'),
-(3, 'App\\Domain\\User\\Models\\User', 1, 'auth_token', '6459a1ef3851ccf10d9b8016686d7e0634e7012e1897544b9e37cf9c7b0c7e69', '[\"*\"]', '2026-01-29 21:53:37', NULL, '2026-01-28 01:59:40', '2026-01-29 21:53:37'),
-(4, 'App\\Domain\\User\\Models\\User', 1, 'auth_token', '9317ac79ea6d34bb515148697629baba6532bd675f2a3b6b9f967cde833fc12e', '[\"*\"]', NULL, NULL, '2026-01-28 02:39:43', '2026-01-28 02:39:43'),
-(5, 'App\\Domain\\User\\Models\\User', 1, 'auth_token', '47914c0f8704622e5f2d188724cc21983260acc996bb7a506fd39932502d9889', '[\"*\"]', NULL, NULL, '2026-01-28 07:07:02', '2026-01-28 07:07:02'),
-(6, 'App\\Domain\\User\\Models\\User', 1, 'auth_token', '53fa65c82b3de69594f0e191cd6df60143dd650a9e23651027a79ec925a19125', '[\"*\"]', NULL, NULL, '2026-01-28 07:33:55', '2026-01-28 07:33:55'),
-(7, 'App\\Domain\\User\\Models\\User', 1, 'auth_token', 'fccb07a90b56a9d5fef30bacb5bfe2e8ed829450d9e4bcf2a2f4c874f6a026a4', '[\"*\"]', NULL, NULL, '2026-01-28 08:06:38', '2026-01-28 08:06:38'),
-(8, 'App\\Domain\\User\\Models\\User', 1, 'auth_token', '0fbb04f1cc124e50408072ef7135f5c7c57af264207ed33998e6337c7ddabd24', '[\"*\"]', NULL, NULL, '2026-01-28 10:26:08', '2026-01-28 10:26:08'),
-(9, 'App\\Domain\\User\\Models\\User', 1, 'auth_token', 'ea6a720c11ff7bcccfae43a722d22c164f448dca63442c17285cc458a6e8f3fa', '[\"*\"]', NULL, NULL, '2026-01-28 20:18:15', '2026-01-28 20:18:15'),
-(33, 'App\\Domain\\User\\Models\\User', 1, 'auth_token', '4d44f0ddb9627d8232e8fe5ebfa0fd97f27994b0134ef94e268076b0f3665305', '[\"*\"]', NULL, NULL, '2026-01-29 21:45:20', '2026-01-29 21:45:20'),
-(34, 'App\\Domain\\User\\Models\\User', 1, 'auth_token', '6d566d1a41ca992d6a4e6cd8faf2c536b2b1041bab8ae7b0c6be162e8c92cb70', '[\"*\"]', NULL, NULL, '2026-01-29 21:52:41', '2026-01-29 21:52:41'),
-(65, 'App\\Domain\\User\\Models\\User', 1, 'auth_token', 'c4e77ca71461f6898173eb9df80c6f50130e216544c344a5764c6644b813d7dc', '[\"*\"]', NULL, NULL, '2026-01-30 04:41:47', '2026-01-30 04:41:47'),
-(66, 'App\\Domain\\User\\Models\\User', 1, 'auth_token', '6f592183d188672446d0beb4be58123e0b7580431b1a46b89e7d0202d545d967', '[\"*\"]', NULL, NULL, '2026-01-30 09:20:00', '2026-01-30 09:20:00'),
-(68, 'App\\Domain\\User\\Models\\User', 1, 'auth_token', '4137f9e85aee0a95687c29498d60a022bdb8237f0a1b563351857c693908a4d9', '[\"*\"]', '2026-01-30 22:37:33', NULL, '2026-01-30 11:10:44', '2026-01-30 22:37:33'),
-(69, 'App\\Domain\\User\\Models\\User', 1, 'auth_token', '9161023cd7e7c2d9e0e20c5f1831c8f1b2758d71d6d8c3e2da7295c144642973', '[\"*\"]', '2026-01-30 22:35:14', NULL, '2026-01-30 22:32:09', '2026-01-30 22:35:14');
+--
+-- Dumping data for table `personal_access_tokens`
+--
+
+-- Tokens removed to prevent Git security alerts
+-- INSERT INTO `personal_access_tokens` ...
 
 -- --------------------------------------------------------
 
