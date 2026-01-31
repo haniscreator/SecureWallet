@@ -153,10 +153,12 @@ const menuTo = ref(false);
 function updateDate(field: 'from_date' | 'to_date', date: any) {
   if (date) {
     const d = new Date(date);
-    const year = d.getFullYear();
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
-    filters.value[field] = `${year}-${month}-${day}`;
+    if (field === 'from_date') {
+        d.setHours(0, 0, 0, 0);
+    } else {
+        d.setHours(23, 59, 59, 999);
+    }
+    filters.value[field] = d.toISOString();
   } else {
     filters.value[field] = null;
   }

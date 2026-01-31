@@ -22,11 +22,11 @@ class TransactionService
         }
 
         if (!empty($filters->from_date)) {
-            $query->whereDate('created_at', '>=', $filters->from_date);
+            $query->where('created_at', '>=', $filters->from_date);
         }
 
         if (!empty($filters->to_date)) {
-            $query->whereDate('created_at', '<=', $filters->to_date);
+            $query->where('created_at', '<=', $filters->to_date);
         }
 
         if (!empty($filters->reference)) {
@@ -61,11 +61,11 @@ class TransactionService
         }
 
         if (!empty($filters->from_date)) {
-            $query->whereDate('created_at', '>=', $filters->from_date);
+            $query->where('created_at', '>=', $filters->from_date);
         }
 
         if (!empty($filters->to_date)) {
-            $query->whereDate('created_at', '<=', $filters->to_date);
+            $query->where('created_at', '<=', $filters->to_date);
         }
 
         if (!empty($filters->reference)) {
