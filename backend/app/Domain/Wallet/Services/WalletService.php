@@ -8,6 +8,7 @@ use App\Domain\Wallet\Actions\CreateWalletAction;
 use App\Domain\Wallet\Actions\UpdateWalletStatusAction;
 use App\Domain\Wallet\Actions\AssignWalletAction;
 use App\Domain\Wallet\DataTransferObjects\WalletData;
+use Illuminate\Support\Facades\DB;
 
 class WalletService
 {
@@ -43,7 +44,7 @@ class WalletService
 
     public function create(WalletData $data): Wallet
     {
-        return \Illuminate\Support\Facades\DB::transaction(function () use ($data) {
+        return DB::transaction(function () use ($data) {
             $wallet = Wallet::create([
                 'name' => $data->name,
                 'currency_id' => $data->currency_id,
