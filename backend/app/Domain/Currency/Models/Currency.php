@@ -4,6 +4,7 @@ namespace App\Domain\Currency\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Database\Factories\CurrencyFactory;
 
 class Currency extends Model
 {
@@ -11,7 +12,7 @@ class Currency extends Model
 
     protected static function newFactory()
     {
-        return \Database\Factories\CurrencyFactory::new();
+        return CurrencyFactory::new();
     }
 
     protected $fillable = [

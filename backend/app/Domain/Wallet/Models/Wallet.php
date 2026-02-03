@@ -4,6 +4,7 @@ namespace App\Domain\Wallet\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Database\Factories\WalletFactory;
 use App\Domain\User\Models\User;
 use App\Domain\Transaction\Models\Transaction;
 
@@ -13,7 +14,7 @@ class Wallet extends Model
 
     protected static function newFactory()
     {
-        return \Database\Factories\WalletFactory::new();
+        return WalletFactory::new();
     }
 
     protected $fillable = [
