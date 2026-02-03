@@ -12,6 +12,7 @@ use App\Domain\User\Actions\DeleteMemberAction;
 use App\Domain\User\Actions\GetMemberAction;
 
 use App\Domain\User\Resources\UserResource;
+use App\Domain\User\DataTransferObjects\UserData;
 use Illuminate\Http\Request;
 
 class MemberController extends Controller
@@ -47,7 +48,7 @@ class MemberController extends Controller
 
     public function store(StoreMemberRequest $request)
     {
-        $user = $this->createMemberAction->execute(\App\Domain\User\DataTransferObjects\UserData::fromRequest($request->validated()));
+        $user = $this->createMemberAction->execute(UserData::fromRequest($request->validated()));
 
         return response()->json([
             'message' => 'Member created successfully',
@@ -59,7 +60,7 @@ class MemberController extends Controller
     {
         $user = $this->getMemberAction->execute($id);
 
-        $updatedUser = $this->updateMemberAction->execute($user, \App\Domain\User\DataTransferObjects\UserData::fromRequest($request->validated()));
+        $updatedUser = $this->updateMemberAction->execute($user, UserData::fromRequest($request->validated()));
 
         return response()->json([
             'message' => 'Member updated successfully',

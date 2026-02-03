@@ -3,6 +3,7 @@
 namespace App\Domain\Auth\Actions;
 
 use App\Domain\Auth\Services\AuthService;
+use App\Domain\Auth\DataTransferObjects\LoginData;
 
 class LoginAction
 {
@@ -11,7 +12,7 @@ class LoginAction
     ) {
     }
 
-    public function execute(\App\Domain\Auth\DataTransferObjects\LoginData $data): array
+    public function execute(LoginData $data): array
     {
         return $this->authService->attemptLogin($data);
     }

@@ -4,10 +4,11 @@ namespace App\Domain\Auth\Services;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
+use App\Domain\Auth\DataTransferObjects\LoginData;
 
 class AuthService
 {
-    public function attemptLogin(\App\Domain\Auth\DataTransferObjects\LoginData $data): array
+    public function attemptLogin(LoginData $data): array
     {
         if (!Auth::attempt($data->toArray())) {
             throw ValidationException::withMessages([

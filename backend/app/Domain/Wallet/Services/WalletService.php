@@ -7,6 +7,7 @@ use App\Domain\User\Models\User;
 use App\Domain\Wallet\Actions\CreateWalletAction;
 use App\Domain\Wallet\Actions\UpdateWalletStatusAction;
 use App\Domain\Wallet\Actions\AssignWalletAction;
+use App\Domain\Wallet\DataTransferObjects\WalletData;
 
 class WalletService
 {
@@ -40,7 +41,7 @@ class WalletService
         return $wallet->load('users');
     }
 
-    public function create(\App\Domain\Wallet\DataTransferObjects\WalletData $data): Wallet
+    public function create(WalletData $data): Wallet
     {
         return \Illuminate\Support\Facades\DB::transaction(function () use ($data) {
             $wallet = Wallet::create([
@@ -77,7 +78,7 @@ class WalletService
         $wallet->users()->syncWithoutDetaching($userIds);
     }
 
-    public function update(Wallet $wallet, \App\Domain\Wallet\DataTransferObjects\WalletData $data): Wallet
+    public function update(Wallet $wallet, WalletData $data): Wallet
     {
         $wallet->update($data->toArray());
         return $wallet;

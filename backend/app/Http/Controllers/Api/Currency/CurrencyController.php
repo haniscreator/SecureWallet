@@ -11,6 +11,7 @@ use App\Domain\Currency\Requests\StoreCurrencyRequest;
 use App\Domain\Currency\Requests\UpdateCurrencyRequest;
 use App\Domain\Currency\Actions\ListCurrenciesAction;
 use App\Domain\Currency\Actions\GetCurrencyAction;
+use App\Domain\Currency\DataTransferObjects\CurrencyData;
 
 class CurrencyController extends Controller
 {
@@ -35,7 +36,7 @@ class CurrencyController extends Controller
 
     public function store(StoreCurrencyRequest $request)
     {
-        $currency = $this->createCurrencyAction->execute(\App\Domain\Currency\DataTransferObjects\CurrencyData::fromRequest($request->validated()));
+        $currency = $this->createCurrencyAction->execute(CurrencyData::fromRequest($request->validated()));
 
         return response()->json(['message' => 'Currency created', 'currency' => new CurrencyResource($currency)], 201);
     }
@@ -49,7 +50,7 @@ class CurrencyController extends Controller
         // Since GetCurrencyAction returns Currency, let's use it.
 
         $currency = $this->getCurrencyAction->execute($id);
-        $updatedCurrency = $this->updateCurrencyAction->execute($currency, \App\Domain\Currency\DataTransferObjects\CurrencyData::fromRequest($request->validated()));
+        $updatedCurrency = $this->updateCurrencyAction->execute($currency, CurrencyData::fromRequest($request->validated()));
 
         return response()->json(['message' => 'Currency updated', 'currency' => new CurrencyResource($updatedCurrency)]);
     }

@@ -4,6 +4,7 @@ namespace App\Domain\Wallet\Actions;
 
 use App\Domain\Wallet\Models\Wallet;
 use App\Domain\Wallet\Services\WalletService;
+use App\Domain\Wallet\DataTransferObjects\WalletData;
 
 class CreateWalletAction
 {
@@ -12,7 +13,7 @@ class CreateWalletAction
     ) {
     }
 
-    public function execute(\App\Domain\Wallet\DataTransferObjects\WalletData $data): Wallet
+    public function execute(WalletData $data): Wallet
     {
         return $this->walletService->create($data);
     }

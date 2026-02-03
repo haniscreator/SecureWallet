@@ -16,6 +16,7 @@ use App\Domain\Wallet\Requests\AssignUserToWalletRequest;
 use App\Domain\Wallet\Actions\ListWalletsAction;
 use App\Domain\Wallet\Actions\GetWalletAction;
 use App\Domain\Wallet\Resources\WalletResource;
+use App\Domain\Wallet\DataTransferObjects\WalletData;
 
 class WalletController extends Controller
 {
@@ -51,7 +52,7 @@ class WalletController extends Controller
 
     public function store(StoreWalletRequest $request)
     {
-        $wallet = $this->createWalletAction->execute(\App\Domain\Wallet\DataTransferObjects\WalletData::fromRequest($request->validated()));
+        $wallet = $this->createWalletAction->execute(WalletData::fromRequest($request->validated()));
 
         return response()->json(['message' => 'Wallet created', 'wallet' => new WalletResource($wallet->append('balance'))]);
     }
@@ -63,7 +64,7 @@ class WalletController extends Controller
         // Authorization handled in Form Request, but we need the model here to pass to action
         // Technically FormRequest loaded it too, but fetching again is cheap and safe or use route binding.
 
-        $wallet = $this->updateWalletAction->execute($wallet, \App\Domain\Wallet\DataTransferObjects\WalletData::fromRequest($request->validated()));
+        $wallet = $this->updateWalletAction->execute($wallet, WalletData::fromRequest($request->validated()));
 
         return response()->json(['message' => 'Wallet updated', 'wallet' => new WalletResource($wallet)]);
     }

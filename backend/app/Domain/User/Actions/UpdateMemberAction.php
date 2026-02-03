@@ -4,6 +4,7 @@ namespace App\Domain\User\Actions;
 
 use App\Domain\User\Models\User;
 use App\Domain\User\Services\UserService;
+use App\Domain\User\DataTransferObjects\UserData;
 
 class UpdateMemberAction
 {
@@ -12,7 +13,7 @@ class UpdateMemberAction
     ) {
     }
 
-    public function execute(User $user, \App\Domain\User\DataTransferObjects\UserData $data): User
+    public function execute(User $user, UserData $data): User
     {
         return $this->userService->updateUser($user, $data);
     }

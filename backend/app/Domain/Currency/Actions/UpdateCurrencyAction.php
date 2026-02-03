@@ -4,6 +4,7 @@ namespace App\Domain\Currency\Actions;
 
 use App\Domain\Currency\Models\Currency;
 use App\Domain\Currency\Services\CurrencyService;
+use App\Domain\Currency\DataTransferObjects\CurrencyData;
 
 class UpdateCurrencyAction
 {
@@ -12,7 +13,7 @@ class UpdateCurrencyAction
     ) {
     }
 
-    public function execute(Currency $currency, \App\Domain\Currency\DataTransferObjects\CurrencyData $data): Currency
+    public function execute(Currency $currency, CurrencyData $data): Currency
     {
         return $this->currencyService->update($currency, $data);
     }

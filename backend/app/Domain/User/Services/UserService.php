@@ -4,10 +4,11 @@ namespace App\Domain\User\Services;
 
 use App\Domain\User\Models\User;
 use Illuminate\Support\Facades\Hash;
+use App\Domain\User\DataTransferObjects\UserData;
 
 class UserService
 {
-    public function createUser(\App\Domain\User\DataTransferObjects\UserData $data): User
+    public function createUser(UserData $data): User
     {
         $user = User::create([
             'name' => $data->name,
@@ -29,7 +30,7 @@ class UserService
         return User::with('wallets')->get();
     }
 
-    public function updateUser(User $user, \App\Domain\User\DataTransferObjects\UserData $data): User
+    public function updateUser(User $user, UserData $data): User
     {
         $user->update($data->toArray());
 

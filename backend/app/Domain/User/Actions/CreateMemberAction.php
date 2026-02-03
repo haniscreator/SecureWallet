@@ -4,6 +4,7 @@ namespace App\Domain\User\Actions;
 
 use App\Domain\User\Models\User;
 use App\Domain\User\Services\UserService;
+use App\Domain\User\DataTransferObjects\UserData;
 
 class CreateMemberAction
 {
@@ -12,7 +13,7 @@ class CreateMemberAction
     ) {
     }
 
-    public function execute(\App\Domain\User\DataTransferObjects\UserData $data): User
+    public function execute(UserData $data): User
     {
         return $this->userService->createUser($data);
     }

@@ -7,6 +7,7 @@ use App\Domain\Auth\Actions\LogoutAction;
 use App\Http\Controllers\Controller;
 use App\Domain\Auth\Requests\LoginRequest;
 use Illuminate\Http\Request;
+use App\Domain\Auth\DataTransferObjects\LoginData;
 
 class AuthController extends Controller
 {
@@ -18,7 +19,7 @@ class AuthController extends Controller
 
     public function login(LoginRequest $request)
     {
-        $data = $this->loginAction->execute(\App\Domain\Auth\DataTransferObjects\LoginData::fromRequest($request->validated()));
+        $data = $this->loginAction->execute(LoginData::fromRequest($request->validated()));
 
         return response()->json([
             'message' => 'Login successful',
