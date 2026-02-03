@@ -59,5 +59,8 @@ export const walletApi = {
     },
     getDashboardWidget() {
         return apiClient.get<Wallet[]>('/dashboard/widget');
+    },
+    getTotalBalanceWidget() {
+        return apiClient.get<Record<string, { amount: number, symbol: string }>>('/transactions/dashboard-total-balance');
     }
 };

@@ -11,6 +11,18 @@ export const useWalletStore = defineStore('wallet', () => {
 
     const dashboardWallets = ref<Wallet[]>([]); // New state for dashboard widget
     const dashboardWidgetLoading = ref(false);
+
+    // Dashboard Pagination State
+    const dashboardTransactions = ref<any[]>([]);
+    const dashboardTotalItems = ref(0);
+    const dashboardPage = ref(1);
+    const dashboardItemsPerPage = ref(10);
+    const dashboardLoading = ref(false);
+
+    // Total Balance State
+    const totalBalance = ref<Record<string, { amount: number, symbol: string }>>({});
+    const totalBalanceLoading = ref(false);
+
     const loading = ref(false);
     const error = ref<string | null>(null);
 
@@ -90,31 +102,7 @@ export const useWalletStore = defineStore('wallet', () => {
     }
 
     // Getters
-    // Getters
-    const totalBalanceByCurrency = computed(() => {
-        const totals: Record<string, { amount: number, symbol: string }> = {};
 
-        wallets.value.forEach(w => {
-            // Use code from currency object or fallback
-            // Note: Map ID to code manually if strictly needed and object is still missing
-            const currencyCode = w.currency?.code || (w.currency_id === 2 ? 'EUR' : 'USD');
-            const currencySymbol = w.currency?.symbol || '$'; // Fallback symbol
-
-            if (!totals[currencyCode]) {
-                totals[currencyCode] = { amount: 0, symbol: currencySymbol };
-            }
-
-            // If symbol was fallback, verify if we can update it now (in case mixed wallets)
-            if (totals[currencyCode].symbol === '$' && currencySymbol !== '$') {
-                totals[currencyCode].symbol = currencySymbol;
-            }
-
-            const val = w.balance !== undefined && w.balance !== null ? w.balance : 0;
-            totals[currencyCode].amount += Number(val);
-        });
-
-        return totals;
-    });
 
     const recentWallets = computed(() => {
         // Return top 3, sorted by created_at desc
@@ -122,12 +110,7 @@ export const useWalletStore = defineStore('wallet', () => {
             .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
             .slice(0, 3);
     });
-    // Dashboard Pagination State
-    const dashboardTransactions = ref<any[]>([]);
-    const dashboardTotalItems = ref(0);
-    const dashboardPage = ref(1);
-    const dashboardItemsPerPage = ref(10);
-    const dashboardLoading = ref(false);
+
 
     async function fetchDashboardTransactions(page = 1, itemsPerPage = 10) {
         dashboardLoading.value = true;
@@ -167,6 +150,18 @@ export const useWalletStore = defineStore('wallet', () => {
         }
     }
 
+    async function fetchTotalBalance() {
+        totalBalanceLoading.value = true;
+        try {
+            const response = await walletApi.getTotalBalanceWidget();
+            totalBalance.value = response.data as any; // Backend returns Record<string, {amount, symbol}>
+        } catch (e) {
+            console.error('Failed to fetch total balance', e);
+        } finally {
+            totalBalanceLoading.value = false;
+        }
+    }
+
     return {
         wallets,
         currentWallet,
@@ -180,7 +175,7 @@ export const useWalletStore = defineStore('wallet', () => {
         updateWallet,
         assignUsers,
 
-        totalBalanceByCurrency,
+
         recentWallets,
 
         // Dashboard Pagination
@@ -192,6 +187,9 @@ export const useWalletStore = defineStore('wallet', () => {
         fetchDashboardTransactions,
         dashboardWallets,
         dashboardWidgetLoading,
-        fetchDashboardWidget
+        fetchDashboardWidget,
+        totalBalance,
+        totalBalanceLoading,
+        fetchTotalBalance
     };
 });

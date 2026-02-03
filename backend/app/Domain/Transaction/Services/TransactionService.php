@@ -80,4 +80,54 @@ class TransactionService
         return $query->orderBy($filters->sort_by ?? 'created_at', $filters->sort_dir ?? 'desc')
             ->paginate($filters->per_page ?? 15);
     }
+
+    public function getAggregatedBalances(User $user)
+    {
+        // 1. Fetch user's wallets
+        // Allow admin to see all wallets
+        $query = ($user->role === 'admin')
+            ? Wallet::query()
+            : $user->wallets();
+
+        $wallets = $query->with('currency')->get();
+
+        $totals = [];
+
+        $wallets->each(function ($wallet) use (&$totals) {
+            // Calculate Balance Manually (Credit - Debit)
+            // Reusing logic from WalletService for consistency, but kept local here to avoid circular dependency if WalletService uses TransactionService
+            $transactions = Transaction::where(function ($q) use ($wallet) {
+                $q->where('from_wallet_id', $wallet->id)
+                    ->orWhere('to_wallet_id', $wallet->id);
+            })->get();
+
+            $balance = 0;
+            foreach ($transactions as $tx) {
+                if ($tx->type === 'credit') {
+                    $balance += $tx->amount;
+                } elseif ($tx->type === 'debit') {
+                    $balance -= $tx->amount;
+                }
+            }
+
+            $currencyCode = $wallet->currency?->code ?? ($wallet->currency_id === 2 ? 'EUR' : 'USD');
+            $currencySymbol = $wallet->currency?->symbol ?? '$';
+
+            if (!isset($totals[$currencyCode])) {
+                $totals[$currencyCode] = [
+                    'amount' => 0,
+                    'symbol' => $currencySymbol
+                ];
+            }
+
+            // If symbol was fallback, update it
+            if ($totals[$currencyCode]['symbol'] === '$' && $currencySymbol !== '$') {
+                $totals[$currencyCode]['symbol'] = $currencySymbol;
+            }
+
+            $totals[$currencyCode]['amount'] += $balance;
+        });
+
+        return $totals;
+    }
 }

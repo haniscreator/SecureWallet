@@ -19,7 +19,7 @@ describe('CompanyInfoCard', () => {
                         initialState: {
                             wallet: {
                                 wallets: [1, 2, 3], // Mocking length
-                                totalBalanceByCurrency: { USD: {}, EUR: {} }, // Mocking keys length
+                                totalBalance: { USD: {}, EUR: {} }, // Mocking keys length
                                 recentGlobalTransactions: [1, 2, 3, 4, 5] // Mocking length
                             },
                             user: {

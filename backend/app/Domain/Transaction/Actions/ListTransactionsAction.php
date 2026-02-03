@@ -23,4 +23,9 @@ class ListTransactionsAction
 
         return $this->transactionService->listAllTransactions($user, $filters);
     }
+
+    public function service(): TransactionService
+    {
+        return $this->transactionService;
+    }
 }

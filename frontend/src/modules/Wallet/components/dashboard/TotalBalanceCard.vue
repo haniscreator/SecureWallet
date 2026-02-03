@@ -16,7 +16,7 @@
               <v-divider class="my-4"></v-divider>
               
               <div class="balance-list">
-                <template v-if="walletStore.loading">
+                <template v-if="walletStore.totalBalanceLoading">
                     <v-skeleton-loader type="text" width="120" color="transparent"></v-skeleton-loader>
                     <v-skeleton-loader type="text" width="80" color="transparent"></v-skeleton-loader>
                 </template>
@@ -41,14 +41,19 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, onMounted } from 'vue';
 import { useWalletStore } from '@/modules/Wallet/store';
 
 const walletStore = useWalletStore();
 
+
+onMounted(() => {
+    walletStore.fetchTotalBalance();
+});
+
 // Safe computed wrapper to avoid template errors during loading/HMR
 const hasBalances = computed(() => {
-    return walletStore.totalBalanceByCurrency && Object.keys(walletStore.totalBalanceByCurrency).length > 0;
+    return walletStore.totalBalance && Object.keys(walletStore.totalBalance).length > 0;
 });
 
 const sortedBalances = computed(() => {
@@ -56,7 +61,7 @@ const sortedBalances = computed(() => {
     
     // Convert dictionary to array
     // Store returns Record<string, { amount: number, symbol: string }>
-    const balances = Object.entries(walletStore.totalBalanceByCurrency).map(([currency, data]) => ({
+    const balances = Object.entries(walletStore.totalBalance).map(([currency, data]) => ({
         currency,
         amount: data.amount,
         symbol: data.symbol

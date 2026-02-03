@@ -32,6 +32,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Transactions
     Route::post('/transactions/search', [\App\Http\Controllers\Api\Wallet\TransactionController::class, 'all']);
+    Route::get('/transactions/dashboard-total-balance', [\App\Http\Controllers\Api\Wallet\TransactionController::class, 'dashboardTotalBalance']);
     Route::get('/transactions/{id}', [\App\Http\Controllers\Api\Wallet\TransactionController::class, 'show']);
     Route::post('/wallets/{id}/transactions/search', [\App\Http\Controllers\Api\Wallet\TransactionController::class, 'index']);
 

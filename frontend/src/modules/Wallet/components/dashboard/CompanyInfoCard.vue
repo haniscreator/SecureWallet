@@ -87,7 +87,7 @@ const authStore = useAuthStore();
 // Computed Stats
 const totalWallets = computed(() => walletStore.wallets.length);
 const totalUsers = computed(() => userStore.members.length); 
-const totalCurrencies = computed(() => Object.keys(walletStore.totalBalanceByCurrency).length);
+const totalCurrencies = computed(() => Object.keys(walletStore.totalBalance || {}).length);
 const companyName = computed(() => authStore.user?.company_name || 'Korporatio');
 const companyEmail = computed(() => authStore.user?.email || 'admin@korporatio.com');
 

@@ -45,4 +45,10 @@ class TransactionController extends Controller
         // Authorization check could be added here
         return new TransactionResource($transaction);
     }
+
+    public function dashboardTotalBalance(Request $request)
+    {
+        $totals = $this->listTransactionsAction->service()->getAggregatedBalances($request->user());
+        return response()->json($totals);
+    }
 }

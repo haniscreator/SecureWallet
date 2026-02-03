@@ -48,7 +48,7 @@ describe('TotalBalanceCard', () => {
                         createSpy: vi.fn,
                         initialState: {
                             wallet: {
-                                totalBalanceByCurrency: {}
+                                totalBalance: {}
                             }
                         }
                     })
