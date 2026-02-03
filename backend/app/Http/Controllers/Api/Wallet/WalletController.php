@@ -26,7 +26,8 @@ class WalletController extends Controller
         protected AssignWalletAction $assignWalletAction,
         protected \App\Domain\Wallet\Actions\UpdateWalletAction $updateWalletAction,
         protected ListWalletsAction $listWalletsAction,
-        protected GetWalletAction $getWalletAction
+        protected GetWalletAction $getWalletAction,
+        protected WalletService $walletService
     ) {
     }
 
@@ -85,5 +86,12 @@ class WalletController extends Controller
         $this->assignWalletAction->execute($wallet, $request->validated()['user_ids']);
 
         return response()->json(['message' => 'Users assigned to wallet']);
+    }
+
+    public function dashboardWidget(Request $request)
+    {
+        $wallets = $this->walletService->getWalletsForDashboard($request->user());
+
+        return \App\Domain\Wallet\Resources\WalletResource::collection($wallets);
     }
 }

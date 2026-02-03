@@ -56,5 +56,8 @@ export const walletApi = {
     },
     getGlobalTransactions(params?: any) {
         return apiClient.post<{ data: Transaction[], meta: any }>('/transactions/search', params);
+    },
+    getDashboardWidget() {
+        return apiClient.get<Wallet[]>('/dashboard/widget');
     }
 };

@@ -22,6 +22,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/members/{id}', [MemberController::class, 'destroy']);
 
     // Wallets
+    Route::get('/dashboard/widget', [\App\Http\Controllers\Api\Wallet\WalletController::class, 'dashboardWidget']);
     Route::get('/wallets', [\App\Http\Controllers\Api\Wallet\WalletController::class, 'index']);
     Route::post('/wallets', [\App\Http\Controllers\Api\Wallet\WalletController::class, 'store']);
     Route::get('/wallets/{id}', [\App\Http\Controllers\Api\Wallet\WalletController::class, 'show']);

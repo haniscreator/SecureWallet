@@ -92,7 +92,7 @@ const companyName = computed(() => authStore.user?.company_name || 'Korporatio')
 const companyEmail = computed(() => authStore.user?.email || 'admin@korporatio.com');
 
 const totalTxCount = computed(() => {
-    return walletStore.recentGlobalTransactions.length;
+    return walletStore.dashboardTotalItems;
 });
 </script>
 

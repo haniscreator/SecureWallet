@@ -6,7 +6,7 @@ use Tests\TestCase;
 use App\Domain\User\Models\User;
 use App\Domain\Wallet\Models\Wallet;
 use App\Domain\Currency\Models\Currency;
-use App\Domain\Wallet\Models\Transaction;
+use App\Domain\Transaction\Models\Transaction;
 use App\Domain\Wallet\Services\WalletService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
@@ -160,5 +160,60 @@ class WalletServiceTest extends TestCase
 
         $this->assertEquals(1, $wallets->count());
         $this->assertEquals('Assigned', $wallets->first()->name);
+    }
+    public function test_get_wallets_for_dashboard()
+    {
+        $user = User::factory()->create();
+
+        // Create 4 wallets with different timestamps
+        $w1 = Wallet::factory()->create(['created_at' => now(), 'name' => 'W1', 'currency_id' => $this->currency->id]);
+        $w2 = Wallet::factory()->create(['created_at' => now()->subHour(), 'name' => 'W2', 'currency_id' => $this->currency->id]);
+        $w3 = Wallet::factory()->create(['created_at' => now()->subHours(2), 'name' => 'W3', 'currency_id' => $this->currency->id]);
+        $w4 = Wallet::factory()->create(['created_at' => now()->subHours(3), 'name' => 'W4', 'currency_id' => $this->currency->id]);
+
+        $user->wallets()->attach([$w1->id, $w2->id, $w3->id, $w4->id]);
+
+        // Add transactions
+        // W1: +1000 (credit)
+        Transaction::create(['to_wallet_id' => $w1->id, 'type' => 'credit', 'amount' => 1000]);
+
+        // W2: +500 (credit), -200 (debit as outgoing)
+        // Wait, frontend logic: 
+        // if credit -> +
+        // if debit -> -
+        // It DOES NOT check if it is incoming or outgoing? 
+        // The frontend iterates `walletApi.getTransactions(wallet.id)`.
+        // `TransactionService::listTransactions` returns BOTH incoming and outgoing.
+        // So if I have an outgoing transaction of type 'debit', it is present in the list.
+        // Logic: if debit -> subtract. Correct.
+        // What if I have an incoming transaction of type 'debit'? (Reversal?) -> subtract. Correct.
+        // What if I have an outgoing transaction of type 'credit'? (refund to me?) -> add. Correct.
+
+        Transaction::create(['to_wallet_id' => $w2->id, 'type' => 'credit', 'amount' => 500]);
+        Transaction::create(['from_wallet_id' => $w2->id, 'type' => 'debit', 'amount' => 200]);
+
+        // W3: Complex case. 
+        // Incoming Debit (e.g. chargeback): -100
+        // Outgoing Credit (e.g. correction?): +50
+        Transaction::create(['to_wallet_id' => $w3->id, 'type' => 'debit', 'amount' => 100]);
+        Transaction::create(['from_wallet_id' => $w3->id, 'type' => 'credit', 'amount' => 50]);
+
+        $results = $this->walletService->getWalletsForDashboard($user);
+
+        // Sorting check (latest created first) -> W1, W2, W3 (W4 excluded as limit 3)
+        // W1 created now, W2 -1h, W3 -2h, W4 -3h
+        $this->assertCount(3, $results);
+        $this->assertEquals('W1', $results[0]->name);
+        $this->assertEquals('W2', $results[1]->name);
+        $this->assertEquals('W3', $results[2]->name);
+
+        // Balance check (dashboard_balance)
+        // Balance check (dashboard_balance)
+        $this->assertEquals(1000, $results[0]->dashboard_balance);
+        $this->assertEquals(300, $results[1]->dashboard_balance); // 500 - 200
+        $this->assertEquals(-50, $results[2]->dashboard_balance); // -100 + 50
+
+        // Users count check
+        $this->assertEquals(1, $results[0]->users_count); // Attached in setup
     }
 }

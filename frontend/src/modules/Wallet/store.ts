@@ -8,7 +8,9 @@ export const useWalletStore = defineStore('wallet', () => {
     const wallets = ref<Wallet[]>([]);
     const currentWallet = ref<Wallet | null>(null);
     const transactions = ref<Transaction[]>([]); // Used in details view
-    const recentGlobalTransactions = ref<(Transaction & { wallet_name: string })[]>([]);
+
+    const dashboardWallets = ref<Wallet[]>([]); // New state for dashboard widget
+    const dashboardWidgetLoading = ref(false);
     const loading = ref(false);
     const error = ref<string | null>(null);
 
@@ -18,9 +20,6 @@ export const useWalletStore = defineStore('wallet', () => {
             const response = await walletApi.getWallets(params);
             const data = response.data as any;
             const fetchedWallets = Array.isArray(data) ? data : (data.data || []);
-
-            // Fetch transactions and calculate balances BEFORE updating state
-            await fetchAllTransactions(fetchedWallets);
 
             wallets.value = fetchedWallets;
         } finally {
@@ -44,70 +43,7 @@ export const useWalletStore = defineStore('wallet', () => {
         }
     }
 
-    // New Action: Fetch transactions for ALL wallets and merge them
-    async function fetchAllTransactions(targetWallets?: Wallet[]) {
-        const walletsToProcess = targetWallets || wallets.value;
-        if (walletsToProcess.length === 0) return;
 
-        // Fetch currencies to map IDs if needed
-        let currencyMap: Record<number, any> = {};
-        try {
-            const curResponse = await import('@/modules/Currency/api').then(m => m.currencyApi.getCurrencies());
-            const curData = curResponse.data as any;
-            const currencies = Array.isArray(curData) ? curData : (curData.data || []);
-            currencies.forEach((c: any) => currencyMap[c.id] = c);
-        } catch (e) {
-            console.error('Failed to fetch currencies', e);
-        }
-
-        const allTxs: (Transaction & { wallet_name: string })[] = [];
-
-        // Use Promise.all for parallel fetching
-        // We map over the walletsToProcess, forcing TS inference if needed (though it should be fine)
-        const promises = (walletsToProcess as any[]).map(async (wallet) => {
-            try {
-                const response = await walletApi.getTransactions(wallet.id);
-                const data = response.data as any;
-                const txs = Array.isArray(data) ? data : (data.data || []);
-
-                // Calculate balance from transactions if not present
-                // Assuming initial balance is 0 or captured in transactions
-                let calculatedBalance = 0;
-                txs.forEach((tx: Transaction) => {
-                    if (tx.type === 'credit') calculatedBalance += Number(tx.amount);
-                    if (tx.type === 'debit') calculatedBalance -= Number(tx.amount);
-                });
-
-                // Update wallet with calculated balance and currency info
-                // We mutate the wallet in the list directly to update the UI
-                wallet.balance = calculatedBalance;
-
-                if (!wallet.currency && wallet.currency_id && currencyMap[wallet.currency_id]) {
-                    wallet.currency = currencyMap[wallet.currency_id];
-                }
-
-                // Tag with wallet name
-                return txs.map((tx: Transaction) => ({
-                    ...tx,
-                    wallet_name: wallet.name
-                }));
-            } catch (e) {
-                console.error(`Failed to fetch transactions for wallet ${wallet.id}`, e);
-                return [];
-            }
-        });
-
-        const results = await Promise.all(promises);
-        results.forEach(txList => allTxs.push(...txList));
-
-        // Deduplicate by ID (keep first occurrence)
-        const uniqueTxs = Array.from(new Map(allTxs.map(tx => [tx.id, tx])).values());
-
-        // Sort by date desc
-        recentGlobalTransactions.value = uniqueTxs.sort((a, b) =>
-            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-        );
-    }
 
     async function createWallet(payload: CreateWalletPayload) {
         const notificationStore = useNotificationStore();
@@ -218,11 +154,24 @@ export const useWalletStore = defineStore('wallet', () => {
         }
     }
 
+    async function fetchDashboardWidget() {
+        dashboardWidgetLoading.value = true;
+        try {
+            const response = await walletApi.getDashboardWidget();
+            const data = response.data as any;
+            dashboardWallets.value = Array.isArray(data) ? data : (data.data || []);
+        } catch (e) {
+            console.error('Failed to fetch dashboard widget', e);
+        } finally {
+            dashboardWidgetLoading.value = false;
+        }
+    }
+
     return {
         wallets,
         currentWallet,
         transactions,
-        recentGlobalTransactions, // Exposed for dashboard (legacy/fallback)
+        // recentGlobalTransactions, // Exposed for dashboard (legacy/fallback)
         loading,
         error,
         fetchWallets,
@@ -230,7 +179,7 @@ export const useWalletStore = defineStore('wallet', () => {
         createWallet,
         updateWallet,
         assignUsers,
-        fetchAllTransactions,
+
         totalBalanceByCurrency,
         recentWallets,
 
@@ -240,6 +189,9 @@ export const useWalletStore = defineStore('wallet', () => {
         dashboardPage,
         dashboardItemsPerPage,
         dashboardLoading,
-        fetchDashboardTransactions
+        fetchDashboardTransactions,
+        dashboardWallets,
+        dashboardWidgetLoading,
+        fetchDashboardWidget
     };
 });
