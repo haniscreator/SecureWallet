@@ -48,7 +48,7 @@ const walletStore = useWalletStore();
 
 
 onMounted(() => {
-    walletStore.fetchTotalBalance();
+    walletStore.fetchDashboardTotalBalances();
 });
 
 // Safe computed wrapper to avoid template errors during loading/HMR

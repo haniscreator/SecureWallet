@@ -57,10 +57,10 @@ export const walletApi = {
     getGlobalTransactions(params?: any) {
         return apiClient.post<{ data: Transaction[], meta: any }>('/transactions/search', params);
     },
-    getDashboardWidget() {
+    getDashboardWallets() {
         return apiClient.get<Wallet[]>('/dashboard/widget');
     },
-    getTotalBalanceWidget() {
+    getDashboardTotalBalances() {
         return apiClient.get<Record<string, { amount: number, symbol: string }>>('/transactions/dashboard-total-balance');
     }
 };

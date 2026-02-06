@@ -92,7 +92,7 @@ const walletStore = useWalletStore();
 const userStore = useUserStore();
 
 onMounted(() => {
-    walletStore.fetchDashboardWidget();
+    walletStore.fetchDashboardWallets();
     walletStore.fetchWallets(); // Keep fetching wallets for TotalBalanceCard if needed, or if it relies on 'wallets' state. 
     // Actually TotalBalanceCard likely uses 'wallets' state. If we want to move ALL logic, check TotalBalanceCard.
     // User request focused on "latest 3 Wallet from API". 

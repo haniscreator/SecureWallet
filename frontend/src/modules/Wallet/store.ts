@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { ref, computed } from 'vue';
+import { ref } from 'vue';
 import { walletApi, type Wallet, type Transaction, type CreateWalletPayload } from './api';
 
 import { useNotificationStore } from '@/shared/stores/notification';
@@ -101,16 +101,6 @@ export const useWalletStore = defineStore('wallet', () => {
         }
     }
 
-    // Getters
-
-
-    const recentWallets = computed(() => {
-        // Return top 3, sorted by created_at desc
-        return [...wallets.value]
-            .sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
-            .slice(0, 3);
-    });
-
 
     async function fetchDashboardTransactions(page = 1, itemsPerPage = 10) {
         dashboardLoading.value = true;
@@ -137,10 +127,10 @@ export const useWalletStore = defineStore('wallet', () => {
         }
     }
 
-    async function fetchDashboardWidget() {
+    async function fetchDashboardWallets() {
         dashboardWidgetLoading.value = true;
         try {
-            const response = await walletApi.getDashboardWidget();
+            const response = await walletApi.getDashboardWallets();
             const data = response.data as any;
             dashboardWallets.value = Array.isArray(data) ? data : (data.data || []);
         } catch (e) {
@@ -150,10 +140,10 @@ export const useWalletStore = defineStore('wallet', () => {
         }
     }
 
-    async function fetchTotalBalance() {
+    async function fetchDashboardTotalBalances() {
         totalBalanceLoading.value = true;
         try {
-            const response = await walletApi.getTotalBalanceWidget();
+            const response = await walletApi.getDashboardTotalBalances();
             totalBalance.value = response.data as any; // Backend returns Record<string, {amount, symbol}>
         } catch (e) {
             console.error('Failed to fetch total balance', e);
@@ -176,7 +166,7 @@ export const useWalletStore = defineStore('wallet', () => {
         assignUsers,
 
 
-        recentWallets,
+
 
         // Dashboard Pagination
         dashboardTransactions,
@@ -187,9 +177,9 @@ export const useWalletStore = defineStore('wallet', () => {
         fetchDashboardTransactions,
         dashboardWallets,
         dashboardWidgetLoading,
-        fetchDashboardWidget,
+        fetchDashboardWallets,
         totalBalance,
         totalBalanceLoading,
-        fetchTotalBalance
+        fetchDashboardTotalBalances
     };
 });
