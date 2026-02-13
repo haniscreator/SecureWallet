@@ -63,5 +63,8 @@ export const walletApi = {
     },
     getDashboardTotalBalances() {
         return apiClient.get<Record<string, { amount: number, symbol: string }>>('/transactions/dashboard-total-balance');
+    },
+    getTransferTargets() {
+        return apiClient.get<Wallet[]>('/wallets/transfer-targets');
     }
 };

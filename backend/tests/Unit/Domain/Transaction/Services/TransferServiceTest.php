@@ -68,7 +68,7 @@ class TransferServiceTest extends TestCase
             'currency_id' => $currency->id
         ]);
 
-        $transaction = $this->transferService->initiateTransfer($wallet, $externalWallet, 1100, $user);
+        $transaction = $this->transferService->initiateTransfer($wallet, 'external', $externalWallet->address, 1100, $user);
 
         $this->assertDatabaseHas('transactions', [
             'id' => $transaction->id,
@@ -95,7 +95,7 @@ class TransferServiceTest extends TestCase
 
         $externalWallet = ExternalWallet::factory()->create(['currency_id' => $currency->id]);
 
-        $transaction = $this->transferService->initiateTransfer($wallet, $externalWallet, 100, $user);
+        $transaction = $this->transferService->initiateTransfer($wallet, 'external', $externalWallet->address, 100, $user);
 
         $this->assertDatabaseHas('transactions', [
             'id' => $transaction->id,
@@ -119,7 +119,7 @@ class TransferServiceTest extends TestCase
 
         $externalWallet = ExternalWallet::factory()->create(['currency_id' => $currency->id]);
 
-        $transaction = $this->transferService->initiateTransfer($wallet, $externalWallet, 2000, $manager);
+        $transaction = $this->transferService->initiateTransfer($wallet, 'external', $externalWallet->address, 2000, $manager);
 
         $this->assertDatabaseHas('transactions', [
             'id' => $transaction->id,
@@ -145,7 +145,7 @@ class TransferServiceTest extends TestCase
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('Insufficient funds');
 
-        $this->transferService->initiateTransfer($wallet, $externalWallet, 100, $user);
+        $this->transferService->initiateTransfer($wallet, 'external', $externalWallet->address, 100, $user);
     }
 
     /** @test */
@@ -159,13 +159,13 @@ class TransferServiceTest extends TestCase
         $user->wallets()->attach($wallet);
         $this->fundWallet($wallet, 500);
 
-        $currency2 = \App\Domain\Currency\Models\Currency::factory()->create();
+        $currency2 = \App\Domain\Currency\Models\Currency::factory()->create(['code' => 'MIS_MATCH']);
         $externalWallet = ExternalWallet::factory()->create(['currency_id' => $currency2->id]);
 
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('Currency mismatch');
 
-        $this->transferService->initiateTransfer($wallet, $externalWallet, 100, $user);
+        $this->transferService->initiateTransfer($wallet, 'external', $externalWallet->address, 100, $user);
     }
 
     /** @test */
@@ -177,7 +177,7 @@ class TransferServiceTest extends TestCase
         $managerRole = \App\Domain\User\Models\UserRole::firstOrCreate(['name' => 'manager'], ['label' => 'Manager']);
         $manager = User::factory()->create(['role_id' => $managerRole->id]);
 
-        $currency = \App\Domain\Currency\Models\Currency::factory()->create();
+        $currency = \App\Domain\Currency\Models\Currency::factory()->create(['code' => 'APP_TRF']);
         $wallet = Wallet::factory()->create(['currency_id' => $currency->id]);
         $user->wallets()->attach($wallet);
         $this->fundWallet($wallet, 500);
@@ -271,5 +271,28 @@ class TransferServiceTest extends TestCase
         ]);
 
         $this->assertEquals(500, $wallet->fresh()->balance);
+    }
+    /** @test */
+    public function it_initiates_internal_transfer_successfully()
+    {
+        $role = \App\Domain\User\Models\UserRole::firstOrCreate(['name' => 'user'], ['label' => 'User']);
+        $user = User::factory()->create(['role_id' => $role->id]);
+
+        $currency = \App\Domain\Currency\Models\Currency::factory()->create();
+        $wallet1 = Wallet::factory()->create(['currency_id' => $currency->id]);
+        $wallet2 = Wallet::factory()->create(['currency_id' => $currency->id]);
+
+        $user->wallets()->attach($wallet1);
+        $this->fundWallet($wallet1, 1000);
+
+        $transaction = $this->transferService->initiateTransfer($wallet1, 'internal', $wallet2->id, 500, $user);
+
+        $this->assertDatabaseHas('transactions', [
+            'id' => $transaction->id,
+            'from_wallet_id' => $wallet1->id,
+            'to_wallet_id' => $wallet2->id,
+            'amount' => 500,
+            'type' => 'debit'
+        ]);
     }
 }

@@ -1,80 +1,102 @@
 <template>
   <div class="transfer-form-container">
-    <div class="page-header d-flex justify-space-between align-center mb-4">
+    <div class="page-header mb-6">
       <h1 class="text-h4 font-weight-bold primary--text">Initiate Transfer</h1>
-      <v-btn color="secondary" variant="outlined" @click="$router.back()">
-        Back
-      </v-btn>
     </div>
 
-    <v-card class="pa-6 rounded-lg elevation-2">
+    <v-card class="pa-8 rounded-lg elevation-2 transfer-card">
       <v-form v-model="valid" @submit.prevent="submitTransfer">
-        <v-select
-          v-model="formData.source_wallet_id"
-          :items="wallets"
-          item-title="name"
-          item-value="id"
-          label="Source Wallet"
-          placeholder="Select a wallet"
-          variant="outlined"
-          :rules="[v => !!v || 'Source wallet is required']"
-          required
-          :loading="loadingWallets"
-          @update:model-value="onSourceWalletChange"
-        >
-          <template v-slot:item="{ props, item }">
-            <v-list-item v-bind="props" :subtitle="item.raw.currency.code + ' - Balance: ' + item.raw.balance"></v-list-item>
-          </template>
-        </v-select>
+        
+        <!-- Source Wallet Info -->
+        <div class="mb-6 pa-4 rounded bg-grey-lighten-4" v-if="selectedSourceWallet" style="background-color: #F5F6F9;">
+            <div class="text-h6 font-weight-bold">{{ selectedSourceWallet.name }}</div>
+            <div class="text-subtitle-1 text-grey-darken-1">
+                Balance: {{ selectedSourceWallet.currency?.symbol }}{{ Number(selectedSourceWallet.balance).toLocaleString() }} {{ selectedSourceWallet.currency?.code }}
+            </div>
+        </div>
+        <div v-else class="mb-6 text-grey">Loading Source Wallet...</div>
 
-        <v-select
-          v-model="formData.external_wallet_id"
-          :items="filteredExternalWallets"
-          item-title="name"
-          item-value="id"
-          label="External Wallet"
-          placeholder="Select an external wallet"
-          variant="outlined"
-          :rules="[v => !!v || 'External wallet is required']"
-          required
-          :loading="loadingExternalWallets"
-          :disabled="!formData.source_wallet_id"
-        >
-             <template v-slot:item="{ props, item }">
-                <v-list-item v-bind="props" :subtitle="item.raw.address"></v-list-item>
-            </template>
-        </v-select>
+        <!-- Transfer Type -->
+        <v-label class="mb-2 font-weight-medium">Transfer Type</v-label>
+        <v-radio-group v-model="formData.type" inline class="mb-4" @update:model-value="onTypeChange" :rules="[v => !!v || 'Transfer type is required']">
+            <v-radio label="Internal Transfer" value="internal"></v-radio>
+            <v-radio label="External Transfer" value="external"></v-radio>
+        </v-radio-group>
 
-        <v-text-field
-          v-model.number="formData.amount"
-          label="Amount"
-          placeholder="0.00"
-          variant="outlined"
-          type="number"
-          min="0.01"
-          step="0.01"
-          :rules="amountRules"
-          required
-        ></v-text-field>
+        <!-- Form Content Wrapper with Transition -->
+        <v-fade-transition>
+            <div v-if="formData.type">
+                <!-- Internal: Target Wallet -->
+                <v-select
+                    v-if="formData.type === 'internal'"
+                    v-model="formData.to_wallet_id"
+                    :items="internalTargetWallets"
+                    item-title="name"
+                    item-value="id"
+                    label="Choose destination wallet"
+                    placeholder="Select a destination wallet"
+                    variant="outlined"
+                    :rules="[v => !!v || 'Target wallet is required', validateInternalTarget]"
+                    required
+                    :loading="loadingTargets"
+                    class="mb-2"
+                >
+                    <template v-slot:item="{ props, item }">
+                        <v-list-item 
+                            v-bind="props" 
+                            :subtitle="(item.raw.currency?.code || '') + ' - User: ' + (item.raw.users?.[0]?.name || 'Unknown')"
+                        ></v-list-item>
+                    </template>
+                </v-select>
 
-        <v-textarea
-          v-model="formData.description"
-          label="Description (Optional)"
-          placeholder="What is this transfer for?"
-          variant="outlined"
-          rows="3"
-        ></v-textarea>
+                <!-- External: Address Input -->
+                <v-text-field
+                    v-if="formData.type === 'external'"
+                    v-model="formData.to_address"
+                    label="External Wallet Address"
+                    placeholder="e.g. 0x123..."
+                    variant="outlined"
+                    :rules="[v => !!v || 'Address is required']"
+                    required
+                    class="mb-2"
+                ></v-text-field>
+
+                <!-- Amount -->
+                <v-text-field
+                    v-model.number="formData.amount"
+                    label="Amount"
+                    placeholder="0.00"
+                    variant="outlined"
+                    type="number"
+                    min="0.01"
+                    step="0.01"
+                    :rules="amountRules"
+                    required
+                    class="mb-2"
+                ></v-text-field>
+
+                <!-- Description -->
+                <v-textarea
+                    v-model="formData.description"
+                    label="Description (Optional)"
+                    placeholder="What is this transfer for?"
+                    variant="outlined"
+                    rows="3"
+                    class="mb-4"
+                ></v-textarea>
+            </div>
+        </v-fade-transition>
 
         <v-alert v-if="error" type="error" class="mb-4" closable>{{ error }}</v-alert>
         <v-alert v-if="successMessage" type="success" class="mb-4" closable>{{ successMessage }}</v-alert>
 
-        <div class="d-flex justify-end mt-4">
-          <v-btn color="secondary" variant="text" class="mr-2" @click="$router.back()" :disabled="submitting">
-            Cancel
-          </v-btn>
-          <v-btn color="primary" type="submit" :loading="submitting" :disabled="!valid">
-            Transfer Funds
-          </v-btn>
+        <div class="d-flex justify-end gap-2 mt-2">
+            <v-btn variant="outlined" color="secondary" size="large" @click="router.push('/wallets')" class="mr-2">
+                Cancel
+            </v-btn>
+            <v-btn color="primary" type="submit" :loading="submitting" :disabled="!valid" size="large" width="200">
+                Transfer Funds
+            </v-btn>
         </div>
       </v-form>
     </v-card>
@@ -83,48 +105,79 @@
 
 <script setup lang="ts">
 import { ref, reactive, onMounted, computed } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 import { walletApi } from '@/modules/Wallet/api';
 import { transactionApi } from '@/modules/Transaction/api';
 
 const router = useRouter();
+const route = useRoute();
 
 const valid = ref(false);
 const submitting = ref(false);
-const loadingWallets = ref(false);
-const loadingExternalWallets = ref(false);
+const loadingSource = ref(false);
+const loadingTargets = ref(false);
 const error = ref('');
 const successMessage = ref('');
 
-const wallets = ref<any[]>([]);
-const externalWallets = ref<any[]>([]);
+const wallets = ref<any[]>([]); // User's wallets (for Source info)
+const allTargets = ref<any[]>([]); // All system wallets (for Internal Target)
 
 const formData = reactive({
   source_wallet_id: null as number | null,
-  external_wallet_id: null as number | null,
+  type: null as 'internal' | 'external' | null, // Default null
+  to_wallet_id: null as number | null,
+  to_address: '',
   amount: null as number | null,
   description: '',
 });
 
-const onSourceWalletChange = () => {
-    formData.external_wallet_id = null;
+const selectedSourceWallet = computed(() => {
+    return wallets.value.find(w => w.id === formData.source_wallet_id);
+});
+
+const onTypeChange = () => {
+    formData.to_wallet_id = null;
+    formData.to_address = '';
+}
+
+// Compute valid targets for Internal Transfer
+const internalTargetWallets = computed(() => {
+    if (!formData.source_wallet_id || !formData.type) return [];
+    
+    // Check if source wallet is loaded
+    if (!selectedSourceWallet.value) return [];
+
+    // Filter from `allTargets`: 
+    // Return ALL other wallets (exclude self)
+    return allTargets.value.filter(w => w.id !== formData.source_wallet_id);
+});
+
+// Validation rule for internal target
+const validateInternalTarget = (value: any) => {
+    if (!value) return 'Target wallet is required';
+    const target = allTargets.value.find(w => w.id === value);
+    if (!target) return true;
+    
+    // Check Currency
+    if (target.currency_id !== selectedSourceWallet.value?.currency_id) {
+        return `Currency mismatch. Target wallet is ${target.currency?.code}, Source is ${selectedSourceWallet.value?.currency?.code}.`;
+    }
+
+    // Check Status
+    if (!target.status) {
+        return 'Target wallet is inactive/frozen and cannot receive funds.';
+    }
+
+    return true;
 };
 
-const filteredExternalWallets = computed(() => {
-    if (!formData.source_wallet_id) return [];
-    const sourceWallet = wallets.value.find(w => w.id === formData.source_wallet_id);
-    if (!sourceWallet) return [];
-    
-    return externalWallets.value.filter(ew => ew.currency_id === sourceWallet.currency_id);
-});
 
 const amountRules = [
   (v: number) => !!v || 'Amount is required',
   (v: number) => v > 0 || 'Amount must be greater than 0',
   (v: number) => {
       if (!formData.source_wallet_id) return true;
-      const sourceWallet = wallets.value.find(w => w.id === formData.source_wallet_id);
-      if (sourceWallet && v > parseFloat(sourceWallet.balance)) {
+      if (selectedSourceWallet.value && v > parseFloat(selectedSourceWallet.value.balance)) {
           return 'Insufficient balance';
       }
       return true;
@@ -132,51 +185,64 @@ const amountRules = [
 ];
 
 onMounted(async () => {
-  await fetchWallets();
-  await fetchExternalWallets();
+  // Load Source Wallet (User's wallets)
+  await fetchUserWallets();
+  
+  // Auto-select Source from query
+  if (route.query.from) {
+      const fromId = Number(route.query.from);
+      const exists = wallets.value.find(w => w.id === fromId);
+      if (exists) {
+          formData.source_wallet_id = fromId;
+      }
+  }
+
+  // Load All Targets for Internal Transfer
+  await fetchTransferTargets();
 });
 
-const fetchWallets = async () => {
-  loadingWallets.value = true;
+const fetchUserWallets = async () => {
+  loadingSource.value = true;
   try {
     const response = await walletApi.getWallets();
-    // Assuming response.data is the array because apiClient returns common Axios response
-    // If apiClient unwraps it, we might need to adjust.
-    // Based on other files, it seems variable.
-    // Let's safe check.
     const data = (response as any).data || response;
     
     if (Array.isArray(data)) {
-         wallets.value = data.filter((w: any) => w.status);
+         wallets.value = data;
     } else {
-         // Maybe inside 'data' property again?
-         wallets.value = (data.data || []).filter((w: any) => w.status);
+         wallets.value = (data.data || []); // .data if paginated or wrapped
     }
   } catch (e) {
     console.error('Failed to load wallets', e);
-    error.value = 'Failed to load your wallets.';
+    error.value = 'Failed to load source wallet info.';
   } finally {
-    loadingWallets.value = false;
+    loadingSource.value = false;
   }
 };
 
-const fetchExternalWallets = async () => {
-    loadingExternalWallets.value = true;
+const fetchTransferTargets = async () => {
+    loadingTargets.value = true;
     try {
-        const response = await transactionApi.getExternalWallets();
-        // Handle Axios Response wrapper
+        const response = await walletApi.getTransferTargets();
         const data = (response as any).data || response;
-        externalWallets.value = Array.isArray(data) ? data : (data.data || []);
+        if (Array.isArray(data)) {
+            allTargets.value = data;
+        } else {
+            allTargets.value = (data.data || []);
+        }
     } catch (e) {
-        console.error('Failed to load external wallets', e);
-        // Dont block UI, just wont populate
+        console.error('Failed to load transfer targets', e);
     } finally {
-        loadingExternalWallets.value = false;
+        loadingTargets.value = false;
     }
 }
 
 const submitTransfer = async () => {
   if (!valid.value) return;
+  if (!formData.type) {
+      error.value = "Please select a transfer type.";
+      return;
+  }
 
   submitting.value = true;
   error.value = '';
@@ -185,14 +251,15 @@ const submitTransfer = async () => {
   try {
     await transactionApi.initiateTransfer({
       source_wallet_id: formData.source_wallet_id!,
-      external_wallet_id: formData.external_wallet_id!,
+      type: formData.type,
+      to_wallet_id: formData.type === 'internal' ? formData.to_wallet_id : null,
+      to_address: formData.type === 'external' ? formData.to_address : null,
       amount: formData.amount!,
       description: formData.description,
     });
     
     successMessage.value = 'Transfer initiated successfully!';
 
-    // Reset form or redirect
     setTimeout(() => {
         router.push('/transactions');
     }, 2000);
@@ -211,8 +278,14 @@ const submitTransfer = async () => {
 
 <style scoped>
 .transfer-form-container {
-  max-width: 600px;
+  max-width: 900px; /* Bigger width as requested */
   margin: 0 auto;
   padding: 24px;
+}
+.transfer-card {
+    border: 1px solid #e0e0e0;
+}
+.border-dashed {
+    border: 1px dashed #bdbdbd;
 }
 </style>

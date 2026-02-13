@@ -14,32 +14,65 @@ use Exception;
 class TransferService
 {
     /**
-     * Initiate a transfer to an external wallet.
+     * Initiate a transfer (Internal or External).
      *
      * @param Wallet $fromWallet
-     * @param ExternalWallet $toWallet
+     * @param string $type 'internal' | 'external'
+     * @param mixed $target Target Wallet ID (internal) or Address (external)
      * @param float $amount
+     * @param User $initiator
+     * @param string|null $description
      * @return Transaction
      * @throws Exception
      */
-    public function initiateTransfer(Wallet $fromWallet, ExternalWallet $toWallet, float $amount, User $initiator): Transaction
+    public function initiateTransfer(Wallet $fromWallet, string $type, $target, float $amount, User $initiator, ?string $description = null): Transaction
     {
-        return DB::transaction(function () use ($fromWallet, $toWallet, $amount, $initiator) {
-            // 1. Check if currencies match
-            if ($fromWallet->currency_id !== $toWallet->currency_id) {
-                throw new Exception("Currency mismatch between source and target wallets.");
+        return DB::transaction(function () use ($fromWallet, $type, $target, $amount, $initiator, $description) {
+            $toWallet = null;
+            $externalWalletId = null;
+
+            // 0. Validate Source Wallet matches User (Controller does this, but sanity check good)
+
+            // 1. Resolve Target
+            if ($type === 'internal') {
+                $toWallet = Wallet::findOrFail($target); // $target is ID
+
+                // Identify same wallet
+                if ($fromWallet->id === $toWallet->id) {
+                    throw new Exception("Cannot transfer to the same wallet.");
+                }
+
+                // Currency mismatch
+                if ($fromWallet->currency_id !== $toWallet->currency_id) {
+                    throw new Exception("Currency mismatch between source and target wallets.");
+                }
+
+            } else {
+                // External
+                // Find or Create External Wallet
+                // $target is address string
+                $externalWallet = ExternalWallet::where('address', $target)->first();
+
+                if ($externalWallet) {
+                    // Check currency
+                    if ($externalWallet->currency_id !== $fromWallet->currency_id) {
+                        // In a real app we might handle multi-chain, but for now strict check:
+                        throw new Exception("Currency mismatch between source wallet and target address.");
+                    }
+                } else {
+                    $externalWallet = ExternalWallet::create([
+                        'address' => $target,
+                        'currency_id' => $fromWallet->currency_id,
+                        'name' => 'External ' . substr($target, 0, 8)
+                    ]);
+                }
+
+                $externalWalletId = $externalWallet->id;
             }
 
             // 2. Check Global Transfer Limit
             $limitSetting = Setting::where('key', 'transfer_limit')->first();
             $limit = $limitSetting ? (float) $limitSetting->value : 1000.0;
-
-            if ($amount > $limit) {
-                // Should we reject or just fail? Usually existing validation fails.
-                // throw new Exception("Transfer amount exceeds the global limit of {$limit}.");
-                // Requirement Change: Auto-approve if <= limit, else Pending (for users).
-                // Admin/Manager always auto-approve.
-            }
 
             // 3. Check Available Balance
             if ($fromWallet->available_balance < $amount) {
@@ -62,7 +95,7 @@ class TransferService
                     // Auto-Approve if within limit
                     $status = 'completed';
                     $approvedAt = now();
-                    $approvedBy = null; // System auto-approval? Or keep null.
+                    $approvedBy = null;
                 } else {
                     $status = 'pending';
                 }
@@ -74,15 +107,21 @@ class TransferService
             return Transaction::create([
                 'user_id' => $initiator->id,
                 'from_wallet_id' => $fromWallet->id,
-                'external_wallet_id' => $toWallet->id,
-                'to_wallet_id' => null, // External transfer
+                'external_wallet_id' => $externalWalletId,
+                'to_wallet_id' => $toWallet ? $toWallet->id : null,
                 'amount' => $amount,
                 'transaction_status_id' => $statusModel->id,
-                'type' => 'debit',
+                'type' => 'debit', // Always debit from source perspective
+                'reference' => $description, // Use description as particular reference? or generate valid reference?
                 'created_at' => now(),
                 'approved_by' => $approvedBy,
                 'approved_at' => $approvedAt,
             ]);
+
+            // Note: If Internal and Completed, we might need a corresponding Credit transaction for the receiver?
+            // The system lists transactions by wallet. A single transaction row has `from` and `to`.
+            // So one row is sufficient to show Debit for Sender and Credit for Receiver (if logic queries properly).
+            // `Transaction` model likely handles this relationship.
         });
     }
 

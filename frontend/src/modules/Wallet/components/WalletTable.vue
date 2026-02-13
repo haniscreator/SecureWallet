@@ -76,6 +76,15 @@
                     <v-btn
                         variant="text"
                         size="small"
+                        color="secondary"
+                        class="font-weight-bold"
+                        @click="$router.push({ path: '/transfer', query: { from: item.id } })"
+                    >
+                        TRANSFER <v-icon size="small" class="ml-1">mdi-bank-transfer</v-icon>
+                    </v-btn>
+                    <v-btn
+                        variant="text"
+                        size="small"
                         :color="isAdmin ? 'primary' : 'info'"
                         class="font-weight-bold"
                         @click="$router.push({ name: 'WalletEdit', params: { id: item.id } })"

@@ -24,7 +24,9 @@ class TransferController extends Controller
     {
         $request->validate([
             'source_wallet_id' => 'required|exists:wallets,id',
-            'external_wallet_id' => 'required|exists:external_wallets,id',
+            'type' => 'required|in:internal,external',
+            'to_wallet_id' => 'required_if:type,internal|nullable|exists:wallets,id',
+            'to_address' => 'required_if:type,external|nullable|string',
             'amount' => 'required|numeric|min:0.01',
         ]);
 
@@ -32,19 +34,20 @@ class TransferController extends Controller
         $sourceWallet = Wallet::findOrFail($request->source_wallet_id);
 
         // Authorization: Check if user owns the wallet
-        // Assuming wallet belongs to user (many-to-many or one-to-many)
         if (!$sourceWallet->users->contains($user->id)) {
             return response()->json(['message' => 'Unauthorized access to wallet.'], 403);
         }
 
-        $externalWallet = ExternalWallet::findOrFail($request->external_wallet_id);
+        $target = $request->type === 'internal' ? $request->to_wallet_id : $request->to_address;
 
         try {
             $transaction = $this->transferService->initiateTransfer(
                 $sourceWallet,
-                $externalWallet,
+                $request->type,
+                $target,
                 (float) $request->amount,
-                $user
+                $user,
+                $request->description
             );
 
             return response()->json([

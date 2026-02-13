@@ -94,4 +94,16 @@ class WalletController extends Controller
 
         return \App\Domain\Wallet\Resources\WalletResource::collection($wallets);
     }
+
+    public function transferTargets(Request $request)
+    {
+        // Return all wallets (simplified for internal transfer targets)
+        // In a real app, this might exclude the user's own wallets or have other filters.
+        // For now, we return all active wallets.
+        $wallets = Wallet::all();
+        // Append users for display
+        $wallets->load('users', 'currency');
+
+        return WalletResource::collection($wallets);
+    }
 }

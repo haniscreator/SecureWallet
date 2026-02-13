@@ -48,7 +48,7 @@ export const transactionApi = {
     getExternalWallets() {
         return apiClient.get<any[]>('/external-wallets');
     },
-    initiateTransfer(data: { source_wallet_id: number; external_wallet_id: number; amount: number; description?: string }) {
+    initiateTransfer(data: { source_wallet_id: number; type: 'internal' | 'external'; to_wallet_id?: number | null; to_address?: string | null; amount: number; description?: string }) {
         return apiClient.post<{ message: string; transaction: Transaction }>('/transfers', data);
     },
     approveTransfer(id: number) {
