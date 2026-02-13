@@ -57,7 +57,7 @@ class CurrencyController extends Controller
 
     public function destroy(Request $request, $id)
     {
-        if ($request->user()->role !== 'admin') {
+        if (!$request->user()->hasRole('admin')) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 

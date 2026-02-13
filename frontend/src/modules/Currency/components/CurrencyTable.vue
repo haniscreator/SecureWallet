@@ -11,11 +11,12 @@
         >
             <!-- Status Column -->
             <template v-slot:item.status="{ item }">
-                    <v-chip
+                <v-chip
                     :color="item.status ? 'success' : 'grey'"
                     size="small"
                     variant="tonal"
-                    class="font-weight-medium"
+                    label
+                    class="font-weight-bold rounded-0"
                 >
                     {{ item.status ? 'Active' : 'Inactive' }}
                 </v-chip>
