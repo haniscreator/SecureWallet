@@ -44,6 +44,12 @@ class DatabaseSeeder extends Seeder
             'role_id' => $managerRole->id,
         ]);
 
+        $wManager = Wallet::factory()->create([
+            'name' => 'Manager Wallet',
+            'currency_id' => $usd->id,
+        ]);
+        $wManager->users()->attach($manager->id);
+
         $w1 = Wallet::factory()->create([
             'name' => 'Admin Wallet',
             'currency_id' => $usd->id,
@@ -53,6 +59,7 @@ class DatabaseSeeder extends Seeder
         $user1 = User::factory()->create([
             'name' => 'User One',
             'email' => 'user1@gmail.com',
+            'password' => '$2y$12$.AjnzZci3HFiXu0CJVdhjuuiFc.BkxINYgUwmR0v62Jy35LmNEmj2', // Explicitly requested hash
             'role_id' => $userRole->id,
         ]);
 
@@ -62,13 +69,20 @@ class DatabaseSeeder extends Seeder
         ]);
         $w2->users()->attach($user1->id);
 
-        // Other users (optional wallet creation if needed for tests, but we only need 2 wallets for ExtraTransactionSeeder)
-        User::factory()->create([
+        $user2 = User::factory()->create([
             'name' => 'User Two',
             'email' => 'user2@gmail.com',
-            'password' => '12345678',
+            'password' => '$2y$12$.AjnzZci3HFiXu0CJVdhjuuiFc.BkxINYgUwmR0v62Jy35LmNEmj2', // Explicitly requested hash
             'role_id' => $userRole->id,
         ]);
+
+        // Wallet-2 for User 2 with SGD
+        $sgd = Currency::where('code', 'SGD')->first();
+        $w3 = Wallet::factory()->create([
+            'name' => 'Wallet-2',
+            'currency_id' => $sgd->id,
+        ]);
+        $w3->users()->attach($user2->id);
 
         // 3. Call Other Seeders
         $this->call([

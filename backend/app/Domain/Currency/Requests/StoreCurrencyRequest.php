@@ -12,7 +12,7 @@ class StoreCurrencyRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()->hasAnyRole(['admin', 'manager']);
+        return $this->user()->hasRole('admin');
     }
 
     /**

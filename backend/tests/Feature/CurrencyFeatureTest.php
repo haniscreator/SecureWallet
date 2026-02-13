@@ -70,6 +70,21 @@ class CurrencyFeatureTest extends TestCase
         ]);
     }
 
+    public function test_manager_cannot_create_currency()
+    {
+        $managerRole = UserRole::where('name', 'manager')->first();
+        $manager = User::factory()->create(['role_id' => $managerRole->id]);
+
+        $response = $this->actingAs($manager)->postJson("/api/currencies", [
+            'code' => 'MGR',
+            'name' => 'Manager Currency',
+            'symbol' => 'M',
+            'status' => true
+        ]);
+
+        $response->assertStatus(403);
+    }
+
     public function test_admin_can_delete_currency()
     {
         $adminRole = UserRole::where('name', 'admin')->first();
@@ -80,6 +95,33 @@ class CurrencyFeatureTest extends TestCase
 
         $response->assertStatus(200);
         $this->assertDatabaseMissing('currencies', ['id' => $currency->id]);
+    }
+
+    public function test_manager_cannot_update_currency()
+    {
+        $managerRole = UserRole::where('name', 'manager')->first();
+        $manager = User::factory()->create(['role_id' => $managerRole->id]);
+        $currency = Currency::factory()->create(['code' => 'MGR_UP_FAIL']);
+
+        $response = $this->actingAs($manager)->putJson("/api/currencies/{$currency->id}", [
+            'code' => 'MGR_UPD',
+            'name' => 'Manager Updated',
+            'symbol' => 'M'
+        ]);
+
+        $response->assertStatus(403);
+    }
+
+    public function test_manager_cannot_delete_currency()
+    {
+        $managerRole = UserRole::where('name', 'manager')->first();
+        $manager = User::factory()->create(['role_id' => $managerRole->id]);
+        $currency = Currency::factory()->create(['code' => 'MGR_DEL_FAIL']);
+
+        $response = $this->actingAs($manager)->deleteJson("/api/currencies/{$currency->id}");
+
+        $response->assertStatus(403);
+        $this->assertDatabaseHas('currencies', ['id' => $currency->id]);
     }
 
     public function test_non_admin_cannot_delete_currency()

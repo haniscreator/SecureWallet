@@ -27,19 +27,22 @@ class ExtraTransactionSeeder extends Seeder
         $rejected = TransactionStatus::where('code', 'rejected')->first();
 
         // Get Wallets
-        $wallets = Wallet::take(2)->get();
+        $wallets = Wallet::all();
         if ($wallets->count() < 2)
             return;
 
         $user = User::first(); // Admin
 
         // 0. Initial Deposits (Ensure positive balance)
+        // 0. Initial Deposits (Ensure positive balance)
         foreach ($wallets as $wallet) {
+            $amount = $wallet->name === 'Wallet-2' ? 30000.00 : 50000.00;
+
             Transaction::create([
                 'to_wallet_id' => $wallet->id,
                 'transaction_status_id' => $completed->id,
                 'type' => 'credit',
-                'amount' => 50000.00, // Large Enough
+                'amount' => $amount,
                 'reference' => 'Initial Seed Deposit',
                 'created_at' => now()->subYear(),
             ]);
