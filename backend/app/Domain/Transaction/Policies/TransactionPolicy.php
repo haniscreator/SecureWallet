@@ -30,8 +30,9 @@ class TransactionPolicy
     /**
      * Determine whether the user can approve the model.
      */
-    public function approve(User $user): bool
+    public function approve(User $user, Transaction $transaction): bool
     {
+        // Only Admin or Manager can approve
         return $user->hasRole('manager') || $user->hasRole('admin');
     }
 }

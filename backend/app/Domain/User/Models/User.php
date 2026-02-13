@@ -12,7 +12,7 @@ use App\Domain\Wallet\Models\Wallet;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<UserFactory> */
+    /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasApiTokens, HasFactory, Notifiable;
 
     protected static function newFactory()

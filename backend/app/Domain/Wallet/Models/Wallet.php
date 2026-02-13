@@ -3,8 +3,8 @@
 namespace App\Domain\Wallet\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Database\Factories\WalletFactory;
+use Illuminate\Database\Eloquent\Model;
 use App\Domain\User\Models\User;
 use App\Domain\Transaction\Models\Transaction;
 use App\Domain\Currency\Models\Currency;
@@ -63,6 +63,17 @@ class Wallet extends Model
             ->sum('amount');
 
         return $credits - $debits;
+    }
+
+    public function getAvailableBalanceAttribute()
+    {
+        $pendingDebit = $this->outgoingTransactions()
+            ->whereHas('status', function ($query) {
+                $query->where('code', 'pending');
+            })
+            ->sum('amount');
+
+        return $this->balance - $pendingDebit;
     }
 
 

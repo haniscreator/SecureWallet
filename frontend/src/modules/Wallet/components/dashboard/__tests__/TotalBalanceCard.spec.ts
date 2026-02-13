@@ -4,7 +4,7 @@ import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
 import TotalBalanceCard from '../TotalBalanceCard.vue'
 import { createTestingPinia } from '@pinia/testing'
-import { vi } from 'vitest'
+import { vi, describe, it, expect } from 'vitest'
 
 const vuetify = createVuetify({ components, directives })
 
@@ -18,10 +18,10 @@ describe('TotalBalanceCard', () => {
                         createSpy: vi.fn,
                         initialState: {
                             wallet: {
-                                wallets: [
-                                    { id: 1, balance: 5000, currency: { code: 'USD', symbol: '$' } },
-                                    { id: 2, balance: 1000, currency: { code: 'EUR', symbol: '€' } }
-                                ]
+                                totalBalance: {
+                                    USD: { amount: 5000, symbol: '$' },
+                                    EUR: { amount: 1000, symbol: '€' }
+                                }
                             }
                         },
                         stubActions: false // Allow getters to compute from state
@@ -68,8 +68,8 @@ describe('TotalBalanceCard', () => {
                         createSpy: vi.fn,
                         initialState: {
                             wallet: {
-                                loading: true,
-                                wallets: [] // Even if empty, loading takes precedence
+                                totalBalanceLoading: true,
+                                totalBalance: {}
                             }
                         }
                     })

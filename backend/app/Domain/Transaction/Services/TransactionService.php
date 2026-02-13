@@ -77,6 +77,10 @@ class TransactionService
             $query->where('reference', 'like', '%' . $filters->reference . '%');
         }
 
+        if (!empty($filters->status_id)) {
+            $query->where('transaction_status_id', $filters->status_id);
+        }
+
         return $query->orderBy($filters->sort_by ?? 'created_at', $filters->sort_dir ?? 'desc')
             ->paginate($filters->per_page ?? 15);
     }

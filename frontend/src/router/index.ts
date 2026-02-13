@@ -41,7 +41,7 @@ const routes = [
                 path: 'wallet/:id',
                 name: 'WalletDetails',
                 component: () => import('@/modules/Wallet/views/WalletDetail.vue'),
-                props: (route) => ({ id: Number(route.params.id) }),
+                props: (route: any) => ({ id: Number(route.params.id) }),
             },
             {
                 path: 'members',
@@ -79,9 +79,20 @@ const routes = [
                 component: () => import('@/modules/Transaction/views/TransactionList.vue'),
             },
             {
+                path: 'transfer',
+                name: 'Transfer',
+                component: () => import('@/modules/Transaction/views/TransferForm.vue'),
+            },
+            {
                 path: 'transactions/:id',
                 name: 'TransactionDetails',
                 component: () => import('@/modules/Transaction/views/TransactionForm.vue'),
+            },
+            {
+                path: 'transfers/approvals',
+                name: 'PendingApprovals',
+                component: () => import('@/modules/Transaction/views/PendingApprovals.vue'),
+                meta: { requiresRole: 'manager' } // Assuming we have such check or leave it open but guarded by API/Page
             },
         ]
     },
@@ -96,7 +107,7 @@ const router = createRouter({
     routes,
 });
 
-router.beforeEach((to, from, next) => {
+router.beforeEach((to, _from, next) => {
     const token = localStorage.getItem('token');
     const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
     const isGuest = to.matched.some(record => record.meta.guest);

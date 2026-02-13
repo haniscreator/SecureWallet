@@ -3,6 +3,7 @@
 namespace App\Domain\Transaction\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Database\Factories\TransactionFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Domain\Wallet\Models\Wallet;
 use App\Domain\Wallet\Models\ExternalWallet;
@@ -11,6 +12,11 @@ use App\Domain\User\Models\User;
 class Transaction extends Model
 {
     use HasFactory;
+
+    protected static function newFactory()
+    {
+        return TransactionFactory::new();
+    }
 
     protected $fillable = [
         'from_wallet_id',

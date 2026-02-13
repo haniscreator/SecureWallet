@@ -4,7 +4,7 @@ import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
 import CompanyInfoCard from '../CompanyInfoCard.vue'
 import { createTestingPinia } from '@pinia/testing'
-import { vi } from 'vitest'
+import { vi, describe, it, expect } from 'vitest'
 
 const vuetify = createVuetify({ components, directives })
 
@@ -20,7 +20,7 @@ describe('CompanyInfoCard', () => {
                             wallet: {
                                 wallets: [1, 2, 3], // Mocking length
                                 totalBalance: { USD: {}, EUR: {} }, // Mocking keys length
-                                recentGlobalTransactions: [1, 2, 3, 4, 5] // Mocking length
+                                dashboardTotalItems: 5 // Mocking length
                             },
                             user: {
                                 members: [1, 2, 3, 4] // Mocking length

@@ -35,6 +35,7 @@ export interface TransactionFilters {
     sort_by?: string;
     sort_dir?: 'asc' | 'desc';
     per_page?: number;
+    status_id?: number;
 }
 
 export const transactionApi = {
@@ -43,5 +44,17 @@ export const transactionApi = {
     },
     getTransaction(id: number) {
         return apiClient.get<{ data: Transaction }>(`/transactions/${id}`);
+    },
+    getExternalWallets() {
+        return apiClient.get<any[]>('/external-wallets');
+    },
+    initiateTransfer(data: { source_wallet_id: number; external_wallet_id: number; amount: number; description?: string }) {
+        return apiClient.post<{ message: string; transaction: Transaction }>('/transfers', data);
+    },
+    approveTransfer(id: number) {
+        return apiClient.post<{ message: string; transaction: Transaction }>(`/transfers/${id}/approve`);
+    },
+    rejectTransfer(id: number, reason: string) {
+        return apiClient.post<{ message: string; transaction: Transaction }>(`/transfers/${id}/reject`, { reason });
     }
 };
