@@ -29,7 +29,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'role',
+        'password',
+        'role_id',
         'status',
     ];
 
@@ -55,6 +56,16 @@ class User extends Authenticatable
             'password' => 'hashed',
             'status' => 'boolean',
         ];
+    }
+
+    public function role()
+    {
+        return $this->belongsTo(\App\Domain\User\Models\UserRole::class);
+    }
+
+    public function hasRole(string $roleName): bool
+    {
+        return $this->role && $this->role->name === $roleName;
     }
     /**
      * The wallets that belong to the user.

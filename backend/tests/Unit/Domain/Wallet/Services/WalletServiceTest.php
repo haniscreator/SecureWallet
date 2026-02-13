@@ -4,6 +4,7 @@ namespace Tests\Unit\Domain\Wallet\Services;
 
 use Tests\TestCase;
 use App\Domain\User\Models\User;
+use App\Domain\User\Models\UserRole;
 use App\Domain\Wallet\Models\Wallet;
 use App\Domain\Currency\Models\Currency;
 use App\Domain\Transaction\Models\Transaction;
@@ -146,7 +147,8 @@ class WalletServiceTest extends TestCase
 
     public function test_list_wallets_as_admin_returns_all()
     {
-        $admin = User::factory()->create(['role' => 'admin']);
+        $roleId = UserRole::firstOrCreate(['name' => 'admin'], ['label' => 'Admin'])->id;
+        $admin = User::factory()->create(['role_id' => $roleId]);
 
         Wallet::factory()->create(['name' => 'W1', 'currency_id' => $this->currency->id]);
         Wallet::factory()->create(['name' => 'W2', 'currency_id' => $this->currency->id]);
@@ -158,7 +160,8 @@ class WalletServiceTest extends TestCase
 
     public function test_list_wallets_as_user_returns_only_assigned()
     {
-        $user = User::factory()->create(['role' => 'user']);
+        $roleId = UserRole::firstOrCreate(['name' => 'user'], ['label' => 'User'])->id;
+        $user = User::factory()->create(['role_id' => $roleId]);
 
         $w1 = Wallet::factory()->create(['name' => 'Assigned', 'currency_id' => $this->currency->id]);
         $w2 = Wallet::factory()->create(['name' => 'Not Assigned', 'currency_id' => $this->currency->id]);

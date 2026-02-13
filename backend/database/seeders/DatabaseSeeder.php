@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Domain\User\Models\User;
+use App\Domain\User\Models\UserRole;
 use App\Domain\Currency\Models\Currency;
 use App\Domain\Wallet\Models\Wallet;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -24,11 +25,23 @@ class DatabaseSeeder extends Seeder
         $eur = Currency::where('code', 'EUR')->first();
 
         // 2. Create Users & Wallets
+        // Seed Roles
+        $adminRole = UserRole::create(['name' => 'admin', 'label' => 'Administrator']);
+        $userRole = UserRole::create(['name' => 'user', 'label' => 'User']);
+        $managerRole = UserRole::create(['name' => 'manager', 'label' => 'Manager']);
+
         $admin = User::factory()->create([
             'name' => 'Admin User',
             'email' => 'admin@gmail.com',
             'password' => '12345678',
-            'role' => 'admin',
+            'role_id' => $adminRole->id,
+        ]);
+
+        $manager = User::factory()->create([
+            'name' => 'Manager User',
+            'email' => 'manager1@gmail.com',
+            'password' => '12345678', // Explicitly requested by user
+            'role_id' => $managerRole->id,
         ]);
 
         $w1 = Wallet::factory()->create([
@@ -40,8 +53,7 @@ class DatabaseSeeder extends Seeder
         $user1 = User::factory()->create([
             'name' => 'User One',
             'email' => 'user1@gmail.com',
-            'password' => '12345678',
-            'role' => 'user',
+            'role_id' => $userRole->id,
         ]);
 
         $w2 = Wallet::factory()->create([
@@ -55,7 +67,7 @@ class DatabaseSeeder extends Seeder
             'name' => 'User Two',
             'email' => 'user2@gmail.com',
             'password' => '12345678',
-            'role' => 'user',
+            'role_id' => $userRole->id,
         ]);
 
         // 3. Call Other Seeders

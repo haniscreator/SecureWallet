@@ -3,6 +3,7 @@
 namespace Tests\Unit\Domain\User\Services;
 
 use App\Domain\User\Models\User;
+use App\Domain\User\Models\UserRole;
 use App\Domain\User\Services\UserService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Hash;
@@ -17,6 +18,10 @@ class UserServiceTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
+        // Seed roles
+        UserRole::create(['name' => 'admin', 'label' => 'Administrator']);
+        UserRole::create(['name' => 'user', 'label' => 'User']);
+
         $this->service = new UserService();
     }
 
@@ -32,10 +37,10 @@ class UserServiceTest extends TestCase
         $user = $this->service->createUser($data);
 
         $this->assertInstanceOf(User::class, $user);
+        $this->assertEquals('admin', $user->role->name);
         $this->assertDatabaseHas('users', [
             'email' => 'test@example.com',
             'name' => 'Test User',
-            'role' => 'admin',
         ]);
         $this->assertTrue(Hash::check('password123', $user->password));
     }
@@ -50,7 +55,7 @@ class UserServiceTest extends TestCase
 
         $user = $this->service->createUser($data);
 
-        $this->assertEquals('user', $user->role);
+        $this->assertEquals('user', $user->role->name);
     }
 
     public function test_list_users()

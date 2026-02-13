@@ -17,15 +17,15 @@
             <!-- Role Column -->
             <template v-slot:item.role="{ item }">
                 <v-chip
-                    :color="item.role === 'admin' ? '#EBEBEF' : '#D6E3F7'"
-                    :text-color="item.role === 'admin' ? '#333' : '#1976D2'"
+                    :color="item.role === 'admin' ? '#EBEBEF' : (item.role === 'manager' ? '#FFF3E0' : '#D6E3F7')"
+                    :text-color="item.role === 'admin' ? '#333' : (item.role === 'manager' ? '#E65100' : '#1976D2')"
                     class="font-weight-bold text-capitalize"
                     size="small"
                     label
                     variant="flat"
                     style="color: inherit"
                 >
-                    {{ item.role === 'admin' ? 'Admin' : 'User' }}
+                    {{ item.role === 'admin' ? 'Admin' : (item.role === 'manager' ? 'Manager' : 'User') }}
                 </v-chip>
             </template>
 

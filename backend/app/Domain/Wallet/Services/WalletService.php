@@ -17,7 +17,7 @@ class WalletService
 {
     public function listWallets(User $user, array $filters = [])
     {
-        $query = ($user->role === 'admin')
+        $query = $user->hasRole('admin')
             ? Wallet::query()
             : $user->wallets()->getQuery();
 
@@ -104,7 +104,7 @@ class WalletService
         // 1. Fetch user's wallets
         // Fix ambiguous column 'created_at' by specifying table name
         // Allow admin to see all wallets
-        $query = ($user->role === 'admin')
+        $query = $user->hasRole('admin')
             ? Wallet::query()
             : $user->wallets();
 

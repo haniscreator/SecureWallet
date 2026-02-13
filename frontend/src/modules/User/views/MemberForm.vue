@@ -163,13 +163,14 @@ const formData = ref({
     name: '',
     email: '',
     password: '',
-    role: null as 'admin' | 'user' | null, 
+    role: null as 'admin' | 'user' | 'manager' | null, 
     status: true,
     wallet_ids: [] as number[],
 });
 
 const roles = [
     { title: 'Administrator', value: 'admin' },
+    { title: 'Manager', value: 'manager' },
     { title: 'User', value: 'user' },
 ];
 
