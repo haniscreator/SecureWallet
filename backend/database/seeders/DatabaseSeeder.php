@@ -44,11 +44,24 @@ class DatabaseSeeder extends Seeder
             'role_id' => $managerRole->id,
         ]);
 
-        $wManager = Wallet::factory()->create([
-            'name' => 'Manager Wallet',
+        $wManager1 = Wallet::factory()->create([
+            'name' => 'Manager Wallet-1',
             'currency_id' => $usd->id,
         ]);
-        $wManager->users()->attach($manager->id);
+        $wManager1->users()->attach($manager->id);
+
+        $wManager2 = Wallet::factory()->create([
+            'name' => 'Manager Wallet-2',
+            'currency_id' => $eur->id,
+        ]);
+        $wManager2->users()->attach($manager->id);
+
+        $sgd = Currency::where('code', 'SGD')->first();
+        $wManager3 = Wallet::factory()->create([
+            'name' => 'Manager Wallet-3',
+            'currency_id' => $sgd->id,
+        ]);
+        $wManager3->users()->attach($manager->id);
 
         $w1 = Wallet::factory()->create([
             'name' => 'Admin Wallet',
