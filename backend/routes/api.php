@@ -40,10 +40,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('currencies', \App\Http\Controllers\Api\Currency\CurrencyController::class);
 
     // Transfers
-    Route::post('/transfers', [\App\Http\Controllers\Api\TransferController::class, 'initiate']);
-    Route::post('/transfers/{transaction}/approve', [\App\Http\Controllers\Api\TransferController::class, 'approve']);
-    Route::post('/transfers/{transaction}/reject', [\App\Http\Controllers\Api\TransferController::class, 'reject']);
+    Route::post('/transfers', [\App\Http\Controllers\Api\Transaction\TransferController::class, 'initiate']);
+    Route::post('/transfers/{transaction}/approve', [\App\Http\Controllers\Api\Transaction\TransferController::class, 'approve']);
+    Route::post('/transfers/{transaction}/reject', [\App\Http\Controllers\Api\Transaction\TransferController::class, 'reject']);
 
     // External Wallets
-    Route::get('/external-wallets', [\App\Http\Controllers\Api\ExternalWalletController::class, 'index']);
+    Route::get('/external-wallets', [\App\Http\Controllers\Api\Wallet\ExternalWalletController::class, 'index']);
+
+    // Settings
+    Route::get('/settings', [\App\Http\Controllers\Api\Setting\SettingController::class, 'index']);
+    Route::post('/settings', [\App\Http\Controllers\Api\Setting\SettingController::class, 'update']);
 });

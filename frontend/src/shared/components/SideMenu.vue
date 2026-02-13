@@ -50,7 +50,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import { useUserStore } from '@/modules/User/store';
+import { useAuthStore } from '@/modules/Auth/store';
 
 const props = defineProps<{
   modelValue: boolean;
@@ -67,9 +67,10 @@ const menuItems = [
   { title: 'Currencies', icon: 'mdi-currency-usd', value: 'currencies', to: '/currencies' },
   { title: 'Team Members', icon: 'mdi-account-group-outline', value: 'members', to: '/members' },
   { title: 'Approvals', icon: 'mdi-check-decagram', value: 'approvals', to: '/approvals', roles: ['admin', 'manager'] },
+  { title: 'Settings', icon: 'mdi-cog-outline', value: 'settings', to: '/settings', roles: ['admin'] },
 ];
 
-const userStore = useUserStore();
+const authStore = useAuthStore();
 
 // Search Logic
 const search = ref('');
@@ -80,9 +81,12 @@ const filteredMenuItems = computed(() => {
   // Filter by Role
   items = items.filter(item => {
     if (!item.roles) return true;
-    const role = userStore.currentUser?.role;
-    const roleName = (typeof role === 'object' && role !== null) ? role.name : role;
-    return item.roles.includes(roleName as string); 
+    const role = authStore.user?.role;
+    // user.role is now a string from the API (UserResource), but AuthStore type might need update if not matching
+    // AuthStore interface says: role: 'admin' | 'user' | 'manager';
+    // So distinct check for object is not strictly needed if we trust the interface/API, 
+    // but safe to keep string check.
+    return item.roles.includes(role || ''); 
   });
 
   if (!search.value) return items;

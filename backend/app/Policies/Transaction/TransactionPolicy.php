@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Policies;
+namespace App\Policies\Transaction;
 
 use App\Domain\User\Models\User;
-use App\Models\Transaction;
+use App\Domain\Transaction\Models\Transaction;
 use Illuminate\Auth\Access\Response;
 
 class TransactionPolicy
@@ -13,7 +13,7 @@ class TransactionPolicy
      */
     public function viewAny(User $user): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -21,7 +21,10 @@ class TransactionPolicy
      */
     public function view(User $user, Transaction $transaction): bool
     {
-        return false;
+        // Check if user owns one of the wallets involved
+        $isOwner = $user->wallets()->whereIn('id', [$transaction->from_wallet_id, $transaction->to_wallet_id])->exists();
+
+        return $isOwner || $user->hasRole('admin') || $user->hasRole('manager');
     }
 
     /**
@@ -62,5 +65,14 @@ class TransactionPolicy
     public function forceDelete(User $user, Transaction $transaction): bool
     {
         return false;
+    }
+
+    /**
+     * Determine whether the user can approve the model.
+     */
+    public function approve(User $user, Transaction $transaction): bool
+    {
+        // Only Admin or Manager can approve
+        return $user->hasRole('manager') || $user->hasRole('admin');
     }
 }

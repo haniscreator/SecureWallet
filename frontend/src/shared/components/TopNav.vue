@@ -81,6 +81,10 @@ const userAvatar = computed(() => {
     if (authStore.user?.email === 'admin@gmail.com') {
         return 'https://randomuser.me/api/portraits/men/32.jpg';
     }
+    // Manager uses specific man profile
+    if (authStore.user?.role === 'manager') {
+        return 'https://randomuser.me/api/portraits/men/44.jpg';
+    }
     // All other users use the women profile
     return 'https://randomuser.me/api/portraits/women/44.jpg';
 });
