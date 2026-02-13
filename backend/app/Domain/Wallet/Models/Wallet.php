@@ -18,10 +18,22 @@ class Wallet extends Model
     }
 
     protected $fillable = [
+        'address',
         'name',
         'currency_id',
         'status',
     ];
+
+    public function isFrozen(): bool
+    {
+        return $this->status === false;
+    }
+
+    public function isActive(): bool
+    {
+        return $this->status === true;
+    }
+
 
     protected $casts = [
         'status' => 'boolean',
@@ -37,15 +49,21 @@ class Wallet extends Model
      */
     public function getBalanceAttribute()
     {
-        $credits = $this->incomingTransactions()->sum('amount');
-        $debits = $this->outgoingTransactions()->sum('amount');
+        $credits = $this->incomingTransactions()
+            ->whereHas('status', function ($query) {
+                $query->where('code', 'completed');
+            })
+            ->sum('amount');
 
-        // If it's a dual-entry system check:
-        // Incoming (to_wallet_id = this) -> Add
-        // Outgoing (from_wallet_id = this) -> Subtract
+        $debits = $this->outgoingTransactions()
+            ->whereHas('status', function ($query) {
+                $query->where('code', 'completed');
+            })
+            ->sum('amount');
 
         return $credits - $debits;
     }
+
 
     public function incomingTransactions()
     {

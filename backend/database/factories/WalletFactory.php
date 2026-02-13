@@ -2,14 +2,17 @@
 
 namespace Database\Factories;
 
+use App\Domain\Wallet\Models\Wallet;
+use App\Domain\Currency\Models\Currency;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Domain\Wallet\Models\Wallet>
  */
 class WalletFactory extends Factory
 {
-    protected $model = \App\Domain\Wallet\Models\Wallet::class;
+    protected $model = Wallet::class;
 
     /**
      * Define the model's default state.
@@ -19,9 +22,11 @@ class WalletFactory extends Factory
     public function definition(): array
     {
         return [
+            'address' => Str::uuid(),
             'name' => fake()->word() . ' Wallet',
             'status' => true,
-            'currency_id' => \App\Domain\Currency\Models\Currency::factory(),
+            'currency_id' => Currency::factory(),
         ];
     }
+
 }

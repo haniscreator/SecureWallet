@@ -94,21 +94,8 @@ class TransactionService
         $totals = [];
 
         $wallets->each(function ($wallet) use (&$totals) {
-            // Calculate Balance Manually (Credit - Debit)
-            // Reusing logic from WalletService for consistency, but kept local here to avoid circular dependency if WalletService uses TransactionService
-            $transactions = Transaction::where(function ($q) use ($wallet) {
-                $q->where('from_wallet_id', $wallet->id)
-                    ->orWhere('to_wallet_id', $wallet->id);
-            })->get();
-
-            $balance = 0;
-            foreach ($transactions as $tx) {
-                if ($tx->type === 'credit') {
-                    $balance += $tx->amount;
-                } elseif ($tx->type === 'debit') {
-                    $balance -= $tx->amount;
-                }
-            }
+            // Calculate Balance using Model Logic (Status = Completed only)
+            $balance = $wallet->balance;
 
             $currencyCode = $wallet->currency?->code ?? ($wallet->currency_id === 2 ? 'EUR' : 'USD');
             $currencySymbol = $wallet->currency?->symbol ?? '$';

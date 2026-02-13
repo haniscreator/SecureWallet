@@ -24,6 +24,9 @@
                         {{ walletStore.currentWallet.currency?.symbol }} {{ Number(walletStore.currentWallet.balance).toFixed(2) }}
                         ({{ walletStore.currentWallet.currency?.code }})
                     </v-card-subtitle>
+                    <div class="text-caption text-medium-emphasis mt-2 font-weight-bold">
+                        Address: {{ walletStore.currentWallet.address || 'N/A' }}
+                    </div>
                 </div>
                 <v-btn color="secondary" prepend-icon="mdi-account-multiple-plus" @click="showAssignDialog = true">
                     Assign Users

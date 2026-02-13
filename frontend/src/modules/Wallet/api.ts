@@ -2,6 +2,7 @@ import apiClient from '@/shared/http/client';
 
 export interface Wallet {
     id: number;
+    address?: string;
     name: string;
     balance: number;
     currency_id: number;

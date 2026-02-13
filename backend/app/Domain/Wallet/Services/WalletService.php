@@ -106,30 +106,27 @@ class WalletService
 
         $wallets->load('currency');
 
-        // 2. Calculate Balance Manually to match Frontend logic
-        // Frontend Logic:
-        // Iterate all transactions where wallet is from or to.
-        // if type == credit -> add
-        // if type == debit -> subtract
-
         $wallets->each(function ($wallet) {
-            // Fetch relevant transactions (incoming OR outgoing)
-            // We use the same logic as TransactionService::listTransactions
-            $transactions = Transaction::where(function ($q) use ($wallet) {
-                $q->where('from_wallet_id', $wallet->id)
-                    ->orWhere('to_wallet_id', $wallet->id);
-            })->get();
+            // Assign to dashboard_balance to match Wallet Model logic
+            // We use the model's accessor logic but eager load it here to avoid N+1 if we were iterating differently
+            // Actually, since we already have the wallet model, we can just use its relation methods if we eager load them properly
+            // But here we are fetching raw transactions to calculate.
 
-            $balance = 0;
-            foreach ($transactions as $tx) {
-                if ($tx->type === 'credit') {
-                    $balance += $tx->amount;
-                } elseif ($tx->type === 'debit') {
-                    $balance -= $tx->amount;
-                }
-            }
+            // Let's use the relation logic with filtering
+            $credits = $wallet->incomingTransactions()
+                ->whereHas('status', function ($q) {
+                    $q->where('code', 'completed');
+                })
+                ->sum('amount');
 
-            // Assign to dashboard_balance to avoid triggering the getBalanceAttribute accessor in the Resource
+            $debits = $wallet->outgoingTransactions()
+                ->whereHas('status', function ($q) {
+                    $q->where('code', 'completed');
+                })
+                ->sum('amount');
+
+            $balance = $credits - $debits;
+
             $wallet->setAttribute('dashboard_balance', $balance);
         });
 

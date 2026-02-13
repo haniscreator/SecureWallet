@@ -13,6 +13,7 @@ class WalletResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'address' => $this->address,
             'name' => $this->name,
             'currency_id' => $this->currency_id,
             'currency' => new CurrencyResource($this->whenLoaded('currency')),

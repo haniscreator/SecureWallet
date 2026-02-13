@@ -13,11 +13,36 @@ class Transaction extends Model
     protected $fillable = [
         'from_wallet_id',
         'to_wallet_id',
+        'external_wallet_id',
+        'transaction_status_id',
         'type', // credit, debit
         'amount',
         'reference',
+        'rejection_reason',
+        'approved_by',
+        'approved_at',
         'created_at',
     ];
+
+    protected $casts = [
+        'approved_at' => 'datetime',
+    ];
+
+    public function status()
+    {
+        return $this->belongsTo(TransactionStatus::class, 'transaction_status_id');
+    }
+
+    public function externalWallet()
+    {
+        return $this->belongsTo(\App\Domain\Wallet\Models\ExternalWallet::class);
+    }
+
+    public function approver()
+    {
+        return $this->belongsTo(\App\Domain\User\Models\User::class, 'approved_by');
+    }
+
 
     public function fromWallet()
     {

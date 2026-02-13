@@ -3,6 +3,8 @@
 namespace Database\Seeders;
 
 use App\Domain\User\Models\User;
+use App\Domain\Currency\Models\Currency;
+use App\Domain\Wallet\Models\Wallet;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -15,22 +17,40 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        // 1. Seed Currencies
+        $this->call(CurrencySeeder::class);
 
-        User::factory()->create([
+        $usd = Currency::where('code', 'USD')->first();
+        $eur = Currency::where('code', 'EUR')->first();
+
+        // 2. Create Users & Wallets
+        $admin = User::factory()->create([
             'name' => 'Admin User',
             'email' => 'admin@gmail.com',
             'password' => '12345678',
             'role' => 'admin',
         ]);
 
-        User::factory()->create([
+        $w1 = Wallet::factory()->create([
+            'name' => 'Admin Wallet',
+            'currency_id' => $usd->id,
+        ]);
+        $w1->users()->attach($admin->id);
+
+        $user1 = User::factory()->create([
             'name' => 'User One',
             'email' => 'user1@gmail.com',
             'password' => '12345678',
             'role' => 'user',
         ]);
 
+        $w2 = Wallet::factory()->create([
+            'name' => 'User One Wallet',
+            'currency_id' => $usd->id,
+        ]);
+        $w2->users()->attach($user1->id);
+
+        // Other users (optional wallet creation if needed for tests, but we only need 2 wallets for ExtraTransactionSeeder)
         User::factory()->create([
             'name' => 'User Two',
             'email' => 'user2@gmail.com',
@@ -38,18 +58,15 @@ class DatabaseSeeder extends Seeder
             'role' => 'user',
         ]);
 
-        User::factory()->create([
-            'name' => 'User Three',
-            'email' => 'user3@gmail.com',
-            'password' => '12345678',
-            'role' => 'user',
-        ]);
-
-        User::factory()->create([
-            'name' => 'User Four',
-            'email' => 'user4@gmail.com',
-            'password' => '12345678',
-            'role' => 'user',
+        // 3. Call Other Seeders
+        $this->call([
+            ExternalWalletSeeder::class,
+            SettingSeeder::class,
+            TransactionStatusSeeder::class,
+            ExtraTransactionSeeder::class,
         ]);
     }
 }
+
+
+
