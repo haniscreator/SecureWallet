@@ -22,9 +22,9 @@ class TransferService
      * @return Transaction
      * @throws Exception
      */
-    public function initiateTransfer(Wallet $fromWallet, ExternalWallet $toWallet, float $amount): Transaction
+    public function initiateTransfer(Wallet $fromWallet, ExternalWallet $toWallet, float $amount, User $initiator): Transaction
     {
-        return DB::transaction(function () use ($fromWallet, $toWallet, $amount) {
+        return DB::transaction(function () use ($fromWallet, $toWallet, $amount, $initiator) {
             // 1. Check if currencies match
             if ($fromWallet->currency_id !== $toWallet->currency_id) {
                 throw new Exception("Currency mismatch between source and target wallets.");
@@ -36,27 +36,52 @@ class TransferService
 
             if ($amount > $limit) {
                 // Should we reject or just fail? Usually existing validation fails.
-                throw new Exception("Transfer amount exceeds the global limit of {$limit}.");
+                // throw new Exception("Transfer amount exceeds the global limit of {$limit}.");
+                // Requirement Change: Auto-approve if <= limit, else Pending (for users).
+                // Admin/Manager always auto-approve.
             }
 
             // 3. Check Available Balance
-            // We use the available_balance attribute which accounts for pending outgoing transactions
             if ($fromWallet->available_balance < $amount) {
                 throw new Exception("Insufficient funds.");
             }
 
-            // 4. Create Transaction (Pending)
-            // We rely on code 'pending' existing
-            $pendingStatus = TransactionStatus::where('code', 'pending')->firstOrFail();
+            // 4. Determine Status
+            $status = 'pending';
+            $approvedAt = null;
+            $approvedBy = null;
 
+            if ($initiator->hasRole('admin') || $initiator->hasRole('manager')) {
+                // Admin/Manager: Always Auto-Approve
+                $status = 'completed';
+                $approvedAt = now();
+                $approvedBy = $initiator->id;
+            } else {
+                // Regular User
+                if ($amount <= $limit) {
+                    // Auto-Approve if within limit
+                    $status = 'completed';
+                    $approvedAt = now();
+                    $approvedBy = null; // System auto-approval? Or keep null.
+                } else {
+                    $status = 'pending';
+                }
+            }
+
+            $statusModel = TransactionStatus::where('code', $status)->firstOrFail();
+
+            // 5. Create Transaction
             return Transaction::create([
+                'user_id' => $initiator->id,
                 'from_wallet_id' => $fromWallet->id,
                 'external_wallet_id' => $toWallet->id,
                 'to_wallet_id' => null, // External transfer
                 'amount' => $amount,
-                'transaction_status_id' => $pendingStatus->id,
+                'transaction_status_id' => $statusModel->id,
                 'type' => 'debit',
                 'created_at' => now(),
+                'approved_by' => $approvedBy,
+                'approved_at' => $approvedAt,
             ]);
         });
     }

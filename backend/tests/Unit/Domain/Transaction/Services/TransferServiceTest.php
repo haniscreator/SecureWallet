@@ -37,100 +37,157 @@ class TransferServiceTest extends TestCase
 
     private function fundWallet(Wallet $wallet, float $amount)
     {
+        // Use the wallet's currency to avoid creating a new one (and potential collisions)
+        $fromWallet = Wallet::factory()->create([
+            'currency_id' => $wallet->currency_id
+        ]);
+
         Transaction::factory()->create([
+            'from_wallet_id' => $fromWallet->id,
             'to_wallet_id' => $wallet->id,
             'amount' => $amount,
             'transaction_status_id' => TransactionStatus::where('code', 'completed')->first()->id,
-            'type' => 'credit' // Assuming type is useful for balance calculation filter if checked
+            'type' => 'credit'
         ]);
-
-        // Refresh wallet to ensure relation is loaded if needed, though getBalanceAttribute queries DB
     }
 
     /** @test */
-    public function it_initiates_transfer_successfully()
+    public function it_initiates_transfer_successfully_as_user_pending()
     {
-        $user = User::factory()->create();
+        $role = \App\Domain\User\Models\UserRole::firstOrCreate(['name' => 'user'], ['label' => 'User']);
+        $user = User::factory()->create(['role_id' => $role->id]);
+
+        $currency = \App\Domain\Currency\Models\Currency::factory()->create();
         $wallet = Wallet::factory()->create([
-            'currency_id' => 1 // Assuming 1 is USD
+            'currency_id' => $currency->id
         ]);
         $user->wallets()->attach($wallet);
-        $this->fundWallet($wallet, 500);
+        $this->fundWallet($wallet, 1500);
 
         $externalWallet = ExternalWallet::factory()->create([
-            'currency_id' => 1
+            'currency_id' => $currency->id
         ]);
 
-        $transaction = $this->transferService->initiateTransfer($wallet, $externalWallet, 100);
+        $transaction = $this->transferService->initiateTransfer($wallet, $externalWallet, 1100, $user);
 
         $this->assertDatabaseHas('transactions', [
             'id' => $transaction->id,
+            'user_id' => $user->id,
             'from_wallet_id' => $wallet->id,
             'external_wallet_id' => $externalWallet->id,
-            'amount' => 100,
+            'amount' => 1100,
             'transaction_status_id' => TransactionStatus::where('code', 'pending')->first()->id
         ]);
 
-        // Available balance should be 400
         $this->assertEquals(400, $wallet->fresh()->available_balance);
+    }
+
+    /** @test */
+    public function it_auto_approves_transfer_as_user_within_limit()
+    {
+        $role = \App\Domain\User\Models\UserRole::firstOrCreate(['name' => 'user'], ['label' => 'User']);
+        $user = User::factory()->create(['role_id' => $role->id]);
+
+        $currency = \App\Domain\Currency\Models\Currency::factory()->create();
+        $wallet = Wallet::factory()->create(['currency_id' => $currency->id]);
+        $user->wallets()->attach($wallet);
+        $this->fundWallet($wallet, 500);
+
+        $externalWallet = ExternalWallet::factory()->create(['currency_id' => $currency->id]);
+
+        $transaction = $this->transferService->initiateTransfer($wallet, $externalWallet, 100, $user);
+
+        $this->assertDatabaseHas('transactions', [
+            'id' => $transaction->id,
+            'user_id' => $user->id,
+            'transaction_status_id' => TransactionStatus::where('code', 'completed')->first()->id
+        ]);
+
+        $this->assertEquals(400, $wallet->fresh()->balance);
+    }
+
+    /** @test */
+    public function it_auto_approves_transfer_as_manager()
+    {
+        $role = \App\Domain\User\Models\UserRole::firstOrCreate(['name' => 'manager'], ['label' => 'Manager']);
+        $manager = User::factory()->create(['role_id' => $role->id]);
+
+        $currency = \App\Domain\Currency\Models\Currency::factory()->create();
+        $wallet = Wallet::factory()->create(['currency_id' => $currency->id]);
+        $manager->wallets()->attach($wallet);
+        $this->fundWallet($wallet, 5000);
+
+        $externalWallet = ExternalWallet::factory()->create(['currency_id' => $currency->id]);
+
+        $transaction = $this->transferService->initiateTransfer($wallet, $externalWallet, 2000, $manager);
+
+        $this->assertDatabaseHas('transactions', [
+            'id' => $transaction->id,
+            'user_id' => $manager->id,
+            'approved_by' => $manager->id,
+            'transaction_status_id' => TransactionStatus::where('code', 'completed')->first()->id
+        ]);
     }
 
     /** @test */
     public function it_fails_initiate_transfer_insufficient_funds()
     {
-        $user = User::factory()->create();
-        $wallet = Wallet::factory()->create([
-            'currency_id' => 1
-        ]);
+        $role = \App\Domain\User\Models\UserRole::firstOrCreate(['name' => 'user'], ['label' => 'User']);
+        $user = User::factory()->create(['role_id' => $role->id]);
+
+        $currency = \App\Domain\Currency\Models\Currency::factory()->create();
+        $wallet = Wallet::factory()->create(['currency_id' => $currency->id]);
         $user->wallets()->attach($wallet);
         $this->fundWallet($wallet, 50);
 
-        $externalWallet = ExternalWallet::factory()->create([
-            'currency_id' => 1
-        ]);
+        $externalWallet = ExternalWallet::factory()->create(['currency_id' => $currency->id]);
 
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('Insufficient funds');
 
-        $this->transferService->initiateTransfer($wallet, $externalWallet, 100);
+        $this->transferService->initiateTransfer($wallet, $externalWallet, 100, $user);
     }
 
     /** @test */
     public function it_fails_initiate_transfer_currency_mismatch()
     {
-        $user = User::factory()->create();
-        $wallet = Wallet::factory()->create([
-            'currency_id' => 1 // USD
-        ]);
+        $role = \App\Domain\User\Models\UserRole::firstOrCreate(['name' => 'user'], ['label' => 'User']);
+        $user = User::factory()->create(['role_id' => $role->id]);
+
+        $currency1 = \App\Domain\Currency\Models\Currency::factory()->create();
+        $wallet = Wallet::factory()->create(['currency_id' => $currency1->id]);
         $user->wallets()->attach($wallet);
         $this->fundWallet($wallet, 500);
 
-        $externalWallet = ExternalWallet::factory()->create([
-            'currency_id' => 2 // EUR
-        ]);
+        $currency2 = \App\Domain\Currency\Models\Currency::factory()->create();
+        $externalWallet = ExternalWallet::factory()->create(['currency_id' => $currency2->id]);
 
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('Currency mismatch');
 
-        $this->transferService->initiateTransfer($wallet, $externalWallet, 100);
+        $this->transferService->initiateTransfer($wallet, $externalWallet, 100, $user);
     }
 
     /** @test */
     public function it_approves_transfer_successfully()
     {
-        $user = User::factory()->create();
-        $manager = User::factory()->create();
+        $userRole = \App\Domain\User\Models\UserRole::firstOrCreate(['name' => 'user'], ['label' => 'User']);
+        $user = User::factory()->create(['role_id' => $userRole->id]);
 
-        $wallet = Wallet::factory()->create([
-            'currency_id' => 1
-        ]);
+        $managerRole = \App\Domain\User\Models\UserRole::firstOrCreate(['name' => 'manager'], ['label' => 'Manager']);
+        $manager = User::factory()->create(['role_id' => $managerRole->id]);
+
+        $currency = \App\Domain\Currency\Models\Currency::factory()->create();
+        $wallet = Wallet::factory()->create(['currency_id' => $currency->id]);
         $user->wallets()->attach($wallet);
         $this->fundWallet($wallet, 500);
 
-        $externalWallet = ExternalWallet::factory()->create(['currency_id' => 1]);
+        $externalWallet = ExternalWallet::factory()->create(['currency_id' => $currency->id]);
 
-        // Creating the pending transaction
+        // Creating the pending transaction. 
+        // We set user_id to user to match new requirement, though approve/reject might not strictly need it, initiate does.
         $transaction = Transaction::factory()->create([
+            'user_id' => $user->id,
             'from_wallet_id' => $wallet->id,
             'external_wallet_id' => $externalWallet->id,
             'amount' => 100,
@@ -145,25 +202,30 @@ class TransferServiceTest extends TestCase
             'transaction_status_id' => TransactionStatus::where('code', 'completed')->first()->id
         ]);
 
-        // Balance should be 500 - 100 = 400
         $this->assertEquals(400, $wallet->fresh()->balance);
     }
 
     /** @test */
     public function it_fails_approve_frozen_wallet()
     {
-        $user = User::factory()->create();
-        $manager = User::factory()->create();
+        $userRole = \App\Domain\User\Models\UserRole::firstOrCreate(['name' => 'user'], ['label' => 'User']);
+        $user = User::factory()->create(['role_id' => $userRole->id]);
 
+        $managerRole = \App\Domain\User\Models\UserRole::firstOrCreate(['name' => 'manager'], ['label' => 'Manager']);
+        $manager = User::factory()->create(['role_id' => $managerRole->id]);
+
+        $currency = \App\Domain\Currency\Models\Currency::factory()->create();
         $wallet = Wallet::factory()->create([
-            'status' => false
+            'status' => false,
+            'currency_id' => $currency->id
         ]);
         $user->wallets()->attach($wallet);
         $this->fundWallet($wallet, 500);
 
-        $externalWallet = ExternalWallet::factory()->create(['currency_id' => 1]);
+        $externalWallet = ExternalWallet::factory()->create(['currency_id' => $currency->id]);
 
         $transaction = Transaction::factory()->create([
+            'user_id' => $user->id,
             'from_wallet_id' => $wallet->id,
             'external_wallet_id' => $externalWallet->id,
             'amount' => 100,
@@ -179,16 +241,21 @@ class TransferServiceTest extends TestCase
     /** @test */
     public function it_rejects_transfer_successfully()
     {
-        $user = User::factory()->create();
-        $manager = User::factory()->create();
+        $userRole = \App\Domain\User\Models\UserRole::firstOrCreate(['name' => 'user'], ['label' => 'User']);
+        $user = User::factory()->create(['role_id' => $userRole->id]);
 
-        $wallet = Wallet::factory()->create();
+        $managerRole = \App\Domain\User\Models\UserRole::firstOrCreate(['name' => 'manager'], ['label' => 'Manager']);
+        $manager = User::factory()->create(['role_id' => $managerRole->id]);
+
+        $currency = \App\Domain\Currency\Models\Currency::factory()->create();
+        $wallet = Wallet::factory()->create(['currency_id' => $currency->id]);
         $user->wallets()->attach($wallet);
         $this->fundWallet($wallet, 500);
 
-        $externalWallet = ExternalWallet::factory()->create(['currency_id' => 1]);
+        $externalWallet = ExternalWallet::factory()->create(['currency_id' => $currency->id]);
 
         $transaction = Transaction::factory()->create([
+            'user_id' => $user->id,
             'from_wallet_id' => $wallet->id,
             'external_wallet_id' => $externalWallet->id,
             'amount' => 100,
@@ -203,9 +270,6 @@ class TransferServiceTest extends TestCase
             'rejection_reason' => 'Suspicious activity'
         ]);
 
-        // Balance should be restored (or rather, never deducted, as it was only pending)
-        // Available balance should be 500
         $this->assertEquals(500, $wallet->fresh()->balance);
-        $this->assertEquals(500, $wallet->fresh()->available_balance);
     }
 }

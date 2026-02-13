@@ -57,7 +57,7 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $w2 = Wallet::factory()->create([
-            'name' => 'User One Wallet',
+            'name' => 'Wallet-1',
             'currency_id' => $usd->id,
         ]);
         $w2->users()->attach($user1->id);

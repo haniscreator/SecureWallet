@@ -43,7 +43,8 @@ class TransferController extends Controller
             $transaction = $this->transferService->initiateTransfer(
                 $sourceWallet,
                 $externalWallet,
-                (float) $request->amount
+                (float) $request->amount,
+                $user
             );
 
             return response()->json([

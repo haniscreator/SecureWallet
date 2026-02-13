@@ -19,6 +19,7 @@ class Transaction extends Model
     }
 
     protected $fillable = [
+        'user_id',
         'from_wallet_id',
         'to_wallet_id',
         'external_wallet_id',
@@ -31,6 +32,11 @@ class Transaction extends Model
         'approved_at',
         'created_at',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 
     protected $casts = [
         'approved_at' => 'datetime',
