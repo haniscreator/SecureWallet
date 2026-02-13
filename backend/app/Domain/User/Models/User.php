@@ -67,6 +67,11 @@ class User extends Authenticatable
     {
         return $this->role && $this->role->name === $roleName;
     }
+
+    public function hasAnyRole(array $roles): bool
+    {
+        return $this->role && in_array($this->role->name, $roles);
+    }
     /**
      * The wallets that belong to the user.
      */

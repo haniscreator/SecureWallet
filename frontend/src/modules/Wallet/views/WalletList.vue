@@ -44,7 +44,11 @@ const walletStore = useWalletStore();
 const userStore = useUserStore();
 const currencies = ref<Currency[]>([]);
 
-const isAdmin = computed(() => userStore.currentUser?.role === 'admin');
+const isAdmin = computed(() => {
+    const role = userStore.currentUser?.role;
+    const roleName = (typeof role === 'object' && role !== null) ? role.name : role;
+    return roleName === 'admin' || roleName === 'manager';
+});
 
 async function fetchCurrencies() {
     try {

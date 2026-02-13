@@ -31,7 +31,7 @@ class UserService
 
     public function listUsers()
     {
-        return User::with('wallets')->get();
+        return User::with(['wallets', 'role'])->get();
     }
 
     public function updateUser(User $user, UserData $data): User

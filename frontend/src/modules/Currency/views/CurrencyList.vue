@@ -34,7 +34,11 @@ import CurrencyTable from '../components/CurrencyTable.vue';
 const currencyStore = useCurrencyStore();
 const userStore = useUserStore();
 
-const isAdmin = computed(() => userStore.currentUser?.role === 'admin');
+const isAdmin = computed(() => {
+    const role = userStore.currentUser?.role;
+    const roleName = (typeof role === 'object' && role !== null) ? role.name : role;
+    return roleName === 'admin' || roleName === 'manager';
+});
 
 onMounted(async () => {
     // Ensure user loaded

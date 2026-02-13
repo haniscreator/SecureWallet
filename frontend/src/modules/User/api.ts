@@ -20,7 +20,7 @@ export interface User {
     id: number;
     name: string;
     email: string;
-    role: 'admin' | 'user' | 'manager';
+    role: 'admin' | 'user' | 'manager' | { id: number; name: string };
     created_at?: string;
     company_name?: string;
     wallet_access?: string[]; // Names for display

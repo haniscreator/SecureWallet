@@ -12,7 +12,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanc
 // User / Members
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', function (Request $request) {
-        return $request->user();
+        return new \App\Domain\User\Resources\UserResource($request->user()->load('role'));
     });
 
     Route::get('/members', [MemberController::class, 'index']);

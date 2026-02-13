@@ -50,6 +50,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
+import { useUserStore } from '@/modules/User/store';
 
 const props = defineProps<{
   modelValue: boolean;
@@ -65,15 +66,28 @@ const menuItems = [
   { title: 'Transactions', icon: 'mdi-swap-horizontal', value: 'transactions', to: '/transactions' },
   { title: 'Currencies', icon: 'mdi-currency-usd', value: 'currencies', to: '/currencies' },
   { title: 'Team Members', icon: 'mdi-account-group-outline', value: 'members', to: '/members' },
+  { title: 'Approvals', icon: 'mdi-check-decagram', value: 'approvals', to: '/approvals', roles: ['admin', 'manager'] },
 ];
+
+const userStore = useUserStore();
 
 // Search Logic
 const search = ref('');
 
 const filteredMenuItems = computed(() => {
-  if (!search.value) return menuItems;
+  let items = menuItems;
+
+  // Filter by Role
+  items = items.filter(item => {
+    if (!item.roles) return true;
+    const role = userStore.currentUser?.role;
+    const roleName = (typeof role === 'object' && role !== null) ? role.name : role;
+    return item.roles.includes(roleName as string); 
+  });
+
+  if (!search.value) return items;
   const query = search.value.toLowerCase();
-  return menuItems.filter(item => 
+  return items.filter(item => 
     item.title.toLowerCase().includes(query)
   );
 });
