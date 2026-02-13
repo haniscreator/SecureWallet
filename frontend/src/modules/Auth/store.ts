@@ -45,7 +45,7 @@ export const useAuthStore = defineStore('auth', () => {
         if (!token.value) return;
         try {
             const response = await authApi.getUser();
-            user.value = response.data;
+            user.value = (response.data as any).data || response.data;
         } catch (err) {
             // If fetching user fails (e.g. invalid token), logout
             logout();

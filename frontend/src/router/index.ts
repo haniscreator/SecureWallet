@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router';
+import { useAuthStore } from '@/modules/Auth/store';
 
 const routes = [
     {
@@ -89,10 +90,10 @@ const routes = [
                 component: () => import('@/modules/Transaction/views/TransactionForm.vue'),
             },
             {
-                path: 'transfers/approvals',
+                path: 'approvals',
                 name: 'PendingApprovals',
                 component: () => import('@/modules/Transaction/views/PendingApprovals.vue'),
-                meta: { requiresRole: 'manager' } // Assuming we have such check or leave it open but guarded by API/Page
+                meta: { roles: ['admin', 'manager'] }
             },
             {
                 path: 'settings',
@@ -113,31 +114,47 @@ const router = createRouter({
     routes,
 });
 
-router.beforeEach((to, _from, next) => {
+router.beforeEach(async (to, _from, next) => {
     const token = localStorage.getItem('token');
     const requiresAuth = to.matched.some(record => record.meta.requiresAuth);
     const isGuest = to.matched.some(record => record.meta.guest);
-
-    const requiredRoles = to.meta.roles as string[] | undefined;
+    const requiredRoles = to.meta.requiresRole ? [to.meta.requiresRole as string] : (to.meta.roles as string[] | undefined);
 
     if (requiresAuth && !token) {
         next('/login');
-    } else if (isGuest && token) {
-        next('/dashboard');
-    } else if (requiredRoles && token) {
-        // Simple role check - in real app might need decoding token or store check
-        // For now, let's assume we rely on the backend, or we decode if we had the user in store.
-        // Since store hydration is async, strict client-side blocking might require waiting.
-        // For now, we'll allow basic navigation but the Sidebar hides the link and API protects data.
-        // If we want to be strict:
-        const user = localStorage.getItem('user'); // Assuming we store user or fetch it
-        // ... implementation of role check ...
-        // To avoid complexity with async store, we will rely on Sidebar hiding the link 
-        // and API returning 403. But let's at least leave the hook for future.
-        next();
-    } else {
-        next();
+        return;
     }
+
+    if (isGuest && token) {
+        next('/dashboard');
+        return;
+    }
+
+    if (token) {
+        // Ensure user is loaded for role checks
+        const authStore = useAuthStore();
+        if (!authStore.user) {
+            try {
+                await authStore.fetchUser();
+            } catch (error) {
+                // If fetch fails (token invalid), redirect to login
+                next('/login');
+                return;
+            }
+        }
+
+        // Check Roles
+        if (requiredRoles && requiredRoles.length > 0) {
+            const userRole = authStore.user?.role;
+            if (!userRole || !requiredRoles.includes(userRole)) {
+                // Unauthorized - redirect to dashboard
+                next('/dashboard');
+                return;
+            }
+        }
+    }
+
+    next();
 });
 
 export default router;

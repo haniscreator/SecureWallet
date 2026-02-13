@@ -2,9 +2,6 @@
   <div class="pending-approvals-container">
     <div class="page-header d-flex justify-space-between align-center mb-4">
       <h1 class="text-h4 font-weight-bold primary--text">Pending Approvals</h1>
-      <v-btn color="secondary" variant="outlined" @click="$router.push('/dashboard')">
-        Dashboard
-      </v-btn>
     </div>
 
     <v-card class="elevation-2 rounded-lg">
@@ -16,17 +13,17 @@
       >
         <template v-slot:item.amount="{ item }">
           <span class="font-weight-bold warning--text">
-            {{ formatCurrency(item.raw.amount, item.raw.from_wallet?.currency?.symbol) }}
+            {{ formatCurrency(item.amount, item.from_wallet?.currency?.symbol) }}
           </span>
         </template>
         
         <template v-slot:item.from_wallet="{ item }">
-            {{ item.raw.from_wallet?.name }}
+            {{ item.from_wallet?.name }}
         </template>
 
         <template v-slot:item.to="{ item }">
-            <span v-if="item.raw.external_wallet">
-                External: {{ item.raw.external_wallet?.address }}
+            <span v-if="item.external_wallet">
+                External: {{ item.external_wallet?.address }}
             </span>
             <span v-else>
                 Internal
@@ -34,7 +31,7 @@
         </template>
 
         <template v-slot:item.created_at="{ item }">
-            {{ formatDate(item.raw.created_at) }}
+            {{ formatDate(item.created_at) }}
         </template>
 
         <template v-slot:item.actions="{ item }">
@@ -44,8 +41,8 @@
               variant="text"
               size="small"
               prepend-icon="mdi-check"
-              @click="approve(item.raw)"
-              :loading="processingId === item.raw.id"
+              @click="approve(item)"
+              :loading="processingId === item.id"
               :disabled="!!processingId"
             >
               Approve
@@ -55,7 +52,7 @@
               variant="text"
               size="small"
               prepend-icon="mdi-close"
-              @click="openRejectDialog(item.raw)"
+              @click="openRejectDialog(item)"
               :disabled="!!processingId"
             >
               Reject

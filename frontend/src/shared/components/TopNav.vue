@@ -45,7 +45,7 @@
                         </v-avatar>
                         <h3 class="text-subtitle-1 font-weight-bold">{{ authStore.user?.name || 'User' }}</h3>
                         <p class="text-caption text-grey mb-3">
-                            {{ authStore.user?.email || 'admin@korporatio.com' }}
+                            {{ authStore.user?.email }}
                         </p>
                         <v-divider class="mb-3"></v-divider>
                         <v-btn rounded variant="text" block prepend-icon="mdi-account-outline" class="justify-start">

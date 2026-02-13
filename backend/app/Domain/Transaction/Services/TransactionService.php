@@ -44,8 +44,8 @@ class TransactionService
     {
         $query = Transaction::query();
 
-        // If not admin, restrict to user's wallets
-        if ($user->role !== 'admin') {
+        // If not admin or manager, restrict to user's wallets
+        if (!$user->hasRole('admin') && !$user->hasRole('manager')) {
             $query->where(function ($q) use ($user) {
                 $q->whereHas('fromWallet', function ($w) use ($user) {
                     $w->whereHas('users', function ($u) use ($user) {
@@ -89,7 +89,7 @@ class TransactionService
     {
         // 1. Fetch user's wallets
         // Allow admin to see all wallets
-        $query = ($user->role === 'admin')
+        $query = ($user->hasRole('admin'))
             ? Wallet::query()
             : $user->wallets();
 
