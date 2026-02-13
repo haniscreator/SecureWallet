@@ -9,7 +9,9 @@ use App\Domain\Wallet\Actions\UpdateWalletStatusAction;
 use App\Domain\Wallet\Actions\AssignWalletAction;
 use App\Domain\Wallet\DataTransferObjects\WalletData;
 use App\Domain\Transaction\Models\Transaction;
+use App\Domain\Transaction\Models\TransactionStatus;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class WalletService
 {
@@ -57,15 +59,19 @@ class WalletService
                 'name' => $data->name,
                 'currency_id' => $data->currency_id,
                 'status' => $data->status ?? true,
+                'address' => (string) Str::uuid(),
             ]);
 
             // Handle Initial Balance by creating a 'credit' transaction
             if ($data->initial_balance && $data->initial_balance > 0) {
-                \App\Domain\Transaction\Models\Transaction::create([
+                $completedStatus = TransactionStatus::where('code', 'completed')->first();
+
+                Transaction::create([
                     'to_wallet_id' => $wallet->id,
                     'type' => 'credit',
                     'amount' => $data->initial_balance,
                     'reference' => 'Initial Balance',
+                    'transaction_status_id' => $completedStatus?->id,
                 ]);
             }
 

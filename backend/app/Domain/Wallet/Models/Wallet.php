@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Database\Factories\WalletFactory;
 use App\Domain\User\Models\User;
 use App\Domain\Transaction\Models\Transaction;
+use App\Domain\Currency\Models\Currency;
 
 class Wallet extends Model
 {
@@ -41,7 +42,7 @@ class Wallet extends Model
 
     public function currency()
     {
-        return $this->belongsTo(\App\Domain\Currency\Models\Currency::class);
+        return $this->belongsTo(Currency::class);
     }
 
     /**

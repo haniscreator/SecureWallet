@@ -5,6 +5,8 @@ namespace App\Domain\Transaction\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Domain\Wallet\Models\Wallet;
+use App\Domain\Wallet\Models\ExternalWallet;
+use App\Domain\User\Models\User;
 
 class Transaction extends Model
 {
@@ -35,12 +37,12 @@ class Transaction extends Model
 
     public function externalWallet()
     {
-        return $this->belongsTo(\App\Domain\Wallet\Models\ExternalWallet::class);
+        return $this->belongsTo(ExternalWallet::class);
     }
 
     public function approver()
     {
-        return $this->belongsTo(\App\Domain\User\Models\User::class, 'approved_by');
+        return $this->belongsTo(User::class, 'approved_by');
     }
 
 

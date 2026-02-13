@@ -8,6 +8,7 @@ use Database\Factories\UserFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use App\Domain\Wallet\Models\Wallet;
 
 class User extends Authenticatable
 {
@@ -60,6 +61,6 @@ class User extends Authenticatable
      */
     public function wallets()
     {
-        return $this->belongsToMany(\App\Domain\Wallet\Models\Wallet::class, 'wallet_user');
+        return $this->belongsToMany(Wallet::class, 'wallet_user');
     }
 }
