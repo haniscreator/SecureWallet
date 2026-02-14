@@ -162,7 +162,6 @@
                     ></v-textarea>
                     
                     <v-alert v-if="error" type="error" class="mb-4" closable>{{ error }}</v-alert>
-                    <v-alert v-if="successMessage" type="success" class="mb-4" closable>{{ successMessage }}</v-alert>
 
                     <div class="d-flex justify-end align-center mt-4">
                         <v-btn variant="text" color="grey-darken-1" class="mr-4 text-none text-subtitle-1" @click="router.push('/wallets')">
@@ -187,9 +186,11 @@ import { useRouter, useRoute } from 'vue-router';
 import { walletApi } from '@/modules/Wallet/api';
 import { transactionApi } from '@/modules/Transaction/api';
 import lottie from 'lottie-web';
+import { useNotificationStore } from '@/shared/stores/notification';
 
 const router = useRouter();
 const route = useRoute();
+const notificationStore = useNotificationStore();
 const lottieContainer = ref<HTMLElement | null>(null);
 
 const validDetails = ref(false);
@@ -197,7 +198,6 @@ const submitting = ref(false);
 const loadingSource = ref(false);
 const loadingTargets = ref(false);
 const error = ref('');
-const successMessage = ref('');
 
 const wallets = ref<any[]>([]); 
 const allTargets = ref<any[]>([]); 
@@ -325,7 +325,6 @@ const submitTransfer = async () => {
 
   submitting.value = true;
   error.value = '';
-  successMessage.value = '';
 
   try {
     await transactionApi.initiateTransfer({
@@ -337,8 +336,8 @@ const submitTransfer = async () => {
       description: formData.description,
     });
     
-    successMessage.value = 'Transfer initiated successfully!';
-    setTimeout(() => router.push('/transactions'), 2000);
+    notificationStore.success('Transfer initiated successfully!');
+    router.push('/wallets');
   } catch (e: any) {
     error.value = e.response?.data?.message || 'An error occurred during transfer.';
   } finally {
