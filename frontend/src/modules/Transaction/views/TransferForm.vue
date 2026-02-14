@@ -1,105 +1,160 @@
 <template>
   <div class="transfer-form-container">
-    <div class="page-header mb-6">
+    <div class="page-header mb-6 d-flex align-center justify-space-between">
       <h1 class="text-h4 font-weight-bold primary--text">Initiate Transfer</h1>
     </div>
 
-    <v-card class="pa-8 rounded-lg elevation-2 transfer-card">
-      <v-form v-model="valid" @submit.prevent="submitTransfer">
-        
-        <!-- Source Wallet Info -->
-        <div class="mb-6 pa-4 rounded bg-grey-lighten-4" v-if="selectedSourceWallet" style="background-color: #F5F6F9;">
-            <div class="text-h6 font-weight-bold">{{ selectedSourceWallet.name }}</div>
-            <div class="text-subtitle-1 text-grey-darken-1">
-                Balance: {{ selectedSourceWallet.currency?.symbol }}{{ Number(selectedSourceWallet.balance).toLocaleString() }} {{ selectedSourceWallet.currency?.code }}
+    <!-- Source Wallet Info (Matched Style) -->
+    <v-card class="mb-6 pa-6 rounded-0 elevation-2" v-if="selectedSourceWallet">
+        <div class="d-flex align-center justify-space-between">
+            <div>
+                <div class="text-subtitle-2 text-grey-darken-1">Source Wallet</div>
+                <div class="text-h6 font-weight-bold">{{ selectedSourceWallet.name }}</div>
+            </div>
+            <div class="text-right">
+                <div class="text-subtitle-2 text-grey-darken-1">Balance</div>
+                <div class="text-h6 font-weight-bold">{{ selectedSourceWallet.currency?.symbol }}{{ Number(selectedSourceWallet.balance).toLocaleString() }} {{ selectedSourceWallet.currency?.code }}</div>
             </div>
         </div>
-        <div v-else class="mb-6 text-grey">Loading Source Wallet...</div>
-
-        <!-- Transfer Type -->
-        <v-label class="mb-2 font-weight-medium">Transfer Type</v-label>
-        <v-radio-group v-model="formData.type" inline class="mb-4" @update:model-value="onTypeChange" :rules="[v => !!v || 'Transfer type is required']">
-            <v-radio label="Internal Transfer" value="internal"></v-radio>
-            <v-radio label="External Transfer" value="external"></v-radio>
-        </v-radio-group>
-
-        <!-- Form Content Wrapper with Transition -->
-        <v-fade-transition>
-            <div v-if="formData.type">
-                <!-- Internal: Target Wallet -->
-                <v-select
-                    v-if="formData.type === 'internal'"
-                    v-model="formData.to_wallet_id"
-                    :items="internalTargetWallets"
-                    item-title="name"
-                    item-value="id"
-                    label="Choose destination wallet"
-                    placeholder="Select a destination wallet"
-                    variant="outlined"
-                    :rules="[v => !!v || 'Target wallet is required', validateInternalTarget]"
-                    required
-                    :loading="loadingTargets"
-                    class="mb-2"
-                >
-                    <template v-slot:item="{ props, item }">
-                        <v-list-item 
-                            v-bind="props" 
-                            :subtitle="(item.raw.currency?.code || '') + ' - User: ' + (item.raw.users?.[0]?.name || 'Unknown')"
-                        ></v-list-item>
-                    </template>
-                </v-select>
-
-                <!-- External: Address Input -->
-                <v-text-field
-                    v-if="formData.type === 'external'"
-                    v-model="formData.to_address"
-                    label="External Wallet Address"
-                    placeholder="e.g. 0x123..."
-                    variant="outlined"
-                    :rules="[v => !!v || 'Address is required']"
-                    required
-                    class="mb-2"
-                ></v-text-field>
-
-                <!-- Amount -->
-                <v-text-field
-                    v-model.number="formData.amount"
-                    label="Amount"
-                    placeholder="0.00"
-                    variant="outlined"
-                    type="number"
-                    min="0.01"
-                    step="0.01"
-                    :rules="amountRules"
-                    required
-                    class="mb-2"
-                ></v-text-field>
-
-                <!-- Description -->
-                <v-textarea
-                    v-model="formData.description"
-                    label="Description (Optional)"
-                    placeholder="What is this transfer for?"
-                    variant="outlined"
-                    rows="3"
-                    class="mb-4"
-                ></v-textarea>
-            </div>
-        </v-fade-transition>
-
-        <v-alert v-if="error" type="error" class="mb-4" closable>{{ error }}</v-alert>
-        <v-alert v-if="successMessage" type="success" class="mb-4" closable>{{ successMessage }}</v-alert>
-
-        <div class="d-flex justify-end gap-2 mt-2">
-            <v-btn variant="outlined" color="secondary" size="large" @click="router.push('/wallets')" class="mr-2">
-                Cancel
-            </v-btn>
-            <v-btn color="primary" type="submit" :loading="submitting" :disabled="!valid" size="large" width="200">
-                Transfer Funds
-            </v-btn>
-        </div>
-      </v-form>
     </v-card>
+    <div v-else class="mb-6 text-grey">Loading Source Wallet...</div>
+
+    <!-- Lottie Animation -->
+    <div class="d-flex justify-center mb-6">
+        <div ref="lottieContainer" style="width: 50px; height: 50px;"></div>
+    </div>
+
+
+        <v-card class="pa-6 rounded-0 elevation-2">
+            <!-- Step 1: Choose Transfer Type (Cards) -->
+            <h3 class="text-h6 mb-4 font-weight-bold">Choose Transfer Type</h3>
+            <v-row class="mb-6">
+                <v-col cols="12" sm="6">
+                    <v-card 
+                        class="py-8 px-4 text-center cursor-pointer transition-swing hover-card d-flex flex-column align-center justify-center rounded-0"
+                        elevation="0"
+                        variant="outlined"
+                        min-height="250"
+                        @click="formData.type = 'internal'"
+                        :class="{'selected-card': formData.type === 'internal'}"
+                        :color="formData.type === 'internal' ? 'primary-lighten-5' : undefined"
+                        style="border-color: #e0e0e0;"
+                    >
+                        <v-icon size="64" color="primary" class="mb-4">mdi-bank-transfer</v-icon>
+                        <div class="text-h6 font-weight-bold text-no-wrap mb-2">Internal Transfer</div>
+                        <div class="text-body-2 text-grey-darken-1">Send funds instantly to another user's wallet within the platform.</div>
+                    </v-card>
+                </v-col>
+                
+                <v-col cols="12" sm="6">
+                    <v-card 
+                        class="py-8 px-4 text-center cursor-pointer transition-swing hover-card d-flex flex-column align-center justify-center rounded-0"
+                        elevation="0"
+                        variant="outlined"
+                        min-height="250"
+                        @click="formData.type = 'external'"
+                        :class="{'selected-card': formData.type === 'external'}"
+                        :color="formData.type === 'external' ? 'primary-lighten-5' : undefined"
+                        style="border-color: #e0e0e0;"
+                    >
+                        <v-icon size="64" color="secondary" class="mb-4">mdi-earth</v-icon>
+                        <div class="text-h6 font-weight-bold text-no-wrap mb-2">External Transfer</div>
+                        <div class="text-body-2 text-grey-darken-1">Withdraw funds to an external blockchain address.</div>
+                    </v-card>
+                </v-col>
+            </v-row>
+
+            <!-- Step 2: Transfer Details Form -->
+            <v-expand-transition>
+                <div v-if="formData.type">
+                    <v-divider class="mb-6"></v-divider>
+                    <h3 class="text-h6 mb-4 font-weight-bold">Transfer Details</h3>
+                    <v-form v-model="validDetails" @submit.prevent="submitTransfer">
+                        <!-- Internal: Target Wallet (Col 8) -->
+                        <v-row v-if="formData.type === 'internal'">
+                            <v-col cols="12" md="8">
+                                <v-select
+                                    v-model="formData.to_wallet_id"
+                                    :items="internalTargetWallets"
+                                    item-title="name"
+                                    item-value="id"
+                                    label="Choose destination wallet"
+                                    placeholder="Select a destination wallet"
+                                    variant="outlined"
+                                    :rules="[v => !!v || 'Target wallet is required', validateInternalTarget]"
+                                    required
+                                    :loading="loadingTargets"
+                                    class="mb-4"
+                                >
+                                    <template v-slot:item="{ props, item }">
+                                        <v-list-item 
+                                            v-bind="props" 
+                                            :subtitle="(item.raw.currency?.code || '') + ' - User: ' + (item.raw.users?.[0]?.name || 'Unknown')"
+                                        ></v-list-item>
+                                    </template>
+                                </v-select>
+                            </v-col>
+                        </v-row>
+
+                        <!-- External: Address Input (Col 8) -->
+                        <v-row v-if="formData.type === 'external'">
+                            <v-col cols="12" md="8">
+                                <v-text-field
+                                    v-model="formData.to_address"
+                                    label="External Wallet Address"
+                                    placeholder="e.g. 0x123..."
+                                    variant="outlined"
+                                    :rules="[v => !!v || 'Address is required']"
+                                    required
+                                    class="mb-4"
+                                ></v-text-field>
+                            </v-col>
+                        </v-row>
+
+                        <!-- Amount (Half Width) -->
+                        <v-row>
+                            <v-col cols="12" md="6">
+                                <v-text-field
+                                    v-model.number="formData.amount"
+                                    label="Amount"
+                                    placeholder="0.00"
+                                    variant="outlined"
+                                    type="number"
+                                    min="0.01"
+                                    step="0.01"
+                                    :rules="amountRules"
+                                    required
+                                    class="mb-4"
+                                ></v-text-field>
+                            </v-col>
+                        </v-row>
+
+                        <!-- Description -->
+                        <v-textarea
+                            v-model="formData.description"
+                            label="Description (Optional)"
+                            placeholder="What is this transfer for?"
+                            variant="outlined"
+                            rows="3"
+                            class="mb-4"
+                        ></v-textarea>
+                        
+                        <v-alert v-if="error" type="error" class="mb-4" closable>{{ error }}</v-alert>
+                        <v-alert v-if="successMessage" type="success" class="mb-4" closable>{{ successMessage }}</v-alert>
+
+                        <div class="d-flex justify-end align-center mt-4">
+                            <v-btn variant="text" color="grey-darken-1" class="mr-4 text-none text-subtitle-1" @click="router.push('/wallets')">
+                                Cancel
+                            </v-btn>
+                            <v-btn color="primary" variant="flat" @click="submitTransfer" :loading="submitting" size="large" width="200" class="text-none text-subtitle-1">
+                                Transfer Funds
+                            </v-btn>
+                        </div>
+                    </v-form>
+                </div>
+            </v-expand-transition>
+        </v-card>
+
   </div>
 </template>
 
@@ -108,23 +163,25 @@ import { ref, reactive, onMounted, computed } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { walletApi } from '@/modules/Wallet/api';
 import { transactionApi } from '@/modules/Transaction/api';
+import lottie from 'lottie-web';
 
 const router = useRouter();
 const route = useRoute();
+const lottieContainer = ref<HTMLElement | null>(null);
 
-const valid = ref(false);
+const validDetails = ref(false);
 const submitting = ref(false);
 const loadingSource = ref(false);
 const loadingTargets = ref(false);
 const error = ref('');
 const successMessage = ref('');
 
-const wallets = ref<any[]>([]); // User's wallets (for Source info)
-const allTargets = ref<any[]>([]); // All system wallets (for Internal Target)
+const wallets = ref<any[]>([]); 
+const allTargets = ref<any[]>([]); 
 
 const formData = reactive({
   source_wallet_id: null as number | null,
-  type: null as 'internal' | 'external' | null, // Default null
+  type: null as 'internal' | 'external' | null, 
   to_wallet_id: null as number | null,
   to_address: '',
   amount: null as number | null,
@@ -135,42 +192,26 @@ const selectedSourceWallet = computed(() => {
     return wallets.value.find(w => w.id === formData.source_wallet_id);
 });
 
-const onTypeChange = () => {
-    formData.to_wallet_id = null;
-    formData.to_address = '';
-}
-
-// Compute valid targets for Internal Transfer
 const internalTargetWallets = computed(() => {
-    if (!formData.source_wallet_id || !formData.type) return [];
-    
-    // Check if source wallet is loaded
-    if (!selectedSourceWallet.value) return [];
-
-    // Filter from `allTargets`: 
-    // Return ALL other wallets (exclude self)
+    if (!formData.source_wallet_id || !selectedSourceWallet.value) return [];
     return allTargets.value.filter(w => w.id !== formData.source_wallet_id);
 });
 
-// Validation rule for internal target
 const validateInternalTarget = (value: any) => {
     if (!value) return 'Target wallet is required';
     const target = allTargets.value.find(w => w.id === value);
     if (!target) return true;
     
-    // Check Currency
     if (target.currency_id !== selectedSourceWallet.value?.currency_id) {
         return `Currency mismatch. Target wallet is ${target.currency?.code}, Source is ${selectedSourceWallet.value?.currency?.code}.`;
     }
 
-    // Check Status
     if (!target.status) {
         return 'Target wallet is inactive/frozen and cannot receive funds.';
     }
 
     return true;
 };
-
 
 const amountRules = [
   (v: number) => !!v || 'Amount is required',
@@ -185,19 +226,22 @@ const amountRules = [
 ];
 
 onMounted(async () => {
-  // Load Source Wallet (User's wallets)
+  if (lottieContainer.value) {
+    lottie.loadAnimation({
+      container: lottieContainer.value,
+      renderer: 'svg',
+      loop: true,
+      autoplay: true,
+      path: '/Arrow Down.json' // Path to your Lottie file in public folder
+    });
+  }
+
   await fetchUserWallets();
-  
-  // Auto-select Source from query
   if (route.query.from) {
       const fromId = Number(route.query.from);
       const exists = wallets.value.find(w => w.id === fromId);
-      if (exists) {
-          formData.source_wallet_id = fromId;
-      }
+      if (exists) formData.source_wallet_id = fromId;
   }
-
-  // Load All Targets for Internal Transfer
   await fetchTransferTargets();
 });
 
@@ -206,14 +250,8 @@ const fetchUserWallets = async () => {
   try {
     const response = await walletApi.getWallets();
     const data = (response as any).data || response;
-    
-    if (Array.isArray(data)) {
-         wallets.value = data;
-    } else {
-         wallets.value = (data.data || []); // .data if paginated or wrapped
-    }
+    wallets.value = Array.isArray(data) ? data : (data.data || []);
   } catch (e) {
-    console.error('Failed to load wallets', e);
     error.value = 'Failed to load source wallet info.';
   } finally {
     loadingSource.value = false;
@@ -225,11 +263,7 @@ const fetchTransferTargets = async () => {
     try {
         const response = await walletApi.getTransferTargets();
         const data = (response as any).data || response;
-        if (Array.isArray(data)) {
-            allTargets.value = data;
-        } else {
-            allTargets.value = (data.data || []);
-        }
+        allTargets.value = Array.isArray(data) ? data : (data.data || []);
     } catch (e) {
         console.error('Failed to load transfer targets', e);
     } finally {
@@ -238,11 +272,9 @@ const fetchTransferTargets = async () => {
 }
 
 const submitTransfer = async () => {
-  if (!valid.value) return;
-  if (!formData.type) {
-      error.value = "Please select a transfer type.";
-      return;
-  }
+  if (formData.amount && formData.amount <= 0) return;
+  if (formData.type === 'internal' && !formData.to_wallet_id) return;
+  if (formData.type === 'external' && !formData.to_address) return;
 
   submitting.value = true;
   error.value = '';
@@ -251,7 +283,7 @@ const submitTransfer = async () => {
   try {
     await transactionApi.initiateTransfer({
       source_wallet_id: formData.source_wallet_id!,
-      type: formData.type,
+      type: formData.type!,
       to_wallet_id: formData.type === 'internal' ? formData.to_wallet_id : null,
       to_address: formData.type === 'external' ? formData.to_address : null,
       amount: formData.amount!,
@@ -259,17 +291,9 @@ const submitTransfer = async () => {
     });
     
     successMessage.value = 'Transfer initiated successfully!';
-
-    setTimeout(() => {
-        router.push('/transactions');
-    }, 2000);
-
+    setTimeout(() => router.push('/transactions'), 2000);
   } catch (e: any) {
-    if (e.response && e.response.data && e.response.data.message) {
-        error.value = e.response.data.message;
-    } else {
-        error.value = 'An error occurred during transfer.';
-    }
+    error.value = e.response?.data?.message || 'An error occurred during transfer.';
   } finally {
     submitting.value = false;
   }
@@ -278,14 +302,30 @@ const submitTransfer = async () => {
 
 <style scoped>
 .transfer-form-container {
-  max-width: 900px; /* Bigger width as requested */
+  max-width: 1000px;
   margin: 0 auto;
-  padding: 24px;
+  padding: 16px;
 }
 .transfer-card {
     border: 1px solid #e0e0e0;
 }
-.border-dashed {
-    border: 1px dashed #bdbdbd;
+
+/* --- Width Issue Fix --- */
+/* Stepper styles removed */
+
+.hover-card:hover {
+    background-color: #f5f5f5;
+    border-color: #1976D2 !important;
+    transform: translateY(-2px);
+}
+.selected-card {
+    border: 2px solid #1976D2;
+    background-color: #F0F7FF;
+}
+
+@media (max-width: 600px) {
+    .text-h6 {
+        font-size: 1rem !important; /* Adjust for mobile if needed */
+    }
 }
 </style>

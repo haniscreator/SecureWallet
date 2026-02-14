@@ -2,7 +2,7 @@
   <v-container fluid class="fill-height align-start pa-6">
     <v-row justify="center">
       <v-col cols="12" md="8" lg="6">
-        <v-card class="mx-auto" elevation="0" rounded="lg" border>
+        <v-card class="mx-auto" elevation="0" rounded="0" border>
             <v-card-title class="text-h6 font-weight-bold pa-4 border-b">
                 System Settings
             </v-card-title>

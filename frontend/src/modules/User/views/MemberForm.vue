@@ -15,7 +15,7 @@
                     </h1>
                 </div>
 
-                <v-card class="rounded-xl pa-4" border elevation="0">
+                <v-card class="rounded-0 pa-4" border elevation="0">
                     <v-card-text>
                         <v-form ref="form" @submit.prevent="submit">
                             <v-row>
@@ -207,7 +207,7 @@ async function loadMember() {
         if (user) {
              formData.value.name = user.name;
              formData.value.email = user.email;
-             formData.value.role = user.role;
+             formData.value.role = user.role as any;
              formData.value.status = user.status ?? true;
              formData.value.wallet_ids = user.wallet_ids || [];
         }

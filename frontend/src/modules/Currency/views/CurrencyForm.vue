@@ -2,7 +2,7 @@
   <v-container fluid class="fill-height align-start pa-6">
     <v-row justify="center">
       <v-col cols="12" md="8" lg="6">
-        <v-card class="rounded-xl" elevation="0" border>
+        <v-card class="rounded-0" elevation="0" border>
           <v-card-title class="pa-6 pb-0 text-h5 font-weight-bold">
             {{ !isAdmin ? 'View Currency' : (isEdit ? 'Edit Currency' : 'New Currency') }}
           </v-card-title>
