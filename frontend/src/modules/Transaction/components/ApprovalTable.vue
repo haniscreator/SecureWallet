@@ -1,5 +1,9 @@
 <template>
   <v-card class="rounded-lg elevation-2" border>
+    <v-card-title class="font-weight-bold py-4 px-4">
+      Transfer List
+    </v-card-title>
+    <v-divider></v-divider>
     <v-data-table-server
       :headers="headers"
       :items="items"
@@ -7,7 +11,7 @@
       :items-length="totalItems"
       :items-per-page="itemsPerPage"
       :page="page"
-      class="elevation-0 rounded-0"
+      class="elevation-0 rounded-0 header-bg"
       @update:options="onUpdateOptions"
       hover
     >
@@ -153,3 +157,13 @@ function getCurrencySymbol(item: Transaction) {
   return item.from_wallet?.currency?.symbol || '$';
 }
 </script>
+
+<style scoped>
+:deep(thead) {
+  background-color: #F5F6F9;
+}
+:deep(th) {
+    font-weight: bold !important;
+    color: rgba(0, 0, 0, 0.87) !important;
+}
+</style>

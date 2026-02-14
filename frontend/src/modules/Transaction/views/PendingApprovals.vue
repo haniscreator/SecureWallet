@@ -1,7 +1,7 @@
 <template>
   <div class="fill-height pa-6">
     <div class="d-flex justify-space-between align-center mb-6">
-      <h1 class="text-h4 font-weight-bold">Pending Approvals</h1>
+      <h1 class="text-h5 font-weight-regular text-grey-darken-1">Pending Approvals - Korporatio</h1>
     </div>
 
     <!-- Filters -->
