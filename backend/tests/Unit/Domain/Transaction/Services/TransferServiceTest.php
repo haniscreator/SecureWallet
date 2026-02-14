@@ -57,7 +57,7 @@ class TransferServiceTest extends TestCase
         $role = \App\Domain\User\Models\UserRole::firstOrCreate(['name' => 'user'], ['label' => 'User']);
         $user = User::factory()->create(['role_id' => $role->id]);
 
-        $currency = \App\Domain\Currency\Models\Currency::factory()->create();
+        $currency = \App\Domain\Currency\Models\Currency::factory()->create(['code' => 'C01']);
         $wallet = Wallet::factory()->create([
             'currency_id' => $currency->id
         ]);
@@ -90,7 +90,7 @@ class TransferServiceTest extends TestCase
         $role = \App\Domain\User\Models\UserRole::firstOrCreate(['name' => 'user'], ['label' => 'User']);
         $user = User::factory()->create(['role_id' => $role->id]);
 
-        $currency = \App\Domain\Currency\Models\Currency::factory()->create();
+        $currency = \App\Domain\Currency\Models\Currency::factory()->create(['code' => 'C02']);
         $wallet = Wallet::factory()->create(['currency_id' => $currency->id]);
         $user->wallets()->attach($wallet);
         $this->fundWallet($wallet, 500);
@@ -115,7 +115,7 @@ class TransferServiceTest extends TestCase
         $role = \App\Domain\User\Models\UserRole::firstOrCreate(['name' => 'manager'], ['label' => 'Manager']);
         $manager = User::factory()->create(['role_id' => $role->id]);
 
-        $currency = \App\Domain\Currency\Models\Currency::factory()->create();
+        $currency = \App\Domain\Currency\Models\Currency::factory()->create(['code' => 'C03']);
         $wallet = Wallet::factory()->create(['currency_id' => $currency->id]);
         $manager->wallets()->attach($wallet);
         $this->fundWallet($wallet, 5000);
@@ -138,7 +138,7 @@ class TransferServiceTest extends TestCase
         $role = \App\Domain\User\Models\UserRole::firstOrCreate(['name' => 'user'], ['label' => 'User']);
         $user = User::factory()->create(['role_id' => $role->id]);
 
-        $currency = \App\Domain\Currency\Models\Currency::factory()->create();
+        $currency = \App\Domain\Currency\Models\Currency::factory()->create(['code' => 'C04']);
         $wallet = Wallet::factory()->create(['currency_id' => $currency->id]);
         $user->wallets()->attach($wallet);
         $this->fundWallet($wallet, 50);
@@ -157,7 +157,7 @@ class TransferServiceTest extends TestCase
         $role = \App\Domain\User\Models\UserRole::firstOrCreate(['name' => 'user'], ['label' => 'User']);
         $user = User::factory()->create(['role_id' => $role->id]);
 
-        $currency1 = \App\Domain\Currency\Models\Currency::factory()->create();
+        $currency1 = \App\Domain\Currency\Models\Currency::factory()->create(['code' => 'C05']);
         $wallet = Wallet::factory()->create(['currency_id' => $currency1->id]);
         $user->wallets()->attach($wallet);
         $this->fundWallet($wallet, 500);
@@ -288,7 +288,7 @@ class TransferServiceTest extends TestCase
         $role = \App\Domain\User\Models\UserRole::firstOrCreate(['name' => 'user'], ['label' => 'User']);
         $user = User::factory()->create(['role_id' => $role->id]);
 
-        $currency = \App\Domain\Currency\Models\Currency::factory()->create();
+        $currency = \App\Domain\Currency\Models\Currency::factory()->create(['code' => 'C06']);
         $wallet1 = Wallet::factory()->create(['currency_id' => $currency->id]);
         $wallet2 = Wallet::factory()->create(['currency_id' => $currency->id]);
 
