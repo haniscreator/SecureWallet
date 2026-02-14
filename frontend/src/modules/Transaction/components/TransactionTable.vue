@@ -128,6 +128,14 @@ function getTypeColor(type: string) {
 }
 
 function getWalletName(item: Transaction) {
+    const wallet = item.to_wallet;
+    if (wallet?.is_external && wallet.address) {
+        // Truncate address: 0x123...456 (first 6, last 4)
+        if (wallet.address.length > 13) {
+             return `${wallet.address.substring(0, 8)}...${wallet.address.substring(wallet.address.length - 6)}`;
+        }
+        return wallet.address;
+    }
   return item.to_wallet?.name || item.wallet?.name || 'Unknown Wallet';
 }
 

@@ -26,8 +26,16 @@ class TransactionResource extends JsonResource
                 'name' => $this->toWallet->name,
                 'currency' => [
                     'symbol' => $this->toWallet->currency->symbol ?? '$',
-                ]
-            ] : null,
+                ],
+                'is_external' => false,
+            ] : ($this->externalWallet ? [
+                    'name' => $this->externalWallet->name,
+                    'address' => $this->externalWallet->address,
+                    'currency' => [
+                        'symbol' => $this->externalWallet->currency->symbol ?? '$',
+                    ],
+                    'is_external' => true,
+                ] : null),
             'created_at' => $this->created_at->toIso8601String(),
             'updated_at' => $this->updated_at->toIso8601String(),
         ];

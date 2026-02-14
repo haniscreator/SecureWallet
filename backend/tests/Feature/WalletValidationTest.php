@@ -108,7 +108,7 @@ class WalletValidationTest extends TestCase
                 'data' => [
                     'exists' => true,
                     'valid' => false,
-                    'message' => "Currency mismatch. Wallet is EUR.",
+                    'message' => "Currency mismatch. Destination wallet is EUR, Source is USD.",
                 ]
             ]);
     }

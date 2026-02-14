@@ -14,6 +14,8 @@ export interface Transaction {
     };
     to_wallet?: {
         name: string;
+        address?: string;
+        is_external?: boolean;
         currency?: {
             symbol: string;
         }
