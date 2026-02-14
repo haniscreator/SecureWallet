@@ -86,10 +86,10 @@
                                 label="Choose destination wallet"
                                 placeholder="Select a destination wallet"
                                 variant="outlined"
-                                :rules="[v => !!v || 'Target wallet is required', validateInternalTarget]"
+                                :rules="[v => !!v || 'Destination wallet is required', validateInternalTarget]"
                                 required
                                 :loading="loadingTargets"
-                                class="mb-4"
+                                class="mb-4 right-aligned-messages"
                                 autocomplete="off"
                             >
                                 <template v-slot:item="{ props, item }">
@@ -112,7 +112,7 @@
                                 variant="outlined"
                                 :rules="[v => !!v || 'Address is required']"
                                 required
-                                class="mb-4"
+                                class="mb-4 right-aligned-messages"
                                 @blur="validateExternalAddress"
                                 @input="addressValidationResult = null"
                                 :error="addressValidationResult && !addressValidationResult.valid"
@@ -221,16 +221,16 @@ const internalTargetWallets = computed(() => {
 });
 
 const validateInternalTarget = (value: any) => {
-    if (!value) return 'Target wallet is required';
+    if (!value) return 'Destination wallet is required';
     const target = allTargets.value.find(w => w.id === value);
     if (!target) return true;
     
     if (target.currency_id !== selectedSourceWallet.value?.currency_id) {
-        return `Currency mismatch. Target wallet is ${target.currency?.code}, Source is ${selectedSourceWallet.value?.currency?.code}.`;
+        return `Currency mismatch. Destination wallet is ${target.currency?.code}, Source is ${selectedSourceWallet.value?.currency?.code}.`;
     }
 
     if (!target.status) {
-        return 'Target wallet is inactive/frozen and cannot receive funds.';
+        return 'Destination wallet is inactive/frozen and cannot receive funds.';
     }
 
     return true;

@@ -37,6 +37,6 @@ class AddressValidationCrashTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertJsonPath('data.valid', false);
-        $response->assertJsonPath('data.message', "Currency mismatch. Wallet is ETH.");
+        $response->assertJsonPath('data.message', "Currency mismatch. Destination wallet is ETH, Source is USD.");
     }
 }

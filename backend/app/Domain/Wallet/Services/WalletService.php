@@ -4,6 +4,7 @@ namespace App\Domain\Wallet\Services;
 
 use App\Domain\Wallet\Models\Wallet;
 use App\Domain\User\Models\User;
+use App\Domain\Currency\Models\Currency;
 use App\Domain\Wallet\Actions\CreateWalletAction;
 use App\Domain\Wallet\Actions\UpdateWalletStatusAction;
 use App\Domain\Wallet\Actions\AssignWalletAction;
@@ -172,10 +173,13 @@ class WalletService
 
         // Check currency
         if ($data->currency_id && $wallet->currency_id != $data->currency_id) {
+            $sourceCurrency = Currency::find($data->currency_id);
+            $sourceCode = $sourceCurrency ? $sourceCurrency->code : 'Unknown';
+
             return [
                 'exists' => true,
                 'valid' => false,
-                'message' => "Currency mismatch. Wallet is {$wallet->currency->code}.",
+                'message' => "Currency mismatch. Destination wallet is {$wallet->currency->code}, Source is {$sourceCode}.",
                 'wallet' => $this->formatWalletData($wallet),
             ];
         }
