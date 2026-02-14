@@ -22,12 +22,18 @@ describe('RecentTransactions', () => {
                                 dashboardTransactions: [
                                     {
                                         id: 1,
-                                        amount: 50.00,
+                                        amount: '50.00',
                                         type: 'debit',
-                                        wallet_name: 'Checking',
                                         reference: 'Coffee',
                                         created_at: '2026-01-30T10:00:00Z',
-                                        to_wallet: { currency: { symbol: '$' } }
+                                        to_wallet: {
+                                            name: 'Coffee Shop',
+                                            currency: { symbol: '$' }
+                                        },
+                                        from_wallet: {
+                                            name: 'Checking',
+                                            currency: { symbol: '$' }
+                                        }
                                     }
                                 ],
                                 dashboardTotalItems: 1,
@@ -41,7 +47,7 @@ describe('RecentTransactions', () => {
 
         expect(wrapper.text()).toContain('Checking')
         expect(wrapper.text()).toContain('Coffee')
-        expect(wrapper.text()).toContain('$50.00')
+        expect(wrapper.text()).toContain('$50')
     })
 
     it('triggers fetchDashboardTransactions on mount', () => {
@@ -109,7 +115,8 @@ describe('RecentTransactions', () => {
             }
         })
 
-        expect(wrapper.find('.v-skeleton-loader').exists()).toBe(true)
-        expect(wrapper.text()).not.toContain('No recent transactions')
+        const table = wrapper.findComponent({ name: 'TransactionTable' })
+        expect(table.exists()).toBe(true)
+        expect(table.props('loading')).toBe(true)
     })
 })

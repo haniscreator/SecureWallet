@@ -17,11 +17,20 @@ class WalletTransferTargetsTest extends TestCase
         $user = User::factory()->create();
         $this->actingAs($user);
 
+        // Create a currency to avoid unique constraint violations on random code generation
+        $currency = \App\Domain\Currency\Models\Currency::factory()->create();
+
         // Create active wallets
-        Wallet::factory()->count(3)->create(['status' => true]);
+        Wallet::factory()->count(3)->create([
+            'status' => true,
+            'currency_id' => $currency->id
+        ]);
 
         // Create inactive wallet
-        Wallet::factory()->create(['status' => false]);
+        Wallet::factory()->create([
+            'status' => false,
+            'currency_id' => $currency->id
+        ]);
 
         $response = $this->getJson('/api/wallets/transfer-targets');
 
