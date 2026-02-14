@@ -68,6 +68,8 @@ class TransferServiceTest extends TestCase
             'currency_id' => $currency->id
         ]);
 
+        $this->assertEquals((int) $wallet->currency_id, (int) $externalWallet->currency_id);
+
         $transaction = $this->transferService->initiateTransfer($wallet, 'external', $externalWallet->address, 1100, $user);
 
         $this->assertDatabaseHas('transactions', [
@@ -94,6 +96,7 @@ class TransferServiceTest extends TestCase
         $this->fundWallet($wallet, 500);
 
         $externalWallet = ExternalWallet::factory()->create(['currency_id' => $currency->id]);
+        $this->assertEquals((int) $wallet->currency_id, (int) $externalWallet->currency_id);
 
         $transaction = $this->transferService->initiateTransfer($wallet, 'external', $externalWallet->address, 100, $user);
 
@@ -184,16 +187,23 @@ class TransferServiceTest extends TestCase
 
         $externalWallet = ExternalWallet::factory()->create(['currency_id' => $currency->id]);
 
+        // Cast to int to ensure no type mismatch issues in strict comparison
+        $this->assertEquals((int) $wallet->currency_id, (int) $externalWallet->currency_id);
+
         // Creating the pending transaction. 
         // We set user_id to user to match new requirement, though approve/reject might not strictly need it, initiate does.
         $transaction = Transaction::factory()->create([
             'user_id' => $user->id,
             'from_wallet_id' => $wallet->id,
+            'to_wallet_id' => null,
             'external_wallet_id' => $externalWallet->id,
             'amount' => 100,
             'transaction_status_id' => TransactionStatus::where('code', 'pending')->first()->id,
             'type' => 'debit'
         ]);
+
+        // Explicitly load the relation to ensure we don't carry any stale state
+        $transaction = $transaction->fresh(['fromWallet']);
 
         $this->transferService->approveTransfer($transaction, $manager);
 

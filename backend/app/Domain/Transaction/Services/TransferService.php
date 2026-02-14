@@ -151,7 +151,8 @@ class TransferService
                 if (!$toWallet) {
                     throw new Exception("Sorry, we couldn’t find the destination wallet.");
                 }
-                if ($toWallet->currency_id !== $transaction->fromWallet->currency_id) {
+
+                if ((int) $toWallet->currency_id !== (int) $transaction->fromWallet->currency_id) {
                     throw new Exception("Sorry, the destination wallet currency does not match.");
                 }
                 if (!$toWallet->isActive()) {
@@ -170,12 +171,12 @@ class TransferService
                     throw new Exception("Sorry, we couldn’t find the destination wallet.");
                 }
 
-                if ($externalWallet->currency_id !== $transaction->fromWallet->currency_id) {
+
+                if ((int) $externalWallet->currency_id !== (int) $transaction->fromWallet->currency_id) {
                     throw new Exception("Sorry, the destination wallet currency does not match.");
                 }
 
                 if (!$externalWallet->status) {
-                    // Assuming false/0 is inactive
                     throw new Exception("Sorry, the destination wallet is not active.");
                 }
             }

@@ -14,8 +14,12 @@ class TransactionFactory extends Factory
     public function definition()
     {
         return [
-            'from_wallet_id' => Wallet::factory(),
-            'to_wallet_id' => Wallet::factory(),
+            'from_wallet_id' => function (array $attributes) {
+                return Wallet::factory();
+            },
+            'to_wallet_id' => function (array $attributes) {
+                return Wallet::factory();
+            },
             'transaction_status_id' => TransactionStatus::factory(), // This might need TransactionStatusFactory or just a clearer, I'll use id if factory not exists
             // actually TransactionStatus might not have a factory. I'll just use 1 or strict values if no factory.
             // Better: 'transaction_status_id' => 1, but let's see.
