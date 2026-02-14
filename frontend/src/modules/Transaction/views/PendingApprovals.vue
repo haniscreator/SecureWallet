@@ -1,5 +1,5 @@
 <template>
-  <div class="fill-height pa-6">
+  <div class="fill-height pa-6 w-100">
     <div class="d-flex justify-space-between align-center mb-6">
       <h1 class="text-h5 font-weight-regular text-grey-darken-1">Pending Approvals - Korporatio</h1>
     </div>
@@ -49,7 +49,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { transactionApi } from '@/modules/Transaction/api';
 import type { Transaction, TransactionFilters } from '@/modules/Transaction/api';
@@ -67,6 +67,8 @@ const totalItems = ref(0);
 const page = ref(1);
 const itemsPerPage = ref(10);
 const filters = ref<TransactionFilters>({});
+const sortBy = ref('created_at');
+const sortDesc = ref(true);
 
 const processingId = ref<number | null>(null);
 const rejectDialog = ref(false);
@@ -82,6 +84,8 @@ async function fetchTransactions() {
       page: page.value,
       per_page: itemsPerPage.value,
       status_id: 1, // Force Pending status
+      sort_by: sortBy.value,
+      sort_dir: sortDesc.value ? 'desc' : 'asc',
     };
 
     const response = await transactionApi.getTransactions(payload);
@@ -105,9 +109,18 @@ function handleFilter(newFilters: TransactionFilters) {
   fetchTransactions();
 }
 
-function handleOptionsUpdate(options: { page: number; itemsPerPage: number }) {
+function handleOptionsUpdate(options: { page: number; itemsPerPage: number; sortBy: any[] }) {
   page.value = options.page;
-  // TransactionTable hides functionality to change itemsPerPage, so we stick to current or default
+  
+  if (options.sortBy && options.sortBy.length > 0) {
+      sortBy.value = options.sortBy[0].key;
+      sortDesc.value = options.sortBy[0].order === 'desc';
+  } else {
+      sortBy.value = 'created_at';
+      sortDesc.value = true;
+  }
+  
+  fetchTransactions();
 }
 
 function handleViewDetails(item: Transaction) {
@@ -151,13 +164,9 @@ const confirmReject = async () => {
     }
 };
 
-// Watchers
-watch(page, () => {
-  fetchTransactions();
-});
+
 
 // Initial Fetch
-fetchTransactions();
 </script>
 
 <style scoped>

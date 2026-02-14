@@ -1,5 +1,5 @@
 <template>
-  <v-card class="rounded-0 mb-6" elevation="0" border>
+  <v-card class="rounded-0 mb-6 w-100" elevation="0" border width="100%">
     <!-- Inputs Section with Gray Background -->
     <div style="background-color: #F5F6F9;" class="pa-4">
       <v-row>

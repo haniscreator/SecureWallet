@@ -1,5 +1,5 @@
 <template>
-  <v-card class="rounded-lg elevation-2" border>
+  <v-card class="rounded-lg elevation-2 w-100" border width="100%">
     <v-card-title class="font-weight-bold py-4 px-4">
       Transfer List
     </v-card-title>
@@ -11,7 +11,8 @@
       :items-length="totalItems"
       :items-per-page="itemsPerPage"
       :page="page"
-      class="elevation-0 rounded-0 header-bg"
+      class="elevation-0 rounded-0 header-bg w-100"
+      width="100%"
       @update:options="onUpdateOptions"
       hover
     >
