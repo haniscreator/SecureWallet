@@ -13,142 +13,50 @@
     </v-card-title>
     <v-divider></v-divider>
     
-    <v-table class="pa-2 recent-transactions-table">
-      <thead>
-        <tr>
-          <th class="text-left text-grey-darken-1 font-weight-bold">Date</th>
-          <th class="text-left text-grey-darken-1 font-weight-bold">From/To</th>
-          <th class="text-left text-grey-darken-1 font-weight-bold">Type</th>
-          <th class="text-left text-grey-darken-1 font-weight-bold">Amount</th>
-          <th class="text-left text-grey-darken-1 font-weight-bold">Reference</th>
-        </tr>
-      </thead>
-      <tbody>
-          <template v-if="walletStore.dashboardLoading">
-               <tr v-for="n in 5" :key="n">
-                   <td colspan="5">
-                       <v-skeleton-loader type="list-item-avatar-two-line" height="50" color="transparent"></v-skeleton-loader>
-                   </td>
-               </tr>
-          </template>
-          <template v-else>
-          <tr v-for="item in transactions" :key="item.id">
-            <td class="text-body-2 text-grey-darken-2">{{ item.date }}</td>
-            <td>
-              <div class="d-flex align-center">
-                <v-avatar 
-                  size="36" 
-                  rounded="lg" 
-                  :color="getWalletColor(item.wallet)" 
-                  variant="tonal"
-                  class="mr-3"
-                >
-                  <!-- Changed to wallet icon as requested -->
-                  <v-icon size="small" :color="getWalletColor(item.wallet)">mdi-wallet-bifold</v-icon>
-                </v-avatar>
-                <span class="text-body-2 font-weight-medium">{{ item.wallet }}</span>
-              </div>
-            </td>
-            <td>
-              <span class="text-body-2">{{ item.type }}</span>
-            </td>
-            <td>
-              <!-- Color logic: Teal for credit, Red for debit -->
-              <span :class="['text-body-2 font-weight-bold', item.amount.startsWith('-') ? 'text-red-darken-2' : 'text-teal-darken-2']">
-                {{ item.amount }}
-              </span>
-            </td>
-            <td class="text-body-2 text-grey-darken-1">{{ item.reference }}</td>
-          </tr>
-          <tr v-if="transactions.length === 0">
-              <td colspan="5" class="text-center pa-6 text-grey text-body-2">No recent transactions</td>
-          </tr>
-          </template>
-      </tbody>
-    </v-table>
-    
-    <v-divider></v-divider>
-    
-    <div class="d-flex align-center justify-space-between pa-4">
-        <div class="text-caption text-grey">Showing {{ transactions.length }} of {{ walletStore.dashboardTotalItems }}</div>
-        <div class="d-flex align-center">
-            <v-pagination
-                :model-value="walletStore.dashboardPage"
-                @update:model-value="handlePageChange"
-                :length="Math.ceil(walletStore.dashboardTotalItems / 10)"
-                total-visible="3"
-                density="compact"
-                active-color="primary"
-                variant="flat"
-                class="details-pagination"
-                :disabled="walletStore.dashboardLoading"
-            ></v-pagination>
-        </div>
-    </div>
+    <TransactionTable
+      :loading="walletStore.dashboardLoading"
+      :items="walletStore.dashboardTransactions"
+      :total-items="walletStore.dashboardTotalItems"
+      :page="walletStore.dashboardPage"
+      :items-per-page="walletStore.dashboardItemsPerPage"
+      @update:options="handleOptionsUpdate"
+      @update:page="handlePageChange"
+      @view-details="handleViewDetails"
+    />
   </v-card>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from 'vue';
+import { onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useWalletStore } from '@/modules/Wallet/store';
+import TransactionTable from '@/modules/Transaction/components/TransactionTable.vue';
+import type { Transaction } from '@/modules/Transaction/api';
 
 const router = useRouter();
 const walletStore = useWalletStore();
 
 onMounted(() => {
-    // Initial fetch for dashboard
+    // Initial fetch for dashboard is triggered by the table's update:options or we can call it here if needed.
+    // However, TransactionTable's v-data-table-server usually triggers an initial load via update:options.
+    // But since we want to be sure and consistent with previous behavior:
     walletStore.fetchDashboardTransactions(1, 10);
-});
-
-// Map customized transactions
-const transactions = computed(() => {
-  const txs = walletStore.dashboardTransactions || [];
-  return txs.map(tx => ({
-    id: tx.id,
-    date: new Date(tx.created_at).toLocaleDateString(),
-    wallet: tx.wallet_name || getWalletName(tx),
-    type: tx.type === 'credit' ? 'Credit' : 'Debit',
-    amount: `${tx.type === 'debit' ? '-' : ''}${getCurrencySymbol(tx)}${Number(tx.amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, 
-    reference: tx.reference
-  }));
 });
 
 function handlePageChange(newPage: number) {
     walletStore.fetchDashboardTransactions(newPage, 10);
 }
 
-function getCurrencySymbol(item: any) {
-    return item.to_wallet?.currency?.symbol || item.from_wallet?.currency?.symbol || '$';
+function handleOptionsUpdate(options: { page: number; itemsPerPage: number }) {
+    // Ensure we don't double-fetch if specific logic prevents it, but usually safe to call store action
+    walletStore.fetchDashboardTransactions(options.page, 10);
 }
 
-function getWalletName(item: any) {
-    // Fallback if wallet_name is not direct property (it comes from backend usually, but let's be safe)
-    return item.to_wallet?.name || item.from_wallet?.name || 'Unknown Wallet';
-}
-
-function getWalletColor(name: string) {
-    if (!name) return 'grey';
-    if (name.includes('Main')) return 'blue-darken-2';
-    if (name.includes('EUR')) return 'blue-darken-4';
-    return 'green-darken-3'; // Default/Others
+function handleViewDetails(item: Transaction) {
+    router.push(`/transactions/${item.id}`);
 }
 </script>
 
 <style scoped>
-.recent-transactions-table :deep(tbody tr:nth-of-type(odd)) {
-    background-color: #FAFAFA; /* Very light grey for odd rows */
-}
-.recent-transactions-table :deep(tbody tr:hover) {
-    background-color: #F5F5F5 !important;
-}
-
-.details-pagination :deep(.v-pagination__list) {
-    margin-bottom: 0;
-}
-
-.details-pagination :deep(.v-pagination__item--is-active) {
-    background-color: rgb(var(--v-theme-primary)) !important;
-    color: white !important;
-}
+/* Reuse styles from TransactionTable or keep specific overrides if needed */
 </style>
