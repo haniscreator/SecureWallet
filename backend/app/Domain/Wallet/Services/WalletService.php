@@ -5,6 +5,7 @@ namespace App\Domain\Wallet\Services;
 use App\Domain\Wallet\Models\Wallet;
 use App\Domain\User\Models\User;
 use App\Domain\Currency\Models\Currency;
+use App\Domain\Wallet\Models\ExternalWallet;
 use App\Domain\Wallet\Actions\CreateWalletAction;
 use App\Domain\Wallet\Actions\UpdateWalletStatusAction;
 use App\Domain\Wallet\Actions\AssignWalletAction;
@@ -154,6 +155,41 @@ class WalletService
         $wallet = Wallet::where('address', $data->address)->with('currency', 'users')->first();
 
         if (!$wallet) {
+            // Check External Wallets
+            $externalWallet = ExternalWallet::where('address', $data->address)->with('currency')->first();
+
+            if ($externalWallet) {
+                // Check status first
+                if (!$externalWallet->status) {
+                    return [
+                        'exists' => true,
+                        'valid' => false,
+                        'message' => 'Destination wallet is inactive/frozen.',
+                        'wallet' => $this->formatExternalWalletData($externalWallet),
+                    ];
+                }
+
+                // Check currency
+                if ($data->currency_id && $externalWallet->currency_id != $data->currency_id) {
+                    $sourceCurrency = Currency::find($data->currency_id);
+                    $sourceCode = $sourceCurrency ? $sourceCurrency->code : 'Unknown';
+
+                    return [
+                        'exists' => true,
+                        'valid' => false,
+                        'message' => "Currency mismatch. Destination wallet is {$externalWallet->currency->code}, Source is {$sourceCode}.",
+                        'wallet' => $this->formatExternalWalletData($externalWallet),
+                    ];
+                }
+
+                return [
+                    'exists' => true,
+                    'valid' => true,
+                    'message' => "Verified External Wallet: {$externalWallet->name}",
+                    'wallet' => $this->formatExternalWalletData($externalWallet),
+                ];
+            }
+
             return [
                 'exists' => false,
                 'valid' => false,
@@ -198,6 +234,15 @@ class WalletService
             'name' => $wallet->name,
             'currency' => $wallet->currency->code,
             'users' => $wallet->users->pluck('name'),
+        ];
+    }
+
+    protected function formatExternalWalletData(ExternalWallet $wallet): array
+    {
+        return [
+            'name' => $wallet->name,
+            'currency' => $wallet->currency->code,
+            'users' => [],
         ];
     }
 }
