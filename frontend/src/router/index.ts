@@ -96,6 +96,12 @@ const routes = [
                 meta: { roles: ['admin', 'manager'] }
             },
             {
+                path: 'approvals/:id',
+                name: 'ApprovalDetail',
+                component: () => import('@/modules/Transaction/views/ApprovalDetail.vue'),
+                meta: { roles: ['admin', 'manager'] }
+            },
+            {
                 path: 'settings',
                 name: 'Settings',
                 component: () => import('@/modules/Setting/views/SettingForm.vue'),

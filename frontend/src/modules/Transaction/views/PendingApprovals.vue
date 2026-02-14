@@ -150,7 +150,7 @@ const fetchPendingTransactions = async () => {
 };
 
 const viewDetails = (item: any) => {
-    router.push(`/transactions/${item.id}`);
+    router.push(`/approvals/${item.id}`);
 };
 
 const approve = async (transaction: any) => {
