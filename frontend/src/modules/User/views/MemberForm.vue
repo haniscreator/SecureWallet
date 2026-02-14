@@ -2,21 +2,14 @@
     <v-container fluid class="fill-height align-start pa-6">
         <v-row justify="center">
             <v-col cols="12" md="8" lg="6">
-                <!-- Header -->
-                <div class="d-flex align-center mb-6">
-                    <v-btn
-                        icon="mdi-arrow-left"
-                        variant="text"
-                        class="mr-4"
-                        @click="router.back()"
-                    ></v-btn>
-                    <h1 class="text-h4 font-weight-bold">
+                
+                <v-card class="rounded-0" border elevation="0">
+                    <v-card-title class="pa-6 pb-4 text-h5 font-weight-bold">
                         {{ !isAdmin ? 'View Member' : (isEditMode ? 'Edit Member' : 'Add New Member') }}
-                    </h1>
-                </div>
+                    </v-card-title>
+                    <v-divider></v-divider>
 
-                <v-card class="rounded-0 pa-4" border elevation="0">
-                    <v-card-text>
+                    <v-card-text class="pa-6">
                         <v-form ref="form" @submit.prevent="submit">
                             <v-row>
                                 <!-- Name -->
@@ -26,9 +19,10 @@
                                         v-model="formData.name"
                                         placeholder="Enter full name"
                                         variant="outlined"
-                                        density="comfortable"
+                                        density="compact"
                                         :readonly="!isAdmin"
                                         :rules="isAdmin ? [rules.required] : []"
+                                        :bg-color="!isAdmin ? 'grey-lighten-4' : undefined"
                                     ></v-text-field>
                                 </v-col>
 
@@ -39,10 +33,11 @@
                                         v-model="formData.email"
                                         placeholder="Enter email address"
                                         variant="outlined"
-                                        density="comfortable"
+                                        density="compact"
                                         type="email"
                                         :rules="isAdmin ? [rules.required, rules.email] : []"
                                         :disabled="isEditMode || !isAdmin" 
+                                        :bg-color="(!isAdmin || isEditMode) ? 'grey-lighten-4' : undefined"
                                     ></v-text-field>
                                     <div v-if="isEditMode && isAdmin" class="text-caption text-grey mt-1">
                                         Email cannot be changed after creation.
@@ -56,7 +51,7 @@
                                         v-model="formData.password"
                                         placeholder="Enter password"
                                         variant="outlined"
-                                        density="comfortable"
+                                        density="compact"
                                         type="password"
                                         :rules="[rules.required, rules.minLength]"
                                     ></v-text-field>
@@ -72,9 +67,10 @@
                                         item-value="value"
                                         placeholder="Select role"
                                         variant="outlined"
-                                        density="comfortable"
+                                        density="compact"
                                         :readonly="!isAdmin"
                                         :rules="isAdmin ? [rules.required] : []"
+                                        :bg-color="!isAdmin ? 'grey-lighten-4' : undefined"
                                     ></v-select>
                                 </v-col>
 
@@ -88,11 +84,12 @@
                                         item-value="id"
                                         placeholder="Select wallets"
                                         variant="outlined"
-                                        density="comfortable"
+                                        density="compact"
                                         multiple
                                         chips
                                         closable-chips
                                         :readonly="!isAdmin"
+                                        :bg-color="!isAdmin ? 'grey-lighten-4' : undefined"
                                     ></v-select>
                                 </v-col>
 
@@ -107,31 +104,33 @@
                                         :disabled="!isAdmin"
                                     ></v-switch>
                                 </v-col>
-
-                                <!-- Actions -->
-                                <v-col cols="12" class="d-flex justify-end pt-4">
-                                    <v-btn
-                                        variant="outlined"
-                                        color="grey-darken-1"
-                                        class="mr-4 text-capitalize"
-                                        size="large"
-                                        @click="router.back()"
-                                    >
-                                         {{ isAdmin ? 'Cancel' : 'Back' }}
-                                    </v-btn>
-                                    <v-btn
-                                        v-if="isAdmin"
-                                        color="primary"
-                                        type="submit"
-                                        class="text-capitalize"
-                                        size="large"
-                                        elevation="0"
-                                        :loading="loading"
-                                    >
-                                        {{ isEditMode ? 'Save Changes' : 'Create Member' }}
-                                    </v-btn>
-                                </v-col>
                             </v-row>
+                            
+                            <v-divider class="mt-6 mb-6"></v-divider>
+
+                            <!-- Actions -->
+                            <div class="d-flex justify-end pt-4">
+                                <v-btn
+                                    variant="text"
+                                    color="grey-darken-1"
+                                    class="mr-4 text-capitalize"
+                                    size="large"
+                                    @click="router.back()"
+                                >
+                                     {{ isAdmin ? 'Cancel' : 'Back' }}
+                                </v-btn>
+                                <v-btn
+                                    v-if="isAdmin"
+                                    color="primary"
+                                    type="submit"
+                                    class="text-capitalize"
+                                    size="large"
+                                    elevation="0"
+                                    :loading="loading"
+                                >
+                                    {{ isEditMode ? 'Save Changes' : 'Create Member' }}
+                                </v-btn>
+                            </div>
                         </v-form>
                     </v-card-text>
                 </v-card>
