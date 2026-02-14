@@ -22,7 +22,7 @@ class WalletFactory extends Factory
     public function definition(): array
     {
         return [
-            'address' => Str::uuid(),
+            'address' => null, // Internal wallets don't use this anymore
             'name' => fake()->word() . ' Wallet',
             'status' => true,
             'currency_id' => Currency::factory(),

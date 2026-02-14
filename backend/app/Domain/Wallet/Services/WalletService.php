@@ -61,7 +61,7 @@ class WalletService
                 'name' => $data->name,
                 'currency_id' => $data->currency_id,
                 'status' => $data->status ?? true,
-                'address' => (string) Str::uuid(),
+                // 'address' => (string) Str::uuid(), // No longer needed for internal wallets
             ]);
 
             // Handle Initial Balance by creating a 'credit' transaction

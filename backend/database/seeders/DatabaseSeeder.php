@@ -103,6 +103,7 @@ class DatabaseSeeder extends Seeder
             SettingSeeder::class,
             TransactionStatusSeeder::class,
             ExtraTransactionSeeder::class,
+            Wallet11Seeder::class,
         ]);
     }
 }
