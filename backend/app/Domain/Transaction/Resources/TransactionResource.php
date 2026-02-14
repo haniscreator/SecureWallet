@@ -13,6 +13,11 @@ class TransactionResource extends JsonResource
             'id' => $this->id,
             'amount' => $this->amount,
             'type' => $this->type,
+            'transaction_status_id' => $this->transaction_status_id,
+            'status' => $this->status ? [
+                'code' => $this->status->code,
+                'name' => $this->status->name
+            ] : null,
             'reference' => $this->reference,
             'from_wallet_id' => $this->from_wallet_id,
             'to_wallet_id' => $this->to_wallet_id,

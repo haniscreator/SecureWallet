@@ -4,7 +4,7 @@
       <h1 class="text-h4 font-weight-bold primary--text">Pending Approvals</h1>
     </div>
 
-    <v-card class="elevation-2 rounded-lg">
+    <v-card class="elevation-2 rounded-lg" width="100%">
       <v-data-table
         :headers="headers"
         :items="transactions"
@@ -22,11 +22,11 @@
         </template>
 
         <template v-slot:item.to="{ item }">
-            <span v-if="item.external_wallet">
-                External: {{ item.external_wallet?.address }}
+            <span v-if="item.to_wallet?.is_external">
+                {{ truncateAddress(item.to_wallet?.address) }}
             </span>
             <span v-else>
-                Internal
+                {{ item.to_wallet?.name || 'Internal' }}
             </span>
         </template>
 
@@ -35,12 +35,13 @@
         </template>
 
         <template v-slot:item.actions="{ item }">
-          <div class="d-flex">
+          <div class="d-flex align-center justify-end">
             <v-btn
               color="success"
               variant="text"
               size="small"
               prepend-icon="mdi-check"
+              class="mr-2"
               @click="approve(item)"
               :loading="processingId === item.id"
               :disabled="!!processingId"
@@ -52,16 +53,27 @@
               variant="text"
               size="small"
               prepend-icon="mdi-close"
+              class="mr-2"
               @click="openRejectDialog(item)"
               :disabled="!!processingId"
             >
               Reject
             </v-btn>
+            <v-btn
+              color="info"
+              variant="text"
+              size="small"
+              prepend-icon="mdi-eye"
+              @click="viewDetails(item)"
+              :disabled="!!processingId"
+            >
+              View
+            </v-btn>
           </div>
         </template>
         
         <template v-slot:no-data>
-            <div class="pa-4 text-center">
+            <div class="pa-4 text-center" style="width: 100%;">
                 <v-icon size="large" color="grey lighten-1">mdi-check-circle-outline</v-icon>
                 <div class="subtitle-1 grey--text mt-2">No pending approvals found.</div>
             </div>
@@ -90,16 +102,17 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-
-    <v-snackbar v-model="snackbar.show" :color="snackbar.color" timeout="3000">
-        {{ snackbar.message }}
-    </v-snackbar>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, reactive } from 'vue';
+import { ref, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 import { transactionApi } from '@/modules/Transaction/api';
+import { useNotificationStore } from '@/shared/stores/notification';
+
+const router = useRouter();
+const notification = useNotificationStore();
 
 const loading = ref(false);
 const transactions = ref<any[]>([]);
@@ -108,15 +121,9 @@ const rejectDialog = ref(false);
 const selectedTransaction = ref<any>(null);
 const rejectionReason = ref('');
 
-const snackbar = reactive({
-    show: false,
-    message: '',
-    color: 'success'
-});
-
 const headers: any[] = [
   { title: 'Reference', key: 'reference', align: 'start' },
-  { title: 'From Wallet', key: 'from_wallet', align: 'start' },
+  { title: 'From', key: 'from_wallet', align: 'start' },
   { title: 'To', key: 'to', align: 'start' },
   { title: 'Amount', key: 'amount', align: 'end' },
   { title: 'Date', key: 'created_at', align: 'end' },
@@ -136,10 +143,14 @@ const fetchPendingTransactions = async () => {
      transactions.value = data; 
   } catch (e) {
     console.error(e);
-    showSnackbar('Failed to load pending transactions', 'error');
+    notification.error('Failed to load pending transactions');
   } finally {
     loading.value = false;
   }
+};
+
+const viewDetails = (item: any) => {
+    router.push(`/transactions/${item.id}`);
 };
 
 const approve = async (transaction: any) => {
@@ -148,10 +159,10 @@ const approve = async (transaction: any) => {
     processingId.value = transaction.id;
     try {
         await transactionApi.approveTransfer(transaction.id);
-        showSnackbar('Transfer approved successfully', 'success');
+        notification.success('Transfer approved successfully');
         await fetchPendingTransactions();
     } catch (e: any) {
-        showSnackbar(e.response?.data?.message || 'Failed to approve', 'error');
+        notification.error(e.response?.data?.message || 'Failed to approve');
     } finally {
         processingId.value = null;
     }
@@ -169,20 +180,14 @@ const confirmReject = async () => {
     processingId.value = selectedTransaction.value.id;
     try {
         await transactionApi.rejectTransfer(selectedTransaction.value.id, rejectionReason.value);
-        showSnackbar('Transfer rejected', 'info');
+        notification.notify('Transfer rejected', 'info'); // Using 'info' or specific 'warning' color if preferred, but user said "notification"
         rejectDialog.value = false;
         await fetchPendingTransactions();
     } catch (e: any) {
-        showSnackbar(e.response?.data?.message || 'Failed to reject', 'error');
+        notification.error(e.response?.data?.message || 'Failed to reject');
     } finally {
         processingId.value = null;
     }
-};
-
-const showSnackbar = (msg: string, color: string) => {
-    snackbar.message = msg;
-    snackbar.color = color;
-    snackbar.show = true;
 };
 
 const formatCurrency = (amount: number, symbol: string = '$') => {
@@ -190,12 +195,20 @@ const formatCurrency = (amount: number, symbol: string = '$') => {
 };
 
 const formatDate = (date: string) => {
-    return new Date(date).toLocaleString();
+    // Only date, no time
+    return new Date(date).toLocaleDateString();
+};
+
+const truncateAddress = (address: string) => {
+    if (!address) return '';
+    if (address.length <= 13) return address;
+    return `${address.substring(0, 6)}...${address.substring(address.length - 4)}`;
 };
 </script>
 
 <style scoped>
 .pending-approvals-container {
     padding: 24px;
+    width: 100%;
 }
 </style>
