@@ -140,18 +140,45 @@ class TransferService
                 throw new Exception("Transaction is not pending.");
             }
 
-            // Re-check if wallet is frozen
+            // Re-check if source wallet is frozen
             if ($transaction->fromWallet->isFrozen()) {
                 throw new Exception("Source wallet is frozen.");
             }
 
-            // We do not strictly re-check available balance here because the funds were "reserved" 
-            // by virtue of the transaction being 'pending' and counting against 'available_balance' 
-            // for OTHER transactions.
-            // However, we should ensure the wallet still has enough TOTAL balance to cover this 
-            // (in case funds were drained via other means that bypassed checks).
+            // Validate Destination Wallet (Internal)
+            if ($transaction->to_wallet_id) {
+                $toWallet = Wallet::find($transaction->to_wallet_id);
+                if (!$toWallet) {
+                    throw new Exception("Sorry, we couldn’t find the destination wallet.");
+                }
+                if ($toWallet->currency_id !== $transaction->fromWallet->currency_id) {
+                    throw new Exception("Sorry, the destination wallet currency does not match.");
+                }
+                if (!$toWallet->isActive()) {
+                    throw new Exception("Sorry, the destination wallet is not active.");
+                }
+            }
 
-            // For now, we trust the flow.
+            // Validate Destination Wallet (External)
+            if ($transaction->external_wallet_id) {
+                // Determine if we need to check External Wallet validity
+                // Assuming we should check existence and status if tracked
+                $externalWallet = ExternalWallet::find($transaction->external_wallet_id);
+
+                if (!$externalWallet) {
+                    // Could happen if hard deleted
+                    throw new Exception("Sorry, we couldn’t find the destination wallet.");
+                }
+
+                if ($externalWallet->currency_id !== $transaction->fromWallet->currency_id) {
+                    throw new Exception("Sorry, the destination wallet currency does not match.");
+                }
+
+                if (!$externalWallet->status) {
+                    // Assuming false/0 is inactive
+                    throw new Exception("Sorry, the destination wallet is not active.");
+                }
+            }
 
             $completedStatus = TransactionStatus::where('code', 'completed')->firstOrFail();
 
