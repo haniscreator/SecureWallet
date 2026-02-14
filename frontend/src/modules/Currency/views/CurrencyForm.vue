@@ -3,9 +3,10 @@
     <v-row justify="center">
       <v-col cols="12" md="8" lg="6">
         <v-card class="rounded-0" elevation="0" border>
-          <v-card-title class="pa-6 pb-0 text-h5 font-weight-bold">
+          <v-card-title class="pa-6 pb-4 text-h5 font-weight-bold">
             {{ !isAdmin ? 'View Currency' : (isEdit ? 'Edit Currency' : 'New Currency') }}
           </v-card-title>
+          <v-divider></v-divider>
           
           <v-card-text class="pa-6">
              <v-alert v-if="error" type="error" class="mb-6" closable @click:close="error = null">{{ error }}</v-alert>
@@ -70,7 +71,9 @@
                     </v-col>
                 </v-row>
 
-                <div class="d-flex justify-end gap-2 mt-6">
+                <v-divider class="mt-6 mb-6"></v-divider>
+
+                <div class="d-flex justify-end gap-2">
                     <v-btn
                         variant="text"
                         color="grey-darken-1"
