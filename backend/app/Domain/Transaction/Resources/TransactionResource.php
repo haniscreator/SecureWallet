@@ -12,7 +12,7 @@ class TransactionResource extends JsonResource
         return [
             'id' => $this->id,
             'amount' => $this->amount,
-            'type' => $this->type,
+            'type' => ($this->from_wallet_id && $this->to_wallet_id) ? 'transfer' : $this->type,
             'transaction_status_id' => $this->transaction_status_id,
             'status' => $this->status ? [
                 'code' => $this->status->code,

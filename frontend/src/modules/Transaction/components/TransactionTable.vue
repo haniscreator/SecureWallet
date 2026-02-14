@@ -20,25 +20,43 @@
         {{ new Date(item.created_at).toLocaleDateString() }}
       </template>
 
+      <!-- From Column -->
+      <template v-slot:item.from="{ item }">
+        <div class="d-flex align-center">
+            <v-icon color="grey" size="small" class="mr-2">mdi-wallet-outline</v-icon>
+            <span class="text-caption font-weight-medium">{{ getWalletName(item, 'from') }}</span>
+        </div>
+      </template>
+
       <!-- To Column (Wallet Name) -->
       <template v-slot:item.to="{ item }">
         <div class="d-flex align-center">
-          <v-icon color="primary" size="small" class="mr-2">mdi-wallet</v-icon>
-          <span>{{ getWalletName(item) }}</span>
+          <v-icon :color="item.to_wallet?.is_external ? 'warning' : 'primary'" size="small" class="mr-2">
+            {{ item.to_wallet?.is_external ? 'mdi-bank-transfer-out' : 'mdi-wallet' }}
+          </v-icon>
+          <span>{{ getWalletName(item, 'to') }}</span>
         </div>
       </template>
 
       <!-- Type Column -->
       <template v-slot:item.type="{ item }">
-        <span class="text-capitalize font-weight-medium" :class="getTypeColor(item.type)">
+        <v-chip
+            :color="item.type === 'transfer' ? 'info' : (item.type === 'credit' ? 'success' : 'error')"
+            size="small"
+            class="text-uppercase font-weight-bold"
+            variant="flat"
+            rounded="0"
+        >
           {{ item.type }}
-        </span>
+        </v-chip>
       </template>
 
       <!-- Amount Column -->
       <template v-slot:item.amount="{ item }">
         <span class="font-weight-bold" :class="getTypeColor(item.type)">
-          {{ item.type === 'debit' ? '-' : '+' }}{{ getCurrencySymbol(item) }}{{ Number(item.amount).toLocaleString() }}
+          <template v-if="item.type === 'debit'">-</template>
+          <template v-if="item.type === 'credit'">+</template>
+          {{ getCurrencySymbol(item) }}{{ Number(item.amount).toLocaleString() }}
         </span>
       </template>
 
@@ -110,6 +128,7 @@ const totalPages = computed(() => Math.ceil(props.totalItems / props.itemsPerPag
 
 const headers = [
   { title: 'Date', key: 'created_at', align: 'start' as const, sortable: true },
+  { title: 'From', key: 'from', align: 'start' as const, sortable: false },
   { title: 'To', key: 'to', align: 'start' as const, sortable: false },
   { title: 'Type', key: 'type', align: 'start' as const, sortable: true },
   { title: 'Amount', key: 'amount', align: 'end' as const, sortable: true },
@@ -124,19 +143,20 @@ function onUpdateOptions(options: any) {
 function getTypeColor(type: string) {
   if (type === 'credit') return 'text-success';
   if (type === 'debit') return 'text-error';
+  if (type === 'transfer') return 'text-info';
   return '';
 }
 
-function getWalletName(item: Transaction) {
-    const wallet = item.to_wallet;
+function getWalletName(item: Transaction, side: 'to' | 'from') {
+    const wallet = side === 'to' ? item.to_wallet : item.from_wallet;
+
     if (wallet?.is_external && wallet.address) {
-        // Truncate address: 0x123...456 (first 6, last 4)
         if (wallet.address.length > 13) {
              return `${wallet.address.substring(0, 8)}...${wallet.address.substring(wallet.address.length - 6)}`;
         }
         return wallet.address;
     }
-  return item.to_wallet?.name || item.wallet?.name || 'Unknown Wallet';
+  return wallet?.name || (side === 'from' ? 'System Deposit' : 'Unknown');
 }
 
 function getCurrencySymbol(item: Transaction) {

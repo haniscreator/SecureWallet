@@ -3,7 +3,7 @@ import apiClient from '@/shared/http/client';
 export interface Transaction {
     id: number;
     amount: number;
-    type: 'credit' | 'debit';
+    type: 'credit' | 'debit' | 'transfer';
     reference: string;
     created_at: string;
     wallet?: {
