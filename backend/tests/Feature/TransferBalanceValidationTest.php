@@ -116,7 +116,7 @@ class TransferBalanceValidationTest extends TestCase
                 'description' => 'Overdraft attempt'
             ]);
 
-        $response->assertStatus(500); // Or 422 if we handled it as validation, currently 500 Exception
+        $response->assertStatus(400);
         $response->assertJson(['message' => 'Insufficient funds.']);
     }
 

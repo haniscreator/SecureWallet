@@ -41,7 +41,7 @@ class WalletService
 
         // Append balance to each wallet
         $wallets->each(function ($wallet) {
-            $wallet->append('balance');
+            $wallet->append(['balance', 'available_balance']);
         });
 
         return $wallets;
