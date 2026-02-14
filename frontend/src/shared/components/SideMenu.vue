@@ -34,6 +34,7 @@
           :prepend-icon="item.icon"
           :title="item.title"
           :value="item.value"
+          :active="isItemActive(item)"
           active-color="primary"
           rounded="lg"
           class="mb-1 font-weight-bold text-body-2"
@@ -50,6 +51,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue';
+import { useRoute } from 'vue-router';
 import { useAuthStore } from '@/modules/Auth/store';
 
 const props = defineProps<{
@@ -58,6 +60,7 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits(['update:modelValue']);
+const route = useRoute();
 
 // Menu Items Definition
 const menuItems = [
@@ -82,10 +85,6 @@ const filteredMenuItems = computed(() => {
   items = items.filter(item => {
     if (!item.roles) return true;
     const role = authStore.user?.role;
-    // user.role is now a string from the API (UserResource), but AuthStore type might need update if not matching
-    // AuthStore interface says: role: 'admin' | 'user' | 'manager';
-    // So distinct check for object is not strictly needed if we trust the interface/API, 
-    // but safe to keep string check.
     return item.roles.includes(role || ''); 
   });
 
@@ -95,6 +94,15 @@ const filteredMenuItems = computed(() => {
     item.title.toLowerCase().includes(query)
   );
 });
+
+function isItemActive(item: any) {
+  // dashboard is exact match usually or default
+  if (item.to === '/dashboard') {
+     return route.path === '/dashboard';
+  }
+  // Others are prefix based (e.g. /wallets, /wallets/create, /wallets/1/edit)
+  return route.path.startsWith(item.to);
+}
 </script>
 
 <style scoped>
