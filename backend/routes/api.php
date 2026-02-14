@@ -23,6 +23,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Wallets
     Route::get('/dashboard/widget', [\App\Http\Controllers\Api\Wallet\WalletController::class, 'dashboardWidget']);
+    Route::get('/wallets/validate-address', [\App\Http\Controllers\Api\Wallet\WalletController::class, 'validateAddress']);
     Route::get('/wallets/transfer-targets', [\App\Http\Controllers\Api\Wallet\WalletController::class, 'transferTargets']);
     Route::get('/wallets', [\App\Http\Controllers\Api\Wallet\WalletController::class, 'index']);
     Route::post('/wallets', [\App\Http\Controllers\Api\Wallet\WalletController::class, 'store']);

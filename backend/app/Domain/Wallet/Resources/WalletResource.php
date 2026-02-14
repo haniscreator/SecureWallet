@@ -21,6 +21,9 @@ class WalletResource extends JsonResource
             'balance' => $this->resource->getAttribute('dashboard_balance') !== null
                 ? $this->resource->getAttribute('dashboard_balance')
                 : $this->whenAppended('balance'),
+            'available_balance' => $this->resource->getAttribute('dashboard_available_balance') !== null
+                ? $this->resource->getAttribute('dashboard_available_balance')
+                : $this->whenAppended('available_balance'),
             'users' => UserResource::collection($this->whenLoaded('users')),
             'users_count' => $this->users_count ?? 0,
             'created_at' => $this->created_at->toIso8601String(),

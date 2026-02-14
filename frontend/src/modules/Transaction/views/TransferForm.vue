@@ -85,6 +85,7 @@
                                     required
                                     :loading="loadingTargets"
                                     class="mb-4"
+                                    autocomplete="off"
                                 >
                                     <template v-slot:item="{ props, item }">
                                         <v-list-item 
@@ -107,7 +108,21 @@
                                     :rules="[v => !!v || 'Address is required']"
                                     required
                                     class="mb-4"
-                                ></v-text-field>
+                                    @blur="validateExternalAddress"
+                                    @input="addressValidationResult = null"
+                                    :error="addressValidationResult && !addressValidationResult.valid"
+                                    :color="addressValidationResult?.valid ? 'success' : 'error'"
+                                    autocomplete="off"
+                                >
+                                    <template v-slot:details v-if="addressValidationResult && (!addressValidationResult.valid || !addressValidationResult.exists)">
+                                        <div class="text-caption" :class="{
+                                            'text-error': !addressValidationResult.valid,
+                                            'text-warning': addressValidationResult.valid && !addressValidationResult.exists
+                                        }">
+                                            {{ addressValidationResult.message }}
+                                        </div>
+                                    </template>
+                                </v-text-field>
                             </v-col>
                         </v-row>
 
@@ -125,6 +140,7 @@
                                     :rules="amountRules"
                                     required
                                     class="mb-4"
+                                    autocomplete="off"
                                 ></v-text-field>
                             </v-col>
                         </v-row>
@@ -137,6 +153,7 @@
                             variant="outlined"
                             rows="3"
                             class="mb-4"
+                            autocomplete="off"
                         ></v-textarea>
                         
                         <v-alert v-if="error" type="error" class="mb-4" closable>{{ error }}</v-alert>
@@ -146,7 +163,9 @@
                             <v-btn variant="text" color="grey-darken-1" class="mr-4 text-none text-subtitle-1" @click="router.push('/wallets')">
                                 Cancel
                             </v-btn>
-                            <v-btn color="primary" variant="flat" @click="submitTransfer" :loading="submitting" size="large" width="200" class="text-none text-subtitle-1">
+                            <v-btn color="primary" variant="flat" @click="submitTransfer" :loading="submitting" size="large" width="200" class="text-none text-subtitle-1"
+                                :disabled="!validDetails || (formData.type === 'external' && addressValidationResult?.valid === false)"
+                            >
                                 Transfer Funds
                             </v-btn>
                         </div>
@@ -270,6 +289,26 @@ const fetchTransferTargets = async () => {
         loadingTargets.value = false;
     }
 }
+
+const addressValidationResult = ref<{ valid: boolean; exists: boolean; message: string } | null>(null);
+
+const validateExternalAddress = async () => {
+    if (!formData.to_address || formData.type !== 'external') return;
+
+    // Reset result
+    addressValidationResult.value = null;
+
+    try {
+        const response = await walletApi.validateAddress(
+            formData.to_address, 
+            selectedSourceWallet.value?.currency_id
+        );
+        const data = (response as any).data || response;
+        addressValidationResult.value = data.data || data;
+    } catch (e) {
+        console.error('Address validation failed', e);
+    }
+};
 
 const submitTransfer = async () => {
   if (formData.amount && formData.amount <= 0) return;

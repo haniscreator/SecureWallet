@@ -50,6 +50,11 @@ class Wallet extends Model
      */
     public function getBalanceAttribute()
     {
+        // Optimization: Use pre-calculated value from service if available
+        if ($this->getAttribute('dashboard_balance') !== null) {
+            return $this->getAttribute('dashboard_balance');
+        }
+
         $credits = $this->incomingTransactions()
             ->whereHas('status', function ($query) {
                 $query->where('code', 'completed');
@@ -67,6 +72,11 @@ class Wallet extends Model
 
     public function getAvailableBalanceAttribute()
     {
+        // Optimization: Use pre-calculated value from service if available
+        if ($this->getAttribute('dashboard_available_balance') !== null) {
+            return $this->getAttribute('dashboard_available_balance');
+        }
+
         $pendingDebit = $this->outgoingTransactions()
             ->whereHas('status', function ($query) {
                 $query->where('code', 'pending');

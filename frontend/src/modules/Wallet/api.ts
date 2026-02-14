@@ -66,5 +66,10 @@ export const walletApi = {
     },
     getTransferTargets() {
         return apiClient.get<Wallet[]>('/wallets/transfer-targets');
+    },
+    validateAddress(address: string, currencyId?: number) {
+        return apiClient.get<{ valid: boolean; exists: boolean; message: string; wallet?: any }>('/wallets/validate-address', {
+            params: { address, currency_id: currencyId }
+        });
     }
 };

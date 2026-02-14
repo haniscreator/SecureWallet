@@ -17,6 +17,9 @@ use App\Domain\Wallet\Actions\ListWalletsAction;
 use App\Domain\Wallet\Actions\GetWalletAction;
 use App\Domain\Wallet\Resources\WalletResource;
 use App\Domain\Wallet\DataTransferObjects\WalletData;
+use App\Domain\Wallet\Requests\ValidateWalletAddressRequest;
+use App\Domain\Wallet\Resources\WalletValidationResource;
+use App\Domain\Wallet\DataTransferObjects\ValidateWalletAddressData;
 
 class WalletController extends Controller
 {
@@ -105,5 +108,14 @@ class WalletController extends Controller
         $wallets->load('users', 'currency');
 
         return WalletResource::collection($wallets);
+    }
+
+    public function validateAddress(ValidateWalletAddressRequest $request)
+    {
+        $data = ValidateWalletAddressData::fromRequest($request);
+
+        $result = $this->walletService->validateAddress($data);
+
+        return new WalletValidationResource($result);
     }
 }

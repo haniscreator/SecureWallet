@@ -8,6 +8,7 @@ use App\Domain\Wallet\Actions\CreateWalletAction;
 use App\Domain\Wallet\Actions\UpdateWalletStatusAction;
 use App\Domain\Wallet\Actions\AssignWalletAction;
 use App\Domain\Wallet\DataTransferObjects\WalletData;
+use App\Domain\Wallet\DataTransferObjects\ValidateWalletAddressData;
 use App\Domain\Transaction\Models\Transaction;
 use App\Domain\Transaction\Models\TransactionStatus;
 use Illuminate\Support\Facades\DB;
@@ -131,11 +132,68 @@ class WalletService
                 })
                 ->sum('amount');
 
+            $pendingDebits = $wallet->outgoingTransactions()
+                ->whereHas('status', function ($q) {
+                    $q->where('code', 'pending');
+                })
+                ->sum('amount');
+
             $balance = $credits - $debits;
+            $availableBalance = $balance - $pendingDebits;
 
             $wallet->setAttribute('dashboard_balance', $balance);
+            $wallet->setAttribute('dashboard_available_balance', $availableBalance);
         });
 
         return $wallets;
+    }
+
+    public function validateAddress(ValidateWalletAddressData $data): array
+    {
+        $wallet = Wallet::where('address', $data->address)->with('currency', 'users')->first();
+
+        if (!$wallet) {
+            return [
+                'exists' => false,
+                'valid' => false,
+                'message' => 'Invalid External Wallet Address',
+            ];
+        }
+
+        // Check status first
+        if (!$wallet->status) {
+            return [
+                'exists' => true,
+                'valid' => false,
+                'message' => 'Wallet is inactive/frozen.',
+                'wallet' => $this->formatWalletData($wallet),
+            ];
+        }
+
+        // Check currency
+        if ($data->currency_id && $wallet->currency_id != $data->currency_id) {
+            return [
+                'exists' => true,
+                'valid' => false,
+                'message' => "Currency mismatch. Wallet is {$wallet->currency->code}.",
+                'wallet' => $this->formatWalletData($wallet),
+            ];
+        }
+
+        return [
+            'exists' => true,
+            'valid' => true,
+            'message' => "Verified Internal Wallet: {$wallet->name}",
+            'wallet' => $this->formatWalletData($wallet),
+        ];
+    }
+
+    protected function formatWalletData(Wallet $wallet): array
+    {
+        return [
+            'name' => $wallet->name,
+            'currency' => $wallet->currency->code,
+            'users' => $wallet->users->pluck('name'),
+        ];
     }
 }
