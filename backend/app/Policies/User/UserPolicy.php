@@ -18,12 +18,12 @@ class UserPolicy
 
     public function create(User $user): bool
     {
-        return $user->hasAnyRole(['admin', 'manager']);
+        return $user->hasRole('admin');
     }
 
     public function update(User $user, User $model): bool
     {
-        return $user->hasAnyRole(['admin', 'manager']);
+        return $user->hasRole('admin');
     }
 
     public function delete(User $user, User $model): bool

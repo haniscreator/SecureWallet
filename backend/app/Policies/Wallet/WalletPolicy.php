@@ -21,23 +21,23 @@ class WalletPolicy
 
     public function create(User $user): bool
     {
-        return $user->hasAnyRole(['admin', 'manager']);
+        return $user->hasRole('admin');
     }
 
     public function update(User $user, Wallet $wallet): bool
     {
-        return $user->hasAnyRole(['admin', 'manager']);
+        return $user->hasRole('admin');
     }
 
     // Custom ability to freeze
     public function freeze(User $user, Wallet $wallet): bool
     {
-        return $user->hasAnyRole(['admin', 'manager']);
+        return $user->hasRole('admin');
     }
 
     // Custom ability to add members
     public function assignMember(User $user, Wallet $wallet): bool
     {
-        return $user->hasAnyRole(['admin', 'manager']);
+        return $user->hasRole('admin');
     }
 }

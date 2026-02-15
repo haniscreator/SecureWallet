@@ -32,11 +32,13 @@ const routes = [
                 path: 'wallets/create',
                 name: 'WalletCreate',
                 component: () => import('@/modules/Wallet/views/WalletForm.vue'),
+                meta: { roles: ['admin'] }
             },
             {
                 path: 'wallets/:id/edit',
                 name: 'WalletEdit',
                 component: () => import('@/modules/Wallet/views/WalletForm.vue'),
+                meta: { roles: ['admin'] }
             },
             {
                 path: 'wallet/:id',
@@ -53,11 +55,13 @@ const routes = [
                 path: 'members/create',
                 name: 'MemberCreate',
                 component: () => import('@/modules/User/views/MemberForm.vue'),
+                meta: { roles: ['admin'] }
             },
             {
                 path: 'members/:id/edit',
                 name: 'MemberEdit',
                 component: () => import('@/modules/User/views/MemberForm.vue'),
+                meta: { roles: ['admin'] }
             },
             {
                 path: 'currencies',
@@ -68,11 +72,13 @@ const routes = [
                 path: 'currencies/create',
                 name: 'CurrencyCreate',
                 component: () => import('@/modules/Currency/views/CurrencyForm.vue'),
+                meta: { roles: ['admin'] }
             },
             {
                 path: 'currencies/:id/edit',
                 name: 'CurrencyEdit',
                 component: () => import('@/modules/Currency/views/CurrencyForm.vue'),
+                meta: { roles: ['admin'] }
             },
             {
                 path: 'transactions',
