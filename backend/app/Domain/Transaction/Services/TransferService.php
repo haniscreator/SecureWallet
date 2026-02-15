@@ -80,24 +80,24 @@ class TransferService
             }
 
             // 4. Determine Status
-            $status = 'pending';
+            $status = TransactionStatus::CODE_PENDING;
             $approvedAt = null;
             $approvedBy = null;
 
             if ($initiator->hasRole('admin') || $initiator->hasRole('manager')) {
                 // Admin/Manager: Always Auto-Approve
-                $status = 'completed';
+                $status = TransactionStatus::CODE_COMPLETED;
                 $approvedAt = now();
                 $approvedBy = $initiator->id;
             } else {
                 // Regular User
                 if ($amount <= $limit) {
                     // Auto-Approve if within limit
-                    $status = 'completed';
+                    $status = TransactionStatus::CODE_COMPLETED;
                     $approvedAt = now();
                     $approvedBy = null;
                 } else {
-                    $status = 'pending';
+                    $status = TransactionStatus::CODE_PENDING;
                 }
             }
 
