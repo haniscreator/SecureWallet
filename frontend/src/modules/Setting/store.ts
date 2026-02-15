@@ -29,9 +29,10 @@ export const useSettingStore = defineStore('setting', () => {
             await settingApi.updateSettings({ settings: updates });
             await fetchSettings();
             notificationStore.success('Settings updated successfully');
-        } catch (err) {
+        } catch (err: any) {
             console.error('Failed to update settings', err);
-            notificationStore.error('Failed to update settings');
+            const message = err.response?.data?.message || 'Failed to update settings';
+            notificationStore.error(message);
         } finally {
             loading.value = false;
         }
