@@ -40,8 +40,8 @@
                       </div>
                   </v-col>
 
-                  <!-- Column 3: Company Details (Name & Email) -->
-                  <v-col cols="12" md="4" class="d-flex flex-column justify-center px-md-6 border-end-sm">
+                  <!-- Column 3: Company Details (Name, Email, Address) -->
+                  <v-col cols="12" md="8" class="d-flex flex-column justify-center px-md-6">
                       <div class="d-flex align-start mb-4">
                           <v-icon size="small" class="mr-3 text-grey-darken-1 mt-1">mdi-office-building</v-icon> 
                           <div>
@@ -49,17 +49,13 @@
                               <div class="font-weight-bold text-grey-darken-3 text-body-1">{{ companyName }}</div>
                           </div>
                       </div>
-                       <div class="d-flex align-start">
+                       <div class="d-flex align-start mb-4">
                           <v-icon size="small" class="mr-3 text-grey-darken-1 mt-1">mdi-email-outline</v-icon> 
                           <div>
                               <div class="text-caption text-grey-darken-1">Email</div>
                               <div class="text-body-2 text-grey-darken-3">{{ companyEmail }}</div>
                           </div>
                       </div>
-                  </v-col>
-
-                  <!-- Column 4: Address -->
-                  <v-col cols="12" md="4" class="d-flex flex-column justify-center pl-md-6">
                       <div class="d-flex align-start">
                           <v-icon size="small" class="mr-3 text-grey-darken-1 mt-1">mdi-map-marker-outline</v-icon> 
                           <div>
