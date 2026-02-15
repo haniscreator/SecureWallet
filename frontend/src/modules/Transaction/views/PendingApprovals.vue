@@ -45,6 +45,14 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+
+    <ConfirmDialog
+      v-model="confirmDialog.isOpen"
+      :title="confirmDialog.title"
+      :message="confirmDialog.message"
+      :loading="!!processingId"
+      @confirm="handleConfirmApprove"
+    />
   </div>
 </template>
 
@@ -52,6 +60,7 @@
 import { usePendingApprovals } from '@/modules/Transaction/composables/usePendingApprovals';
 import ApprovalFilter from '@/modules/Transaction/components/ApprovalFilter.vue';
 import ApprovalTable from '@/modules/Transaction/components/ApprovalTable.vue';
+import ConfirmDialog from '@/shared/components/ConfirmDialog.vue';
 
 const {
     loading,
@@ -62,12 +71,14 @@ const {
     processingId,
     rejectDialog,
     rejectionReason,
+    confirmDialog,
     handleFilter,
     handleOptionsUpdate,
     handleViewDetails,
     approve,
     openRejectDialog,
-    confirmReject
+    confirmReject,
+    handleConfirmApprove
 } = usePendingApprovals();
 
 // Initial fetch is triggered by the table or filter on mount usually, 

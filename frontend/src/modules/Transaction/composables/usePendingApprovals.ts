@@ -74,9 +74,22 @@ export function usePendingApprovals() {
         router.push(`/approvals/${item.id}`);
     }
 
-    const approve = async (transaction: Transaction) => {
-        if (!confirm('Are you sure you want to approve this transfer?')) return;
+    const confirmDialog = ref({
+        isOpen: false,
+        title: 'Confirm Approval',
+        message: 'Are you sure you want to approve this transfer?',
+        data: null as Transaction | null
+    });
 
+    const openConfirmDialog = (transaction: Transaction) => {
+        confirmDialog.value.data = transaction;
+        confirmDialog.value.isOpen = true;
+    };
+
+    const handleConfirmApprove = async () => {
+        if (!confirmDialog.value.data) return;
+
+        const transaction = confirmDialog.value.data;
         processingId.value = transaction.id;
         try {
             await transactionApi.approveTransfer(transaction.id);
@@ -86,7 +99,12 @@ export function usePendingApprovals() {
             notification.error(e.response?.data?.message || 'Failed to approve');
         } finally {
             processingId.value = null;
+            confirmDialog.value.isOpen = false;
         }
+    };
+
+    const approve = (transaction: Transaction) => {
+        openConfirmDialog(transaction);
     };
 
     const openRejectDialog = (transaction: Transaction) => {
@@ -113,8 +131,8 @@ export function usePendingApprovals() {
 
     return {
         // State
-        loading, transactions, totalItems, page, itemsPerPage, processingId, rejectDialog, rejectionReason,
+        loading, transactions, totalItems, page, itemsPerPage, processingId, rejectDialog, rejectionReason, confirmDialog,
         // Methods
-        fetchTransactions, handleFilter, handleOptionsUpdate, handleViewDetails, approve, openRejectDialog, confirmReject
+        fetchTransactions, handleFilter, handleOptionsUpdate, handleViewDetails, approve, openRejectDialog, confirmReject, openConfirmDialog, handleConfirmApprove
     };
 }

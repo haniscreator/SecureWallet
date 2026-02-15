@@ -152,6 +152,14 @@
             </v-card-actions>
         </v-card>
     </v-dialog>
+
+    <ConfirmDialog
+        v-model="confirmDialog.isOpen"
+        :title="confirmDialog.title"
+        :message="confirmDialog.message"
+        :loading="processing"
+        @confirm="handleConfirmApprove"
+    />
   </v-container>
 </template>
 
@@ -159,6 +167,7 @@
 import { onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useApprovalDetail } from '@/modules/Transaction/composables/useApprovalDetail';
+import ConfirmDialog from '@/shared/components/ConfirmDialog.vue';
 
 const router = useRouter();
 
@@ -168,12 +177,14 @@ const {
     processing,
     rejectDialog,
     rejectionReason,
+    confirmDialog,
     init,
     formatAmount,
     getWalletName,
     approve,
     openRejectDialog,
-    confirmReject
+    confirmReject,
+    handleConfirmApprove
 } = useApprovalDetail();
 
 onMounted(async () => {

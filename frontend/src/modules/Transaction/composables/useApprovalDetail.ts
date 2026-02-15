@@ -48,9 +48,18 @@ export function useApprovalDetail() {
         return item.to_wallet?.name || item.wallet?.name || 'Unknown Wallet';
     }
 
-    const approve = async () => {
+    const confirmDialog = ref({
+        isOpen: false,
+        title: 'Confirm Approval',
+        message: 'Are you sure you want to approve this transfer?',
+    });
+
+    const openConfirmDialog = () => {
+        confirmDialog.value.isOpen = true;
+    };
+
+    const handleConfirmApprove = async () => {
         if (!transaction.value) return;
-        if (!confirm('Are you sure you want to approve this transfer?')) return;
 
         processing.value = true;
         try {
@@ -61,7 +70,13 @@ export function useApprovalDetail() {
             notification.error(e.response?.data?.message || 'Failed to approve');
         } finally {
             processing.value = false;
+            confirmDialog.value.isOpen = false;
         }
+    };
+
+    const approve = () => {
+        if (!transaction.value) return;
+        openConfirmDialog();
     };
 
     const openRejectDialog = () => {
@@ -96,6 +111,9 @@ export function useApprovalDetail() {
         getWalletName,
         approve,
         openRejectDialog,
-        confirmReject
+        confirmReject,
+        confirmDialog,
+        openConfirmDialog,
+        handleConfirmApprove
     };
 }
