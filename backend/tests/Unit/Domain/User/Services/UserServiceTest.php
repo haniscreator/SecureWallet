@@ -69,8 +69,11 @@ class UserServiceTest extends TestCase
 
     public function test_create_user_with_wallets()
     {
-        $wallet1 = \App\Domain\Wallet\Models\Wallet::factory()->create();
-        $wallet2 = \App\Domain\Wallet\Models\Wallet::factory()->create();
+        $currency1 = \App\Domain\Currency\Models\Currency::factory()->create(['code' => 'C01']);
+        $currency2 = \App\Domain\Currency\Models\Currency::factory()->create(['code' => 'C02']);
+
+        $wallet1 = \App\Domain\Wallet\Models\Wallet::factory()->create(['currency_id' => $currency1->id]);
+        $wallet2 = \App\Domain\Wallet\Models\Wallet::factory()->create(['currency_id' => $currency2->id]);
 
         $data = new \App\Domain\User\DataTransferObjects\UserData(
             name: 'Wallet User',
