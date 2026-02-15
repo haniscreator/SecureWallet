@@ -46,6 +46,12 @@
         </div>
       </template>
     </v-list>
+
+    <template v-slot:append>
+      <div class="pa-4 text-center">
+        <span class="text-caption text-grey">v1.1.0</span>
+      </div>
+    </template>
   </v-navigation-drawer>
 </template>
 
@@ -109,6 +115,10 @@ function isItemActive(item: any) {
 /* Optional: Fine-tune search input styling */
 :deep(.v-field__outline) {
     --v-field-border-opacity: 0.15;
+}
+
+:deep(.v-list-item__prepend) {
+    width: 32px !important;
 }
 
 :deep(.v-list-item--active) {
