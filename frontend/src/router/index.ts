@@ -116,6 +116,11 @@ const routes = [
         ]
     },
     {
+        path: '/changelog',
+        name: 'Changelog',
+        component: () => import('@/modules/Changelog/views/Changelog.vue'),
+    },
+    {
         path: '/:pathMatch(.*)*',
         redirect: '/dashboard'
     }
