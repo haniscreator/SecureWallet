@@ -42,7 +42,7 @@ class TransactionService
 
     public function listAllTransactions(User $user, TransactionFilterData $filters): LengthAwarePaginator
     {
-        $query = Transaction::query();
+        $query = Transaction::with(['user', 'fromWallet.currency', 'toWallet.currency', 'externalWallet.currency']);
 
         // If not admin or manager, restrict to user's wallets
         if (!$user->hasRole('admin') && !$user->hasRole('manager')) {

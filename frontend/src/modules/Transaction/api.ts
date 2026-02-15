@@ -26,6 +26,10 @@ export interface Transaction {
             symbol: string;
         }
     };
+    user?: {
+        id: number;
+        name: string;
+    };
 }
 
 export interface TransactionFilters {

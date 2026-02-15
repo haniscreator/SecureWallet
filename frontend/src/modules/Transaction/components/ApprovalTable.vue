@@ -13,22 +13,23 @@
       :page="page"
       class="elevation-0 rounded-0 header-bg w-100"
       width="100%"
+      density="compact"
       @update:options="onUpdateOptions"
       hover
     >
       <!-- Reference Column -->
       <template v-slot:item.reference="{ item }">
-        <span class="font-weight-medium">{{ item.reference || '-' }}</span>
+        <span class="font-weight-medium text-small-body">{{ item.reference || '-' }}</span>
       </template>
 
       <!-- From Column -->
       <template v-slot:item.from_wallet="{ item }">
-         {{ item.from_wallet?.name || 'System Deposit' }}
+         <span class="text-small-body">{{ item.from_wallet?.name || 'System Deposit' }}</span>
       </template>
 
       <!-- To Column -->
       <template v-slot:item.to="{ item }">
-        <div class="d-flex align-center">
+        <div class="d-flex align-center text-small-body">
             <span v-if="item.to_wallet?.is_external">
                 {{ truncateAddress(item.to_wallet?.address) }}
             </span>
@@ -39,15 +40,24 @@
       </template>
 
       <!-- Amount Column -->
+      <!-- Amount Column -->
+      <!-- Amount Column -->
       <template v-slot:item.amount="{ item }">
-        <span class="font-weight-bold warning--text">
+        <span class="warning--text text-small-body">
           {{ getCurrencySymbol(item) }} {{ Number(item.amount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
         </span>
       </template>
 
+      <!-- User Column -->
+      <template v-slot:item.user="{ item }">
+        <div class="d-flex align-center text-small-body">
+            {{ item.user?.name || 'Unknown' }}
+        </div>
+      </template>
+
       <!-- Date Column -->
       <template v-slot:item.created_at="{ item }">
-        {{ new Date(item.created_at).toLocaleDateString() }}
+        <span class="text-small-body">{{ new Date(item.created_at).toLocaleDateString() }}</span>
       </template>
 
       <!-- Actions Column -->
@@ -58,7 +68,8 @@
             variant="text"
             size="small"
             prepend-icon="mdi-check"
-            class="mr-2"
+            class="mr-1 px-1 text-none"
+            style="min-width: auto;"
             @click="$emit('approve', item)"
           >
             Approve
@@ -68,7 +79,8 @@
             variant="text"
             size="small"
             prepend-icon="mdi-close"
-            class="mr-2"
+            class="mr-1 px-1 text-none"
+            style="min-width: auto;"
             @click="$emit('reject', item)"
           >
             Reject
@@ -78,6 +90,8 @@
             variant="text"
             size="small"
             prepend-icon="mdi-eye"
+            class="px-1 text-none"
+            style="min-width: auto;"
             @click="$emit('view-details', item)"
           >
             View
@@ -136,12 +150,13 @@ const proxyPage = computed({
 const totalPages = computed(() => Math.ceil(props.totalItems / props.itemsPerPage) || 1);
 
 const headers = [
-  { title: 'Reference', key: 'reference', align: 'start' as const, sortable: true },
-  { title: 'From', key: 'from_wallet', align: 'start' as const, sortable: false },
+  { title: 'Reference', key: 'reference', align: 'start' as const, sortable: true, minWidth: '230px' },
+  { title: 'By', key: 'user', align: 'start' as const, sortable: false, width: '150px' },
+  { title: 'From', key: 'from_wallet', align: 'start' as const, sortable: false, width: '130px' },
   { title: 'To', key: 'to', align: 'start' as const, sortable: false },
   { title: 'Amount', key: 'amount', align: 'end' as const, sortable: true },
   { title: 'Date', key: 'created_at', align: 'end' as const, sortable: true },
-  { title: 'Actions', key: 'actions', align: 'center' as const, sortable: false },
+  { title: 'Actions', key: 'actions', align: 'end' as const, sortable: false, width: '1%' },
 ];
 
 function onUpdateOptions(options: any) {
@@ -164,7 +179,9 @@ function getCurrencySymbol(item: Transaction) {
   background-color: #F5F6F9;
 }
 :deep(th) {
-    font-weight: bold !important;
     color: rgba(0, 0, 0, 0.87) !important;
+}
+.text-small-body {
+    font-size: 12.4px !important;
 }
 </style>

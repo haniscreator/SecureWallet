@@ -41,6 +41,10 @@ class TransactionResource extends JsonResource
                     ],
                     'is_external' => true,
                 ] : null),
+            'user' => $this->user ? [
+                'id' => $this->user->id,
+                'name' => $this->user->name,
+            ] : null,
             'created_at' => $this->created_at->toIso8601String(),
             'updated_at' => $this->updated_at->toIso8601String(),
         ];
