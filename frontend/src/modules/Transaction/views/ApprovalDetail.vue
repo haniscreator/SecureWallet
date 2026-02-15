@@ -27,6 +27,18 @@
                         ></v-text-field>
                     </v-col>
 
+                    <!-- Submitted By -->
+                    <v-col cols="12">
+                        <div class="text-subtitle-2 font-weight-bold mb-2">Submitted By</div>
+                         <v-text-field
+                            :model-value="transaction.user?.name || 'Unknown'"
+                            variant="outlined"
+                            density="compact"
+                            readonly
+                            bg-color="grey-lighten-4"
+                        ></v-text-field>
+                    </v-col>
+
                     <!-- Amount -->
                     <v-col cols="12" md="6">
                         <div class="text-subtitle-2 font-weight-bold mb-2">Amount</div>
