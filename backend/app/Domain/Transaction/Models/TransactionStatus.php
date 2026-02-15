@@ -21,4 +21,24 @@ class TransactionStatus extends Model
         'name',
         'code',
     ];
+
+    public const CODE_PENDING = 'pending';
+    public const CODE_COMPLETED = 'completed';
+    public const CODE_REJECTED = 'rejected';
+    public const CODE_CANCELLED = 'cancelled';
+
+    private static array $cache = [];
+
+    public static function getId(string $code): int
+    {
+        if (!isset(self::$cache[$code])) {
+            self::$cache[$code] = self::where('code', $code)->value('id');
+        }
+        return self::$cache[$code];
+    }
+
+    public static function flushCache(): void
+    {
+        self::$cache = [];
+    }
 }

@@ -67,14 +67,14 @@ class WalletService
 
             // Handle Initial Balance by creating a 'credit' transaction
             if ($data->initial_balance && $data->initial_balance > 0) {
-                $completedStatus = TransactionStatus::where('code', 'completed')->first();
+                $completedStatusId = TransactionStatus::getId(TransactionStatus::CODE_COMPLETED);
 
                 Transaction::create([
                     'to_wallet_id' => $wallet->id,
                     'type' => 'credit',
                     'amount' => $data->initial_balance,
                     'reference' => 'Initial Balance',
-                    'transaction_status_id' => $completedStatus?->id,
+                    'transaction_status_id' => $completedStatusId,
                 ]);
             }
 
@@ -123,21 +123,15 @@ class WalletService
 
             // Let's use the relation logic with filtering
             $credits = $wallet->incomingTransactions()
-                ->whereHas('status', function ($q) {
-                    $q->where('code', 'completed');
-                })
+                ->where('transaction_status_id', TransactionStatus::getId(TransactionStatus::CODE_COMPLETED))
                 ->sum('amount');
 
             $debits = $wallet->outgoingTransactions()
-                ->whereHas('status', function ($q) {
-                    $q->where('code', 'completed');
-                })
+                ->where('transaction_status_id', TransactionStatus::getId(TransactionStatus::CODE_COMPLETED))
                 ->sum('amount');
 
             $pendingDebits = $wallet->outgoingTransactions()
-                ->whereHas('status', function ($q) {
-                    $q->where('code', 'pending');
-                })
+                ->where('transaction_status_id', TransactionStatus::getId(TransactionStatus::CODE_PENDING))
                 ->sum('amount');
 
             $balance = $credits - $debits;

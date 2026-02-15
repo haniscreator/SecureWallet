@@ -16,11 +16,13 @@ class TransactionResourceTest extends TestCase
 
     public function test_resource_includes_external_wallet_address()
     {
+        $currency = \App\Domain\Currency\Models\Currency::factory()->create(['code' => 'TR1']);
         $user = User::factory()->create();
-        $sourceWallet = Wallet::factory()->create();
+        $sourceWallet = Wallet::factory()->create(['currency_id' => $currency->id]);
         $externalWallet = ExternalWallet::factory()->create([
             'address' => '0x1234567890abcdef1234567890abcdef12345678',
             'name' => 'Test External',
+            'currency_id' => $currency->id
         ]);
 
         $transaction = Transaction::factory()->create([
@@ -28,6 +30,7 @@ class TransactionResourceTest extends TestCase
             'to_wallet_id' => null,
             'external_wallet_id' => $externalWallet->id,
             'amount' => 100,
+            'transaction_status_id' => \App\Domain\Transaction\Models\TransactionStatus::factory()->create()->id
         ]);
 
         $resource = new TransactionResource($transaction);
@@ -40,14 +43,16 @@ class TransactionResourceTest extends TestCase
 
     public function test_resource_handles_internal_wallet()
     {
-        $sourceWallet = Wallet::factory()->create();
-        $destWallet = Wallet::factory()->create(['name' => 'Internal Dest']);
+        $currency = \App\Domain\Currency\Models\Currency::factory()->create(['code' => 'TR2']);
+        $sourceWallet = Wallet::factory()->create(['currency_id' => $currency->id]);
+        $destWallet = Wallet::factory()->create(['name' => 'Internal Dest', 'currency_id' => $currency->id]);
 
         $transaction = Transaction::factory()->create([
             'from_wallet_id' => $sourceWallet->id,
             'to_wallet_id' => $destWallet->id,
             'external_wallet_id' => null,
             'amount' => 100,
+            'transaction_status_id' => \App\Domain\Transaction\Models\TransactionStatus::factory()->create()->id
         ]);
 
         $resource = new TransactionResource($transaction);
@@ -55,6 +60,6 @@ class TransactionResourceTest extends TestCase
 
         $this->assertEquals('Internal Dest', $json['data']['to_wallet']['name']);
         $this->assertFalse($json['data']['to_wallet']['is_external']);
-        $this->assertArrayNotHasKey('address', $json['data']['to_wallet']); // Or it might be null if I explicitly set it, but I didn't.
+        $this->assertArrayNotHasKey('address', $json['data']['to_wallet']);
     }
 }

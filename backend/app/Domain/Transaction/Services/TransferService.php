@@ -101,7 +101,7 @@ class TransferService
                 }
             }
 
-            $statusModel = TransactionStatus::where('code', $status)->firstOrFail();
+            $statusId = TransactionStatus::getId($status);
 
             // 5. Create Transaction
             return Transaction::create([
@@ -110,7 +110,7 @@ class TransferService
                 'external_wallet_id' => $externalWalletId,
                 'to_wallet_id' => $toWallet ? $toWallet->id : null,
                 'amount' => $amount,
-                'transaction_status_id' => $statusModel->id,
+                'transaction_status_id' => $statusId,
                 'type' => 'debit', // Always debit from source perspective
                 'reference' => $description, // Use description as particular reference? or generate valid reference?
                 'created_at' => now(),
@@ -136,7 +136,7 @@ class TransferService
     public function approveTransfer(Transaction $transaction, User $approver): Transaction
     {
         return DB::transaction(function () use ($transaction, $approver) {
-            if ($transaction->status->code !== 'pending') {
+            if ($transaction->transaction_status_id !== TransactionStatus::getId(TransactionStatus::CODE_PENDING)) {
                 throw new Exception("Transaction is not pending.");
             }
 
@@ -181,10 +181,10 @@ class TransferService
                 }
             }
 
-            $completedStatus = TransactionStatus::where('code', 'completed')->firstOrFail();
+            $completedStatusId = TransactionStatus::getId(TransactionStatus::CODE_COMPLETED);
 
             $transaction->update([
-                'transaction_status_id' => $completedStatus->id,
+                'transaction_status_id' => $completedStatusId,
                 'approved_by' => $approver->id,
                 'approved_at' => now(),
             ]);
@@ -205,14 +205,14 @@ class TransferService
     public function rejectTransfer(Transaction $transaction, User $rejector, string $reason): Transaction
     {
         return DB::transaction(function () use ($transaction, $rejector, $reason) {
-            if ($transaction->status->code !== 'pending') {
+            if ($transaction->transaction_status_id !== TransactionStatus::getId(TransactionStatus::CODE_PENDING)) {
                 throw new Exception("Transaction is not pending.");
             }
 
-            $rejectedStatus = TransactionStatus::where('code', 'rejected')->firstOrFail();
+            $rejectedStatusId = TransactionStatus::getId(TransactionStatus::CODE_REJECTED);
 
             $transaction->update([
-                'transaction_status_id' => $rejectedStatus->id,
+                'transaction_status_id' => $rejectedStatusId,
                 'rejection_reason' => $reason,
                 // Optionally track rejector
             ]);

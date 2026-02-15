@@ -7,6 +7,7 @@ use Database\Factories\WalletFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Domain\User\Models\User;
 use App\Domain\Transaction\Models\Transaction;
+use App\Domain\Transaction\Models\TransactionStatus;
 use App\Domain\Currency\Models\Currency;
 
 class Wallet extends Model
@@ -56,15 +57,11 @@ class Wallet extends Model
         }
 
         $credits = $this->incomingTransactions()
-            ->whereHas('status', function ($query) {
-                $query->where('code', 'completed');
-            })
+            ->where('transaction_status_id', TransactionStatus::getId(TransactionStatus::CODE_COMPLETED))
             ->sum('amount');
 
         $debits = $this->outgoingTransactions()
-            ->whereHas('status', function ($query) {
-                $query->where('code', 'completed');
-            })
+            ->where('transaction_status_id', TransactionStatus::getId(TransactionStatus::CODE_COMPLETED))
             ->sum('amount');
 
         return $credits - $debits;
@@ -78,9 +75,7 @@ class Wallet extends Model
         }
 
         $pendingDebit = $this->outgoingTransactions()
-            ->whereHas('status', function ($query) {
-                $query->where('code', 'pending');
-            })
+            ->where('transaction_status_id', TransactionStatus::getId(TransactionStatus::CODE_PENDING))
             ->sum('amount');
 
         return $this->balance - $pendingDebit;

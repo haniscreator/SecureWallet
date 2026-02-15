@@ -37,6 +37,11 @@ class WalletServiceTest extends TestCase
             'name' => 'Completed',
             'code' => 'completed',
         ]);
+
+        TransactionStatus::create([
+            'name' => 'Pending',
+            'code' => 'pending',
+        ]);
     }
 
     public function test_create_wallet_successfully()
