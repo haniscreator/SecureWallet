@@ -38,7 +38,6 @@ const routes = [
                 path: 'wallets/:id/edit',
                 name: 'WalletEdit',
                 component: () => import('@/modules/Wallet/views/WalletForm.vue'),
-                meta: { roles: ['admin'] }
             },
             {
                 path: 'wallet/:id',
@@ -61,7 +60,6 @@ const routes = [
                 path: 'members/:id/edit',
                 name: 'MemberEdit',
                 component: () => import('@/modules/User/views/MemberForm.vue'),
-                meta: { roles: ['admin'] }
             },
             {
                 path: 'currencies',
@@ -78,7 +76,6 @@ const routes = [
                 path: 'currencies/:id/edit',
                 name: 'CurrencyEdit',
                 component: () => import('@/modules/Currency/views/CurrencyForm.vue'),
-                meta: { roles: ['admin'] }
             },
             {
                 path: 'transactions',
