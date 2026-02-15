@@ -4,7 +4,7 @@
     <div style="background-color: #F5F6F9;" class="pa-4">
       <v-row>
         <!-- Reference -->
-        <v-col cols="12" md="3">
+        <v-col cols="12" md="4">
           <div class="text-subtitle-2 font-weight-bold mb-2">Reference</div>
           <v-text-field
             v-model="filters.reference"
@@ -19,7 +19,7 @@
         </v-col>
 
         <!-- Date From -->
-        <v-col cols="12" md="3">
+        <v-col cols="12" md="4">
           <div class="text-subtitle-2 font-weight-bold mb-2">Date From</div>
           <v-menu
             v-model="menuFrom"
@@ -50,7 +50,7 @@
         </v-col>
 
         <!-- Date To -->
-        <v-col cols="12" md="3">
+        <v-col cols="12" md="4">
           <div class="text-subtitle-2 font-weight-bold mb-2">Date To</div>
           <v-menu
             v-model="menuTo"
@@ -81,7 +81,8 @@
         </v-col>
 
         <!-- Type -->
-        <v-col cols="12" md="3">
+        <!-- Type -->
+        <!-- <v-col cols="12" md="3">
           <div class="text-subtitle-2 font-weight-bold mb-2">Type</div>
           <v-select
             v-model="filters.type"
@@ -94,7 +95,7 @@
             hide-details
             bg-color="white"
           ></v-select>
-        </v-col>
+        </v-col> -->
       </v-row>
     </div>
 
