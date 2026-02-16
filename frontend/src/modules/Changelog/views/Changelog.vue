@@ -17,7 +17,7 @@
                 <!-- Left Column: Version & Date -->
                 <v-col cols="12" md="3">
                     <div class="text-h6 font-weight-bold text-grey-darken-3">1.1.0</div>
-                    <div class="text-body-2 text-grey-darken-1 mt-1">Feb 15, 2026</div>
+                    <div class="text-body-2 text-grey-darken-1 mt-1">Feb 16, 2026</div>
                 </v-col>
 
                 <!-- Right Column: Card -->

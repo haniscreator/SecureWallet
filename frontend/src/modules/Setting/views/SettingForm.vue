@@ -24,6 +24,7 @@
                             variant="outlined"
                             density="comfortable"
                             class="mb-4"
+                            @keypress="onKeypress($event, item.key)"
                         ></v-text-field>
                     </template>
 
@@ -66,6 +67,16 @@ function humanizeKey(key: string) {
         .split('_')
         .map(word => word.charAt(0).toUpperCase() + word.slice(1))
         .join(' ');
+}
+
+function onKeypress(event: KeyboardEvent, key: string) {
+    if (key.toLowerCase().includes('limit')) {
+        // Allow only digits (0-9)
+        const charCode = (event.which) ? event.which : event.keyCode;
+        if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+            event.preventDefault();
+        }
+    }
 }
 
 // Sync store data to local form
