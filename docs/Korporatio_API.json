@@ -5,6 +5,543 @@
     },
     "item": [
         {
+            "name": "Auth",
+            "item": [
+                {
+                    "name": "Login",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": "{{base_url}}/api/login",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"email\": \"admin@gmail.com\",\n    \"password\": \"12345678\"\n}"
+                        }
+                    }
+                },
+                {
+                    "name": "Logout",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": "{{base_url}}/api/logout"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "User",
+            "item": [
+                {
+                    "name": "Get Current User",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": "{{base_url}}/api/user"
+                    }
+                },
+                {
+                    "name": "List Members (Admin)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": "{{base_url}}/api/members"
+                    }
+                },
+                {
+                    "name": "Create Member (Admin)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": "{{base_url}}/api/members",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"name\": \"New Member\",\n    \"email\": \"new@member.com\",\n    \"password\": \"password123\",\n    \"role\": \"user\"\n}"
+                        }
+                    }
+                },
+                {
+                    "name": "Get Member Detail",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": "{{base_url}}/api/members/1"
+                    }
+                },
+                {
+                    "name": "Update Member (Admin)",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": "{{base_url}}/api/members/1",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"name\": \"Updated Name\",\n    \"role\": \"manager\"\n}"
+                        }
+                    }
+                },
+                {
+                    "name": "Delete Member (Admin)",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": "{{base_url}}/api/members/1"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Wallet",
+            "item": [
+                {
+                    "name": "Dashboard Widget",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": "{{base_url}}/api/dashboard/widget"
+                    }
+                },
+                {
+                    "name": "List Wallets",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": "{{base_url}}/api/wallets"
+                    }
+                },
+                {
+                    "name": "Create Wallet (Admin)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": "{{base_url}}/api/wallets",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"name\": \"Main Wallet\",\n    \"currency_id\": 1,\n    \"initial_balance\": 1000.00\n}"
+                        }
+                    }
+                },
+                {
+                    "name": "Get Wallet Details",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": "{{base_url}}/api/wallets/1"
+                    }
+                },
+                {
+                    "name": "Update Wallet",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": "{{base_url}}/api/wallets/1",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"name\": \"Updated Wallet Name\"\n}"
+                        }
+                    }
+                },
+                {
+                    "name": "Update Wallet Status",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": "{{base_url}}/api/wallets/1/status",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"status\": false\n}"
+                        }
+                    }
+                },
+                {
+                    "name": "Assign Users to Wallet",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": "{{base_url}}/api/wallets/1/users",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"user_ids\": [2, 3]\n}"
+                        }
+                    }
+                },
+                {
+                    "name": "Validate Wallet Address",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{base_url}}/api/wallets/validate-address?address=UUID-OR-ADDRESS&currency_id=1",
+                            "host": [
+                                "{{base_url}}"
+                            ],
+                            "path": [
+                                "api",
+                                "wallets",
+                                "validate-address"
+                            ],
+                            "query": [
+                                {
+                                    "key": "address",
+                                    "value": "UUID-OR-ADDRESS"
+                                },
+                                {
+                                    "key": "currency_id",
+                                    "value": "1"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Transfer Targets",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": "{{base_url}}/api/wallets/transfer-targets?currency_id=1&exclude_wallet_id=1"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Transactions",
+            "item": [
+                {
+                    "name": "Dashboard Total Balance",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": "{{base_url}}/api/transactions/dashboard-total-balance"
+                    }
+                },
+                {
+                    "name": "Search All Transactions",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": "{{base_url}}/api/transactions/search",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"type\": \"credit\",\n    \"status\": \"pending\",\n    \"from_date\": \"2026-01-01\",\n    \"to_date\": \"2026-12-31\"\n}"
+                        }
+                    }
+                },
+                {
+                    "name": "Search Wallet Transactions",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": "{{base_url}}/api/wallets/1/transactions/search",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"type\": \"debit\",\n    \"reference\": \"Payment\"\n}"
+                        }
+                    }
+                },
+                {
+                    "name": "Get Transaction Detail",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": "{{base_url}}/api/transactions/1"
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Transfers",
+            "item": [
+                {
+                    "name": "Initiate Transfer",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": "{{base_url}}/api/transfers",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"source_wallet_id\": 1,\n    \"type\": \"internal\",\n    \"to_wallet_id\": 2,\n    \"to_address\": null,\n    \"amount\": 500.00,\n    \"description\": \"Test Transfer\"\n}"
+                        }
+                    }
+                },
+                {
+                    "name": "Approve Transfer",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": "{{base_url}}/api/transfers/1/approve"
+                    }
+                },
+                {
+                    "name": "Reject Transfer",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{token}}"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
+                            }
+                        ],
+                        "url": "{{base_url}}/api/transfers/1/reject",
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n    \"reason\": \"Invalid request\"\n}"
+                        }
+                    }
+                }
+            ]
+        },
+        {
             "name": "Currency",
             "item": [
                 {
@@ -15,6 +552,10 @@
                             {
                                 "key": "Authorization",
                                 "value": "Bearer {{token}}"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
                             }
                         ],
                         "url": "{{base_url}}/api/currencies"
@@ -32,13 +573,17 @@
                             {
                                 "key": "Content-Type",
                                 "value": "application/json"
+                            },
+                            {
+                                "key": "Accept",
+                                "value": "application/json"
                             }
                         ],
+                        "url": "{{base_url}}/api/currencies",
                         "body": {
                             "mode": "raw",
                             "raw": "{\n    \"code\": \"GBP\",\n    \"name\": \"British Pound\",\n    \"symbol\": \"£\"\n}"
-                        },
-                        "url": "{{base_url}}/api/currencies"
+                        }
                     }
                 },
                 {
@@ -59,7 +604,7 @@
                     }
                 },
                 {
-                    "name": "Update Currency (Admin)",
+                    "name": "Update Currency",
                     "request": {
                         "method": "PUT",
                         "header": [
@@ -84,7 +629,7 @@
                     }
                 },
                 {
-                    "name": "Delete Currency (Admin)",
+                    "name": "Delete Currency",
                     "request": {
                         "method": "DELETE",
                         "header": [
@@ -103,43 +648,12 @@
             ]
         },
         {
-            "name": "Auth",
+            "name": "External Wallets",
             "item": [
                 {
-                    "name": "Login",
+                    "name": "List External Wallets",
                     "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            },
-                            {
-                                "key": "Accept",
-                                "value": "application/json"
-                            }
-                        ],
-                        "url": {
-                            "raw": "{{base_url}}/api/login",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "v1",
-                                "login"
-                            ]
-                        },
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n    \"email\": \"admin@gmail.com\",\n    \"password\": \"12345678\"\n}"
-                        }
-                    }
-                },
-                {
-                    "name": "Logout",
-                    "request": {
-                        "method": "POST",
+                        "method": "GET",
                         "header": [
                             {
                                 "key": "Authorization",
@@ -150,26 +664,16 @@
                                 "value": "application/json"
                             }
                         ],
-                        "url": {
-                            "raw": "{{base_url}}/api/logout",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "v1",
-                                "logout"
-                            ]
-                        }
+                        "url": "{{base_url}}/api/external-wallets"
                     }
                 }
             ]
         },
         {
-            "name": "User",
+            "name": "Settings",
             "item": [
                 {
-                    "name": "Get Current User",
+                    "name": "List Settings",
                     "request": {
                         "method": "GET",
                         "header": [
@@ -182,21 +686,11 @@
                                 "value": "application/json"
                             }
                         ],
-                        "url": {
-                            "raw": "{{base_url}}/api/user",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "v1",
-                                "user"
-                            ]
-                        }
+                        "url": "{{base_url}}/api/settings"
                     }
                 },
                 {
-                    "name": "Create Member (Admin Only)",
+                    "name": "Update Settings",
                     "request": {
                         "method": "POST",
                         "header": [
@@ -213,384 +707,10 @@
                                 "value": "application/json"
                             }
                         ],
-                        "url": {
-                            "raw": "{{base_url}}/api/members",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "v1",
-                                "members"
-                            ]
-                        },
+                        "url": "{{base_url}}/api/settings",
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n    \"name\": \"New Member\",\n    \"email\": \"new@member.com\",\n    \"password\": \"password123\",\n    \"role\": \"user\"\n}"
-                        }
-                    }
-                },
-                {
-                    "name": "List Members (Admin Only)",
-                    "request": {
-                        "method": "GET",
-                        "header": [
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{token}}"
-                            },
-                            {
-                                "key": "Accept",
-                                "value": "application/json"
-                            }
-                        ],
-                        "url": {
-                            "raw": "{{base_url}}/api/members",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "v1",
-                                "members"
-                            ]
-                        }
-                    }
-                },
-                {
-                    "name": "Update Member (Admin Only)",
-                    "request": {
-                        "method": "PUT",
-                        "header": [
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{token}}"
-                            },
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            },
-                            {
-                                "key": "Accept",
-                                "value": "application/json"
-                            }
-                        ],
-                        "url": {
-                            "raw": "{{base_url}}/api/members/2",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "v1",
-                                "members",
-                                "2"
-                            ]
-                        },
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n    \"name\": \"Updated Name\",\n    \"role\": \"admin\"\n}"
-                        }
-                    }
-                },
-                {
-                    "name": "Delete Member (Admin Only)",
-                    "request": {
-                        "method": "DELETE",
-                        "header": [
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{token}}"
-                            },
-                            {
-                                "key": "Accept",
-                                "value": "application/json"
-                            }
-                        ],
-                        "url": {
-                            "raw": "{{base_url}}/api/members/3",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "v1",
-                                "members",
-                                "3"
-                            ]
-                        }
-                    }
-                }
-            ]
-        },
-        {
-            "name": "Wallet",
-            "item": [
-                {
-                    "name": "List Wallets",
-                    "request": {
-                        "method": "GET",
-                        "header": [
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{token}}"
-                            },
-                            {
-                                "key": "Accept",
-                                "value": "application/json"
-                            }
-                        ],
-                        "url": {
-                            "raw": "{{base_url}}/api/wallets",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "v1",
-                                "wallets"
-                            ]
-                        }
-                    }
-                },
-                {
-                    "name": "Create Wallet (Admin Only)",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{token}}"
-                            },
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            },
-                            {
-                                "key": "Accept",
-                                "value": "application/json"
-                            }
-                        ],
-                        "url": {
-                            "raw": "{{base_url}}/api/wallets",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "v1",
-                                "wallets"
-                            ]
-                        },
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n    \"name\": \"Main Wallet\",\n    \"currency_id\": 1,\n    \"initial_balance\": 1000.00\n}"
-                        }
-                    }
-                },
-                {
-                    "name": "Update Wallet (Name)",
-                    "request": {
-                        "method": "PUT",
-                        "header": [
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{token}}"
-                            },
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            },
-                            {
-                                "key": "Accept",
-                                "value": "application/json"
-                            }
-                        ],
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n    \"name\": \"Updated Wallet Name\"\n}"
-                        },
-                        "url": "{{base_url}}/api/wallets/1"
-                    }
-                },
-                {
-                    "name": "Get Wallet Details",
-                    "request": {
-                        "method": "GET",
-                        "header": [
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{token}}"
-                            },
-                            {
-                                "key": "Accept",
-                                "value": "application/json"
-                            }
-                        ],
-                        "url": {
-                            "raw": "{{base_url}}/api/wallets/1",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "v1",
-                                "wallets",
-                                "1"
-                            ]
-                        }
-                    }
-                },
-                {
-                    "name": "Update Wallet Status (Admin Only)",
-                    "request": {
-                        "method": "PUT",
-                        "header": [
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{token}}"
-                            },
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            },
-                            {
-                                "key": "Accept",
-                                "value": "application/json"
-                            }
-                        ],
-                        "url": {
-                            "raw": "{{base_url}}/api/wallets/1/status",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "v1",
-                                "wallets",
-                                "1",
-                                "status"
-                            ]
-                        },
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n    \"status\": false\n}"
-                        }
-                    }
-                },
-                {
-                    "name": "Assign Users to Wallet (Admin Only)",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{token}}"
-                            },
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            },
-                            {
-                                "key": "Accept",
-                                "value": "application/json"
-                            }
-                        ],
-                        "url": {
-                            "raw": "{{base_url}}/api/wallets/1/users",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "v1",
-                                "wallets",
-                                "1",
-                                "users"
-                            ]
-                        },
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n    \"user_ids\": [2, 3]\n}"
-                        }
-                    }
-                }
-            ]
-        },
-        {
-            "name": "Transactions",
-            "item": [
-                {
-                    "name": "List Transactions",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{token}}"
-                            },
-                            {
-                                "key": "Accept",
-                                "value": "application/json"
-                            },
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            }
-                        ],
-                        "url": {
-                            "raw": "{{base_url}}/api/wallets/1/transactions/search",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "v1",
-                                "wallets",
-                                "1",
-                                "transactions",
-                                "search"
-                            ]
-                        },
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n    \"type\": \"credit\",\n    \"reference\": \"Ref\"\n}"
-                        }
-                    }
-                },
-                {
-                    "name": "List All Transactions (Admin)",
-                    "request": {
-                        "method": "POST",
-                        "header": [
-                            {
-                                "key": "Authorization",
-                                "value": "Bearer {{token}}"
-                            },
-                            {
-                                "key": "Accept",
-                                "value": "application/json"
-                            },
-                            {
-                                "key": "Content-Type",
-                                "value": "application/json"
-                            }
-                        ],
-                        "url": {
-                            "raw": "{{base_url}}/api/transactions/search",
-                            "host": [
-                                "{{base_url}}"
-                            ],
-                            "path": [
-                                "api",
-                                "v1",
-                                "transactions",
-                                "search"
-                            ]
-                        },
-                        "body": {
-                            "mode": "raw",
-                            "raw": "{\n    \"type\": \"credit\",\n    \"reference\": \"\"\n}"
+                            "raw": "{\n    \"settings\": [\n        {\n            \"key\": \"transfer_limit\",\n            \"value\": \"2000\"\n        }\n    ]\n}"
                         }
                     }
                 }

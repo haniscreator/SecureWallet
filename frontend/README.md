@@ -38,15 +38,30 @@ src/
 ├── assets/             # Static assets (images, global css)
 ├── modules/            # Feature-based modules
 │   ├── Auth/           # Login views and logic
-│   ├── Wallet/         # Dashboard, Wallet Details, Transaction List
-│   └── ...
+│   ├── Currency/       # Currency Management
+│   ├── Setting/        # System Settings
+│   ├── Transaction/    # Transaction & Transfer logic
+│   ├── User/           # User & Member Management
+│   └── Wallet/         # Dashboard, Wallet Details, Transaction List
 ├── shared/             # Shared components and utilities
 │   ├── components/     # Reusable UI components
 │   ├── http/           # API client (Axios wrapper)
 │   └── ...
+├── plugins/            # Vue plugins (Vuetify, Pinia, Router)
+├── router/             # Vue Router configuration
+├── styles/             # Global styles (SCSS/CSS)
 ├── App.vue             # Main App Component
 └── main.ts             # Entry point
 ```
+
+## Introduce Composables
+
+We use **Composables** to encapsulate and reuse stateful logic, particularly in the **Transaction** and **Transfer** modules. Instead of mixing complex business logic directly into the Vue components, we extract it into composable functions (e.g., `useTransfer.ts`). 
+
+This approach allows us to:
+-   **Reuse Logic**: Share validation, API calls, and state management across multiple components.
+-   **Test Implementation**: Isolate logic for easier unit testing.
+-   **Clean Components**: Keep UI components focused on rendering and user interaction.
 
 ## Testing Coverage
 
