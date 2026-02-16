@@ -30,6 +30,10 @@ export interface Transaction {
         id: number;
         name: string;
     };
+    status?: {
+        code: string;
+        name: string;
+    };
 }
 
 export interface TransactionFilters {

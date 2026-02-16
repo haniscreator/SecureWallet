@@ -40,24 +40,21 @@
 
       <!-- Type Column -->
       <template v-slot:item.type="{ item }">
-        <v-chip
-            :color="item.type === 'transfer' ? 'info' : (item.type === 'credit' ? 'success' : 'error')"
-            size="small"
-            class="text-uppercase font-weight-bold"
-            variant="flat"
-            rounded="0"
-        >
-          {{ item.type }}
-        </v-chip>
+        <span class="text-capitalize">{{ item.type }}</span>
       </template>
 
       <!-- Amount Column -->
       <template v-slot:item.amount="{ item }">
-        <span class="font-weight-bold" :class="getTypeColor(item.type)">
-          <template v-if="item.type === 'debit'">-</template>
-          <template v-if="item.type === 'credit'">+</template>
+        <span class="font-weight-bold">
           {{ getCurrencySymbol(item) }}{{ Number(item.amount).toLocaleString() }}
         </span>
+      </template>
+
+      <!-- Status Column -->
+      <template v-slot:item.status.name="{ item }">
+          <v-chip size="small" variant="tonal" class="text-capitalize" color="grey">
+              {{ item.status?.name || 'Unknown' }}
+          </v-chip>
       </template>
 
       <!-- Actions Column -->
@@ -133,6 +130,7 @@ const headers = [
   { title: 'Type', key: 'type', align: 'start' as const, sortable: false },
   { title: 'Amount', key: 'amount', align: 'end' as const, sortable: true },
   { title: 'Reference', key: 'reference', align: 'start' as const, sortable: true },
+  { title: 'Status', key: 'status.name', align: 'start' as const, sortable: false },
   { title: 'Actions', key: 'actions', align: 'end' as const, sortable: false },
 ];
 
@@ -140,12 +138,7 @@ function onUpdateOptions(options: any) {
   emit('update:options', options);
 }
 
-function getTypeColor(type: string) {
-  if (type === 'credit') return 'text-success';
-  if (type === 'debit') return 'text-error';
-  if (type === 'transfer') return 'text-info';
-  return '';
-}
+
 
 function getWalletName(item: Transaction, side: 'to' | 'from') {
     const wallet = side === 'to' ? item.to_wallet : item.from_wallet;
