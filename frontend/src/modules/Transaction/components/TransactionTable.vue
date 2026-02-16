@@ -130,7 +130,7 @@ const headers = [
   { title: 'Date', key: 'created_at', align: 'start' as const, sortable: true },
   { title: 'From', key: 'from', align: 'start' as const, sortable: false },
   { title: 'To', key: 'to', align: 'start' as const, sortable: false },
-  { title: 'Type', key: 'type', align: 'start' as const, sortable: true },
+  { title: 'Type', key: 'type', align: 'start' as const, sortable: false },
   { title: 'Amount', key: 'amount', align: 'end' as const, sortable: true },
   { title: 'Reference', key: 'reference', align: 'start' as const, sortable: true },
   { title: 'Actions', key: 'actions', align: 'end' as const, sortable: false },
