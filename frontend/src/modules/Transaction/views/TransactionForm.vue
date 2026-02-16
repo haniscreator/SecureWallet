@@ -34,9 +34,11 @@
                                         bg-color="grey-lighten-4"
                                     ></v-text-field>
                                 </v-col>
+                            </v-row>
 
+                            <v-row>
                                 <!-- Amount -->
-                                <v-col cols="12">
+                                <v-col cols="12" md="6">
                                     <div class="text-subtitle-2 font-weight-bold mb-2">Amount</div>
                                     <v-text-field
                                         :model-value="formatAmount(transaction)"
@@ -46,7 +48,9 @@
                                         bg-color="grey-lighten-4"
                                     ></v-text-field>
                                 </v-col>
+                            </v-row>
 
+                            <v-row>
                                 <!-- Type -->
                                 <v-col cols="12" md="6">
                                     <div class="text-subtitle-2 font-weight-bold mb-2">Type</div>
@@ -72,7 +76,9 @@
                                         class="text-capitalize"
                                     ></v-text-field>
                                 </v-col>
+                            </v-row>
 
+                            <v-row>
                                 <!-- Reference -->
                                 <v-col cols="12">
                                     <div class="text-subtitle-2 font-weight-bold mb-2">Reference</div>
