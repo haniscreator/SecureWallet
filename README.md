@@ -38,22 +38,27 @@ To make the review easier, I’ve included short demo videos below that walk thr
 ## Documentation & Architecture
 
 Additionally, I’ve included some supporting design materials below to provide more context on the overall architecture and future extensibility:
-### 1. Transfer Flow – System Design Diagram
+
+### 1. Transfer Flow – Flowchart
+- **[Flowchart](docs/part-2/transfer-flow-chart.md)**: I created a flowchart to validate the logic, especially for the Transfer feature, which includes multiple conditions and edge cases. 
+
+
+### 2. Transfer Flow – System Design Diagram
 - **[System Design Diagram](docs/part-2/transfer-system-design.md)**: Since the FX service (currency exchange) is not yet available, I designed the system with future extensibility in mind and included a conceptual approach for potential integration. This is intended as an ideation for future implementation.
 
-### 2. Transfer Flow – Sequence Diagram
+### 3. Transfer Flow – Sequence Diagram
 - **[Transfer Flow – Sequence Diagram](docs/part-2/transfer-sequence-diagram.md)**: This diagram illustrates the end-to-end flow of the transfer process and interactions between components.
 
-### 3. Database ER Diagram
+### 4. Database ER Diagram
 - **[Database ER Diagram](docs/part-2/er-diagram-v2.md)**: This diagram shows the database relationships and overall data structure.
 
-### 4. About Backend Project
+### 5. About Backend Project
 - **[Backend Readme](backend/README.md)**: Detailed information about the backend technology, project structure, and how it works.
 
-### 5. About Frontend Project
+### 6. About Frontend Project
 - **[Frontend Readme](frontend/README.md)**: Detailed information about the frontend technology, project structure, and how it works.
 
-### 6. API Documentation
+### 7. API Documentation
 - **[API Setup](docs/api-setup.md)**: Instructions on how to import the Postman collection and explore available APIs.
 
 
