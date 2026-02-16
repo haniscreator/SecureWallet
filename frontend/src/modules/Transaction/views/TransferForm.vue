@@ -150,11 +150,11 @@
                         </v-col>
                     </v-row>
 
-                    <!-- Description -->
+                    <!-- Reference -->
                     <v-textarea
                         v-model="formData.description"
-                        label="Description (Optional)"
-                        placeholder="What is this transfer for?"
+                        label="Reference (Optional)"
+                        placeholder="Enter reference"
                         variant="outlined"
                         rows="3"
                         class="mb-4"
