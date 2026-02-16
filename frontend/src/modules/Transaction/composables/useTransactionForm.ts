@@ -27,18 +27,19 @@ export function useTransactionForm() {
     function formatAmount(item: Transaction) {
         if (!item) return '';
         const symbol = item.to_wallet?.currency?.symbol || item.from_wallet?.currency?.symbol || '$';
-        return `${item.type === 'debit' ? '-' : '+'}${symbol}${Number(item.amount).toLocaleString()}`;
+        return `${symbol}${Number(item.amount).toLocaleString()}`;
     }
 
-    function getWalletName(item: Transaction) {
-        const wallet = item.to_wallet;
+    function getWalletName(item: Transaction, side: 'to' | 'from' = 'to') {
+        const wallet = side === 'to' ? item.to_wallet : item.from_wallet;
+
         if (wallet?.is_external && wallet.address) {
             if (wallet.address.length > 13) {
                 return `${wallet.address.substring(0, 8)}...${wallet.address.substring(wallet.address.length - 6)}`;
             }
             return wallet.address;
         }
-        return item.to_wallet?.name || item.wallet?.name || 'Unknown Wallet';
+        return wallet?.name || (side === 'from' ? 'System Deposit' : 'Unknown');
     }
 
     return {

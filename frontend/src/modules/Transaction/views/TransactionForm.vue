@@ -11,11 +11,23 @@
                     <v-card-text class="pa-6" v-if="!loading && transaction">
                         <v-form>
                             <v-row>
-                                <!-- Reference -->
-                                <v-col cols="12">
-                                    <div class="text-subtitle-2 font-weight-bold mb-2">Reference</div>
+                                <!-- From Wallet -->
+                                <v-col cols="12" md="6">
+                                    <div class="text-subtitle-2 font-weight-bold mb-2">From</div>
                                     <v-text-field
-                                        :model-value="transaction.reference"
+                                        :model-value="getWalletName(transaction, 'from')"
+                                        variant="outlined"
+                                        density="compact"
+                                        readonly
+                                        bg-color="grey-lighten-4"
+                                    ></v-text-field>
+                                </v-col>
+
+                                <!-- To Wallet -->
+                                <v-col cols="12" md="6">
+                                    <div class="text-subtitle-2 font-weight-bold mb-2">To</div>
+                                    <v-text-field
+                                        :model-value="getWalletName(transaction, 'to')"
                                         variant="outlined"
                                         density="compact"
                                         readonly
@@ -24,7 +36,7 @@
                                 </v-col>
 
                                 <!-- Amount -->
-                                <v-col cols="12" md="6">
+                                <v-col cols="12">
                                     <div class="text-subtitle-2 font-weight-bold mb-2">Amount</div>
                                     <v-text-field
                                         :model-value="formatAmount(transaction)"
@@ -32,11 +44,10 @@
                                         density="compact"
                                         readonly
                                         bg-color="grey-lighten-4"
-                                        :class="transaction.type === 'credit' ? 'text-success' : 'text-error'"
                                     ></v-text-field>
                                 </v-col>
 
-                                 <!-- Type -->
+                                <!-- Type -->
                                 <v-col cols="12" md="6">
                                     <div class="text-subtitle-2 font-weight-bold mb-2">Type</div>
                                     <v-text-field
@@ -49,10 +60,24 @@
                                     ></v-text-field>
                                 </v-col>
 
+                                <!-- Status -->
                                 <v-col cols="12" md="6">
-                                     <div class="text-subtitle-2 font-weight-bold mb-2">Related Wallet</div>
+                                    <div class="text-subtitle-2 font-weight-bold mb-2">Status</div>
                                     <v-text-field
-                                        :model-value="getWalletName(transaction)"
+                                        :model-value="transaction.status?.name || 'Unknown'"
+                                        variant="outlined"
+                                        density="compact"
+                                        readonly
+                                        bg-color="grey-lighten-4"
+                                        class="text-capitalize"
+                                    ></v-text-field>
+                                </v-col>
+
+                                <!-- Reference -->
+                                <v-col cols="12">
+                                    <div class="text-subtitle-2 font-weight-bold mb-2">Reference</div>
+                                    <v-text-field
+                                        :model-value="transaction.reference"
                                         variant="outlined"
                                         density="compact"
                                         readonly
