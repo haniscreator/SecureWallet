@@ -93,7 +93,7 @@ class WalletService
 
     public function assignUsers(Wallet $wallet, array $userIds): void
     {
-        $wallet->users()->syncWithoutDetaching($userIds);
+        $wallet->users()->sync($userIds);
     }
 
     public function update(Wallet $wallet, WalletData $data): Wallet
