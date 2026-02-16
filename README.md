@@ -1,6 +1,8 @@
 # Secure Business Wallet Management
 
-This repository contains a simplified internal wallet management system for a fintech use case. It provides admin tools for wallet control, transaction visibility, and team access management. The current scope supports one company, with a design that enables future scalability.
+This repository contains a simplified internal wallet management system for a fintech use case. It provides admin tools for wallet control, transaction visibility, and team access management. The current scope supports one company, with a design that enables future scalability. 
+
+For completeness, I’ve provided the changelog for the latest version rollout v1.1.0 [Changelog](ttps://secure-wallet-jet.vercel.app/changelog)
 
 ![Demo](screenshots/demo.png)
 
@@ -12,44 +14,46 @@ This repository contains a simplified internal wallet management system for a fi
 - **Auth**: Laravel Sanctum (Token-based)
 - **Database**: MySQL / SQLite (for unit testing)
 - **Testing**: PHPUnit, Vitest
+
+
 ## Demo
 
 - **Live Demo**: [https://secure-wallet-jet.vercel.app/](https://secure-wallet-jet.vercel.app/)
 
-## User Access for Testing
 
-You can use the following credentials for both local and live environments:
+## Data For Testing
 
-Admin Account
-- **Email**: `admin@gmail.com`
-- **Password**: `12345678`
+User Accounts (Login Credentials):
+- [ Demo User Accounts ](https://docs.google.com/spreadsheets/d/1VjZgWQA9DU4YxbEs9A6fwGaqSYv-V46Ti_gSKJxNf0Y/edit?gid=1011573278#gid=1011573278)
 
-User Account
-- **Email**: `euuser@gmail.com`
-- **Password**: `12345678`
+Wallets (Including Pre-seeded External Wallets):
+- [ Demo Wallets ](https://docs.google.com/spreadsheets/d/1VjZgWQA9DU4YxbEs9A6fwGaqSYv-V46Ti_gSKJxNf0Y/edit?gid=1644118482#gid=1644118482)
 
-## Docker (Up & Running on Local)
 
-As an industry best practice, this project comes pre-configured with Docker for easy development for both backend and frontend.
+## Demo Videos & Testing Coverage
+To make the review easier, I’ve included short demo videos below that walk through the main features and flows of the application. 📹 [Watch Demo Videos](docs/part-2/demo-video.md)
 
-For detailed setup instructions, including prerequisites, commands, and troubleshooting, please refer to:
-👉 **[Docker Setup Guide](docs/docker-setup.md)**
+
 
 ## Documentation & Architecture
 
-I have provided detailed documentation for each part of the system:
+Additionally, I’ve included some supporting design materials below to provide more context on the overall architecture and future extensibility:
+### 1. Transfer Flow – System Design Diagram
+- **[System Design Diagram](docs/part-2/transfer-system-design-diagram.md)**: Since the FX service (currency exchange) is not yet available, I designed the system with future extensibility in mind and included a conceptual approach for potential integration. This is intended as an ideation for future implementation.
 
-### 1. Backend
+### 2. Transfer Flow – Sequence Diagram
+- **[Transfer Flow – Sequence Diagram](docs/part-2/transfer-sequence-diagram.md)**: This diagram illustrates the end-to-end flow of the transfer process and interactions between components.
+
+### 3. Database ER Diagram
+- **[Database ER Diagram](docs/part-2/er-diagram.md)**: This diagram shows the database relationships and overall data structure.
+
+### 4. About Backend Project
 - **[Backend Readme](backend/README.md)**: Detailed information about the backend technology, project structure, and how it works.
 
-### 2. Frontend
+### 5. About Frontend Project
 - **[Frontend Readme](frontend/README.md)**: Detailed information about the frontend technology, project structure, and how it works.
 
-### 3. API Documentation
+### 6. API Documentation
 - **[API Setup](docs/api-setup.md)**: Instructions on how to import the Postman collection and explore available APIs.
 
-### 4. System Design
-- **[System Design Overview](docs/system-design.md)**: Sequence diagrams and class diagrams explaining the core architecture.
 
-### 5. Database Schema
-- **[ER Diagram](docs/er-diagram.md)**: Entity Relationship Diagram showing the database structure.

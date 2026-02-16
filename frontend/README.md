@@ -56,7 +56,7 @@ src/
 
 ## Introduce Composables
 
-We use **Composables** to encapsulate and reuse stateful logic, particularly in the **Transaction** and **Transfer** modules. Instead of mixing complex business logic directly into the Vue components, we extract it into composable functions (e.g., `useTransfer.ts`). 
+We use **Composables** to encapsulate and reuse stateful logic, particularly in the **Transaction** / **Transfer** modules. Instead of mixing complex business logic directly into the Vue components, we extract it into composable functions (e.g., `useTransferForm.ts`). 
 
 This approach allows us to:
 -   **Reuse Logic**: Share validation, API calls, and state management across multiple components.

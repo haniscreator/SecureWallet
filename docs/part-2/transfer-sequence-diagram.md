@@ -44,7 +44,7 @@ sequenceDiagram
     end
 ```
 
-## detailed Steps
+## Detailed Steps
 
 1.  **Initiation**: The user submits a transfer request via the Frontend.
 2.  **API Processing**: The Backend API (`TransferController`) receives the request.
