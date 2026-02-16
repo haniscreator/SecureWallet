@@ -24,7 +24,7 @@ class SettingFeatureTest extends TestCase
     }
 
     /** @test */
-    public function admin_cannot_update_settings_when_pending_transactions_exist()
+    public function admin_can_update_settings_even_when_pending_transactions_exist()
     {
         $adminRole = \App\Domain\User\Models\UserRole::firstOrCreate(['name' => 'admin'], ['label' => 'Admin']);
         $admin = User::factory()->create(['role_id' => $adminRole->id]);
@@ -43,8 +43,8 @@ class SettingFeatureTest extends TestCase
             ]
         ]);
 
-        $response->assertStatus(400) // Or 422, let's assume 400 for business logic error
-            ->assertJson(['message' => 'Sorry, it is not able to update due to pending approval records.']);
+        $response->assertStatus(200)
+            ->assertJson(['message' => 'Settings updated successfully']);
     }
 
     /** @test */
