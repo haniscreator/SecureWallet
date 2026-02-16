@@ -79,6 +79,7 @@
                         color="secondary"
                         class="font-weight-bold"
                         @click="$router.push({ path: '/transfer', query: { from: item.id } })"
+                        :disabled="!item.status"
                     >
                         TRANSFER <v-icon size="small" class="ml-1">mdi-bank-transfer</v-icon>
                     </v-btn>

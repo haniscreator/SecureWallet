@@ -121,6 +121,12 @@ export function useTransferForm() {
         if (formData.type === 'internal' && !formData.to_wallet_id) return;
         if (formData.type === 'external' && !formData.to_address) return;
 
+        // Safety check: ensure source wallet is active
+        if (selectedSourceWallet.value && !selectedSourceWallet.value.status) {
+            error.value = 'Cannot transfer from a frozen wallet.';
+            return;
+        }
+
         submitting.value = true;
         error.value = '';
 
@@ -149,7 +155,20 @@ export function useTransferForm() {
         if (route.query.from) {
             const fromId = Number(route.query.from);
             const exists = wallets.value.find(w => w.id === fromId);
-            if (exists) formData.source_wallet_id = fromId;
+
+            if (exists) {
+                // Check if frozen
+                if (!exists.status) {
+                    error.value = 'This wallet is frozen and cannot initiate transfers.';
+                    // Keep source_wallet_id set so UI shows it, but maybe we should block interaction?
+                    // The error alert is shown in the template. 
+                    // We should also probably clear it to prevent submission if they somehow bypass checks, 
+                    // but the submit function validates too.
+                    formData.source_wallet_id = fromId;
+                    return;
+                }
+                formData.source_wallet_id = fromId;
+            }
         }
         await fetchTransferTargets();
     };
