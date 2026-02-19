@@ -33,10 +33,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/wallets/{id}/status', [\App\Http\Controllers\Api\Wallet\WalletController::class, 'updateStatus']);
 
     // Transactions
-    Route::post('/transactions/search', [\App\Http\Controllers\Api\Wallet\TransactionController::class, 'all']);
-    Route::get('/transactions/dashboard-total-balance', [\App\Http\Controllers\Api\Wallet\TransactionController::class, 'dashboardTotalBalance']);
-    Route::get('/transactions/{id}', [\App\Http\Controllers\Api\Wallet\TransactionController::class, 'show']);
-    Route::post('/wallets/{id}/transactions/search', [\App\Http\Controllers\Api\Wallet\TransactionController::class, 'index']);
+    Route::post('/transactions/search', [\App\Http\Controllers\Api\Transaction\TransactionController::class, 'all']);
+    Route::get('/transactions/dashboard-total-balance', [\App\Http\Controllers\Api\Transaction\TransactionController::class, 'dashboardTotalBalance']);
+    Route::get('/transactions/{id}', [\App\Http\Controllers\Api\Transaction\TransactionController::class, 'show']);
+    Route::post('/wallets/{id}/transactions/search', [\App\Http\Controllers\Api\Transaction\TransactionController::class, 'index']);
 
     // Currencies
     Route::apiResource('currencies', \App\Http\Controllers\Api\Currency\CurrencyController::class);
