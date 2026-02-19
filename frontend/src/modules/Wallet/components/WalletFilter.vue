@@ -32,7 +32,6 @@
                         hide-details
                         bg-color="white"
                         clearable
-                        :loading="loading"
                     ></v-select>
                 </v-col>
 
@@ -87,7 +86,6 @@ import type { Currency } from '@/modules/Currency/api';
 
 defineProps<{
     currencies: Currency[];
-    loading?: boolean;
 }>();
 
 const emit = defineEmits(['apply-filter']);

@@ -18,8 +18,7 @@
 
         <!-- Filters -->
         <WalletFilter 
-            :currencies="currencies"
-            :loading="loadingCurrencies"
+            :currencies="currencies" 
             @apply-filter="onApplyFilter" 
         />
 
@@ -44,7 +43,6 @@ import WalletTable from '../components/WalletTable.vue';
 const walletStore = useWalletStore();
 const userStore = useUserStore();
 const currencies = ref<Currency[]>([]);
-const loadingCurrencies = ref(false);
 
 const isAdmin = computed(() => {
     const role = userStore.currentUser?.role;
@@ -54,14 +52,11 @@ const isAdmin = computed(() => {
 
 async function fetchCurrencies() {
     try {
-        loadingCurrencies.value = true;
         const res = await currencyApi.getCurrencies();
         const data = res.data as any;
         currencies.value = Array.isArray(data) ? data : (data.data || []);
     } catch (e) {
         console.error('Failed to fetch currencies');
-    } finally {
-        loadingCurrencies.value = false;
     }
 }
 
