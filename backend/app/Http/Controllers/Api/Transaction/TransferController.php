@@ -3,58 +3,37 @@
 namespace App\Http\Controllers\Api\Transaction;
 
 use App\Http\Controllers\Controller;
-use App\Domain\Transaction\Services\TransferService;
-use App\Domain\Wallet\Models\Wallet;
-use App\Domain\Wallet\Models\ExternalWallet;
+use App\Domain\Transaction\Actions\InitiateTransferAction;
+use App\Domain\Transaction\Actions\ApproveTransferAction;
+use App\Domain\Transaction\Actions\RejectTransferAction;
+use App\Domain\Transaction\Actions\CancelTransferAction;
+use App\Domain\Transaction\DataTransferObjects\TransferData;
+use App\Domain\Transaction\Requests\InitiateTransferRequest;
+use App\Domain\Transaction\Requests\RejectTransferRequest;
+use App\Domain\Transaction\Resources\TransactionResource;
 use App\Domain\Transaction\Models\Transaction;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Gate;
 
 class TransferController extends Controller
 {
-    protected $transferService;
-
-    public function __construct(TransferService $transferService)
-    {
-        $this->transferService = $transferService;
+    public function __construct(
+        protected InitiateTransferAction $initiateTransferAction,
+        protected ApproveTransferAction $approveTransferAction,
+        protected RejectTransferAction $rejectTransferAction,
+        protected CancelTransferAction $cancelTransferAction,
+    ) {
     }
 
-    public function initiate(Request $request)
+    public function initiate(InitiateTransferRequest $request)
     {
-        $request->validate([
-            'source_wallet_id' => 'required|exists:wallets,id',
-            'type' => 'required|in:internal,external',
-            'to_wallet_id' => 'required_if:type,internal|nullable|exists:wallets,id',
-            'to_address' => 'required_if:type,external|nullable|string',
-            'amount' => 'required|numeric|min:0.01',
-        ]);
-
-        $user = Auth::user();
-        $sourceWallet = Wallet::findOrFail($request->source_wallet_id);
-
-        // Authorization: Check if user owns the wallet
-        if (!$sourceWallet->users->contains($user->id)) {
-            return response()->json(['message' => 'Unauthorized access to wallet.'], 403);
-        }
-
-        $target = $request->type === 'internal' ? $request->to_wallet_id : $request->to_address;
-
         try {
-            $transaction = $this->transferService->initiateTransfer(
-                $sourceWallet,
-                $request->type,
-                $target,
-                (float) $request->amount,
-                $user,
-                $request->description
-            );
+            $data = TransferData::fromRequest($request->validated());
+            $transaction = $this->initiateTransferAction->execute($data, Auth::user());
 
             return response()->json([
                 'message' => 'Transfer initiated successfully.',
-                'transaction' => $transaction
+                'transaction' => new TransactionResource($transaction)
             ], 201);
-
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage()], 400);
         }
@@ -64,57 +43,34 @@ class TransferController extends Controller
     {
         $user = Auth::user();
 
-        // Authorization: Check if user is Manager (implied by route middleware or specific gate)
-        // Here we can use Gate or Policy.
-        // For simplicity, we check role directly or rely on route middleware.
-        // "manager" role check.
-        if (!$user->tokenCan('role:manager') && !$user->hasRole('manager')) {
-            // Or verify with Policy
-            // Ensure this user CAN approve.
-        }
-
-        // Let's use Policy if we have one, or just check role for now as per requirements.
-        // "Implement approve_transfer policy/permission" was done in Phase 2.
-        // Let's use Gate::authorize('approve', $transaction) if Policy exists.
-        // For now, explicit check:
-        // Adjust based on how roles are implemented (User::hasRole).
-
         if (!$user->hasRole('manager') && !$user->hasRole('admin')) {
             return response()->json(['message' => 'Unauthorized. Manager role required.'], 403);
         }
 
         try {
-            $approvedTransaction = $this->transferService->approveTransfer($transaction, $user);
+            $approvedTransaction = $this->approveTransferAction->execute($transaction, $user);
             return response()->json([
                 'message' => 'Transfer approved successfully.',
-                'transaction' => $approvedTransaction
+                'transaction' => new TransactionResource($approvedTransaction)
             ]);
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage()], 400);
         }
     }
 
-    public function reject(Request $request, Transaction $transaction)
+    public function reject(RejectTransferRequest $request, Transaction $transaction)
     {
-        $request->validate([
-            'reason' => 'required|string|max:255',
-        ]);
-
         $user = Auth::user();
 
-        if (!$user->hasRole('manager') && !$user->hasRole('admin')) {
-            return response()->json(['message' => 'Unauthorized. Manager role required.'], 403);
-        }
-
         try {
-            $rejectedTransaction = $this->transferService->rejectTransfer(
+            $rejectedTransaction = $this->rejectTransferAction->execute(
                 $transaction,
                 $user,
-                $request->reason
+                $request->validated()['reason']
             );
             return response()->json([
                 'message' => 'Transfer rejected successfully.',
-                'transaction' => $rejectedTransaction
+                'transaction' => new TransactionResource($rejectedTransaction)
             ]);
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage()], 400);
@@ -126,10 +82,10 @@ class TransferController extends Controller
         $user = Auth::user();
 
         try {
-            $cancelledTransaction = $this->transferService->cancelTransfer($transaction, $user);
+            $cancelledTransaction = $this->cancelTransferAction->execute($transaction, $user);
             return response()->json([
                 'message' => 'Transfer cancelled successfully.',
-                'transaction' => $cancelledTransaction
+                'transaction' => new TransactionResource($cancelledTransaction)
             ]);
         } catch (\Exception $e) {
             return response()->json(['message' => $e->getMessage()], 400);
