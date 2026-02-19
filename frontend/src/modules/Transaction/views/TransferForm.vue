@@ -218,6 +218,12 @@ onMounted(async () => {
 
   await init();
 });
+
+defineExpose({
+    formData,
+    submitTransfer,
+    validDetails
+});
 </script>
 
 <style scoped>

@@ -59,3 +59,16 @@ Object.defineProperty(global, 'IntersectionObserver', {
     configurable: true,
     value: IntersectionObserverMock
 })
+
+// Mock lottie-web
+vi.mock('lottie-web', () => ({
+    default: {
+        loadAnimation: vi.fn().mockReturnValue({
+            destroy: vi.fn(),
+            stop: vi.fn(),
+            play: vi.fn(),
+            setSpeed: vi.fn(),
+            setDirection: vi.fn(),
+        }),
+    },
+}))
