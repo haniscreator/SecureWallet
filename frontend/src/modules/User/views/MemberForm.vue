@@ -90,6 +90,7 @@
                                         closable-chips
                                         :readonly="!isAdmin"
                                         :bg-color="!isAdmin ? 'grey-lighten-4' : undefined"
+                                        :loading="loadingWallets"
                                     ></v-select>
                                 </v-col>
 
@@ -154,6 +155,7 @@ const userStore = useUserStore();
 
 const form = ref<any>(null);
 const loading = ref(false);
+const loadingWallets = ref(false);
 const isEditMode = computed(() => route.params.id !== undefined);
 const isAdmin = computed(() => userStore.currentUser?.role === 'admin');
 const availableWallets = ref<Wallet[]>([]);
@@ -184,10 +186,13 @@ onMounted(async () => {
     await userStore.fetchCurrentUser();
 
     try {
+        loadingWallets.value = true;
         const { data } = await walletApi.getWallets();
         availableWallets.value = (data as any).data || data;
     } catch (e) {
         console.error('Failed to fetch wallets', e);
+    } finally {
+        loadingWallets.value = false;
     }
 
     if (isEditMode.value) {
