@@ -8,6 +8,8 @@ export interface Transaction {
     created_at: string;
     wallet?: {
         name: string;
+        address?: string;
+        is_external?: boolean;
         currency?: {
             symbol: string;
         }
@@ -22,6 +24,8 @@ export interface Transaction {
     };
     from_wallet?: {
         name: string;
+        address?: string;
+        is_external?: boolean;
         currency?: {
             symbol: string;
         }
@@ -66,5 +70,8 @@ export const transactionApi = {
     },
     rejectTransfer(id: number, reason: string) {
         return apiClient.post<{ message: string; transaction: Transaction }>(`/transfers/${id}/reject`, { reason });
+    },
+    cancelTransaction(id: number) {
+        return apiClient.post<{ message: string; transaction: Transaction }>(`/transfers/${id}/cancel`);
     }
 };

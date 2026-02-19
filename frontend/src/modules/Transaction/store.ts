@@ -52,6 +52,20 @@ export const useTransactionStore = defineStore('transaction', () => {
         }
     }
 
+    async function cancelTransaction(id: number) {
+        loading.value = true;
+        error.value = null;
+        try {
+            await transactionApi.cancelTransaction(id);
+        } catch (e: any) {
+            error.value = e.response?.data?.message || 'Failed to cancel transaction';
+            console.error(e);
+            throw e;
+        } finally {
+            loading.value = false;
+        }
+    }
+
     return {
         transactions,
         currentTransaction,
@@ -61,6 +75,7 @@ export const useTransactionStore = defineStore('transaction', () => {
         totalItems,
         itemsPerPage,
         fetchTransactions,
-        fetchTransaction
+        fetchTransaction,
+        cancelTransaction
     };
 });

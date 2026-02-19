@@ -45,6 +45,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/transfers', [\App\Http\Controllers\Api\Transaction\TransferController::class, 'initiate']);
     Route::post('/transfers/{transaction}/approve', [\App\Http\Controllers\Api\Transaction\TransferController::class, 'approve']);
     Route::post('/transfers/{transaction}/reject', [\App\Http\Controllers\Api\Transaction\TransferController::class, 'reject']);
+    Route::post('/transfers/{transaction}/cancel', [\App\Http\Controllers\Api\Transaction\TransferController::class, 'cancel']);
 
     // External Wallets
     Route::get('/external-wallets', [\App\Http\Controllers\Api\Wallet\ExternalWalletController::class, 'index']);

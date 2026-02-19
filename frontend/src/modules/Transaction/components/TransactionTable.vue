@@ -61,6 +61,16 @@
       <template v-slot:item.actions="{ item }">
         <div class="d-flex justify-end gap-2">
           <v-btn
+            v-if="item.status?.code === 'pending' && item.user?.id === authStore.user?.id"
+            variant="text"
+            size="small"
+            color="error"
+            class="font-weight-bold"
+            @click="$emit('cancel-transaction', item)"
+          >
+            CANCEL <v-icon size="small" class="ml-1">mdi-close-circle</v-icon>
+          </v-btn>
+          <v-btn
             variant="text"
             size="small"
             color="info"
@@ -103,6 +113,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
 import type { Transaction } from '../api';
+import { useAuthStore } from '@/modules/Auth/store';
 
 const props = defineProps<{
   loading: boolean;
@@ -112,8 +123,9 @@ const props = defineProps<{
   itemsPerPage: number;
 }>();
 
-const emit = defineEmits(['update:options', 'update:page', 'view-details']);
+const emit = defineEmits(['update:options', 'update:page', 'view-details', 'cancel-transaction']);
 
+const authStore = useAuthStore();
 const selected = ref([]);
 
 const proxyPage = computed({

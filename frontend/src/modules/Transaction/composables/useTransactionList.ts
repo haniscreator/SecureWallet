@@ -42,11 +42,37 @@ export function useTransactionList() {
         router.push(`/transactions/${item.id}`);
     }
 
+    const showConfirm = ref(false);
+    const confirmingItem = ref<any>(null);
+
+    function onCancelClick(item: any) {
+        confirmingItem.value = item;
+        showConfirm.value = true;
+    }
+
+    async function confirmCancel() {
+        if (!confirmingItem.value) return;
+
+        try {
+            await store.cancelTransaction(confirmingItem.value.id);
+            // Refresh list
+            store.fetchTransactions(filters.value);
+            showConfirm.value = false;
+            confirmingItem.value = null;
+        } catch (err) {
+            console.error('Failed to cancel transaction', err);
+        }
+    }
+
     return {
         store,
         filters,
+        showConfirm,
+        confirmingItem,
         onApplyFilter,
         loadItems,
-        viewDetails
+        viewDetails,
+        onCancelClick,
+        confirmCancel
     };
 }

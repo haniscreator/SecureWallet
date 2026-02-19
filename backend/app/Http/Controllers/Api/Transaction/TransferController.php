@@ -120,4 +120,19 @@ class TransferController extends Controller
             return response()->json(['message' => $e->getMessage()], 400);
         }
     }
+
+    public function cancel(Transaction $transaction)
+    {
+        $user = Auth::user();
+
+        try {
+            $cancelledTransaction = $this->transferService->cancelTransfer($transaction, $user);
+            return response()->json([
+                'message' => 'Transfer cancelled successfully.',
+                'transaction' => $cancelledTransaction
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 400);
+        }
+    }
 }

@@ -220,4 +220,33 @@ class TransferService
             return $transaction->fresh();
         });
     }
+
+    /**
+     * Cancel a pending transfer by the initiator.
+     *
+     * @param Transaction $transaction
+     * @param User $user
+     * @return Transaction
+     * @throws Exception
+     */
+    public function cancelTransfer(Transaction $transaction, User $user): Transaction
+    {
+        return DB::transaction(function () use ($transaction, $user) {
+            if ($transaction->transaction_status_id !== TransactionStatus::getId(TransactionStatus::CODE_PENDING)) {
+                throw new Exception("Only pending transactions can be cancelled.");
+            }
+
+            if ($transaction->user_id !== $user->id) {
+                throw new Exception("You can only cancel your own transactions.");
+            }
+
+            $cancelledStatusId = TransactionStatus::getId(TransactionStatus::CODE_CANCELLED);
+
+            $transaction->update([
+                'transaction_status_id' => $cancelledStatusId,
+            ]);
+
+            return $transaction->fresh();
+        });
+    }
 }
