@@ -49,7 +49,7 @@
 
     <template v-slot:append>
       <div class="pa-4 text-center">
-        <a href="/changelog" target="_blank" class="text-caption text-grey text-decoration-none">v1.1.0</a>
+        <a href="/changelog" target="_blank" class="text-caption text-grey text-decoration-none">v1.1.1</a>
       </div>
     </template>
   </v-navigation-drawer>
