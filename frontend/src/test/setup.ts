@@ -26,3 +26,36 @@ Element.prototype.getBoundingClientRect = vi.fn(() => {
         right: 0,
     } as DOMRect;
 });
+
+// Mock visualViewport
+if (typeof window !== 'undefined' && !window.visualViewport) {
+    (window as any).visualViewport = {
+        offsetLeft: 0,
+        offsetTop: 0,
+        pageLeft: 0,
+        pageTop: 0,
+        width: 1024,
+        height: 768,
+        scale: 1,
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+        dispatchEvent: vi.fn(),
+    }
+}
+
+// Mock IntersectionObserver
+class IntersectionObserverMock {
+    observe = vi.fn()
+    unobserve = vi.fn()
+    disconnect = vi.fn()
+}
+Object.defineProperty(window, 'IntersectionObserver', {
+    writable: true,
+    configurable: true,
+    value: IntersectionObserverMock
+})
+Object.defineProperty(global, 'IntersectionObserver', {
+    writable: true,
+    configurable: true,
+    value: IntersectionObserverMock
+})
