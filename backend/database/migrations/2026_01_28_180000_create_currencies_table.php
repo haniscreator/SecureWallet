@@ -17,11 +17,6 @@ return new class extends Migration {
             $table->timestamps();
         });
 
-        // Seed initial data to support existing wallets if any (though we are fresh dev)
-        DB::table('currencies')->insert([
-            ['code' => 'USD', 'name' => 'US Dollar', 'symbol' => '$', 'created_at' => now(), 'updated_at' => now()],
-            ['code' => 'EUR', 'name' => 'Euro', 'symbol' => '€', 'created_at' => now(), 'updated_at' => now()],
-        ]);
     }
 
     public function down(): void
