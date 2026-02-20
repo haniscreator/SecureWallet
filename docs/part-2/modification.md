@@ -24,5 +24,5 @@ More UI tests were added to improve confidence in key flows and visual behavior.
 
 
 ## 4. Improvements
-- Refactored code for better consistency, readability, and overall code quality.
+- Refactored to improve overall code quality, performance, and address minor fixes.
 
