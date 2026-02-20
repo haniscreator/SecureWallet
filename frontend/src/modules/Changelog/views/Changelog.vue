@@ -44,9 +44,9 @@
                                         </v-expansion-panel-title>
                                         <v-expansion-panel-text class="text-grey-darken-1">
                                             <ul class="pl-4">
-                                                <li>Added indexes to the transactions table to improve query performance. (Feedback #2)</li>
-                                                <li>Added more UI tests for the frontend to improve test coverage and reliability. (Feedback #3)</li>
-                                                <li>Refactored code for better consistency, readability, and overall code quality.</li>
+                                                <li>Feedback #2 : Added indexes to the transactions table to improve query performance.</li>
+                                                <li>Feedback #3 Added more UI tests for the frontend to improve test coverage and reliability.</li>
+                                                <li>Ohters Improvement : Refactoring to improve overall code quality, performance, and address minor fixes</li>
                                             </ul>
                                         </v-expansion-panel-text>
                                     </v-expansion-panel>
@@ -58,7 +58,7 @@
                                         </v-expansion-panel-title>
                                         <v-expansion-panel-text class="text-grey-darken-1">
                                             <ul class="pl-4">
-                                                <li>Fixed several minor bugs.</li>
+                                                <li>Ohters Fixes : Fixed several minor bugs.</li>
                                             </ul>
                                         </v-expansion-panel-text>
                                     </v-expansion-panel>
@@ -70,7 +70,7 @@
                                         </v-expansion-panel-title>
                                         <v-expansion-panel-text class="text-grey-darken-1">
                                             <ul class="pl-4">
-                                                <li>User can cancel own transaction (Feedback #1)</li>
+                                                <li>Feedback #1 : User can cancel own transaction</li>
                                             </ul>
                                         </v-expansion-panel-text>
                                     </v-expansion-panel>

@@ -24,4 +24,5 @@ More UI tests were added to improve confidence in key flows and visual behavior.
 
 
 ## 4. Improvements
-- Another round of Code Refactoring on both frontend and backend
+- Refactored code for better consistency, readability, and overall code quality.
+

@@ -18,10 +18,10 @@ For completeness, I’ve provided the changelog for the latest version rollout v
 ## What's Update?
 I would like to highlight some updates I made to the application:
 
-- User can cancel own transaction [Watch Video](https://drive.google.com/file/d/1ZDMxaZtLdHphUwPGxmAPui8jiBacCC4f/view?usp=sharing)
-- Added index at transactions table
-- Added more UI Test for Frontend
-- Code Refactoring on both frontend and backend
+- Feedback #1 : User can cancel own transaction 📹 [Watch Video](https://drive.google.com/file/d/1ZDMxaZtLdHphUwPGxmAPui8jiBacCC4f/view?usp=sharing)
+- Feedback #2 : Added indexes to the transactions table to improve query performance.
+- Feedback #3 : Added more UI tests for the frontend to improve test coverage and reliability.
+- Ohters Improvement : Refactored code for better consistency, readability, and overall code quality.
 
 👉 [Read More](docs/part-2/modification.md)
 
