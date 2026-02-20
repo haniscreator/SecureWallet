@@ -44,8 +44,9 @@
                                         </v-expansion-panel-title>
                                         <v-expansion-panel-text class="text-grey-darken-1">
                                             <ul class="pl-4">
-                                                <li>Add index at transactions table</li>
-                                                <li>Add more UI Test for Frontend</li>
+                                                <li>Added indexes to the transactions table to improve query performance. (Feedback #2)</li>
+                                                <li>Added more UI tests for the frontend to improve test coverage and reliability. (Feedback #3)</li>
+                                                <li>Refactored code for better consistency, readability, and overall code quality.</li>
                                             </ul>
                                         </v-expansion-panel-text>
                                     </v-expansion-panel>
@@ -57,7 +58,7 @@
                                         </v-expansion-panel-title>
                                         <v-expansion-panel-text class="text-grey-darken-1">
                                             <ul class="pl-4">
-                                                <li>Code Refactoring on both frontend and backend</li>
+                                                <li>Fixed several minor bugs.</li>
                                             </ul>
                                         </v-expansion-panel-text>
                                     </v-expansion-panel>
@@ -69,7 +70,7 @@
                                         </v-expansion-panel-title>
                                         <v-expansion-panel-text class="text-grey-darken-1">
                                             <ul class="pl-4">
-                                                <li>User can cancel own transaction</li>
+                                                <li>User can cancel own transaction (Feedback #1)</li>
                                             </ul>
                                         </v-expansion-panel-text>
                                     </v-expansion-panel>

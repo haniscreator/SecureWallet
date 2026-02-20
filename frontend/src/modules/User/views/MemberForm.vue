@@ -77,7 +77,22 @@
                                  <!-- Wallet Access -->
                                 <v-col cols="12">
                                     <div class="text-subtitle-2 font-weight-bold mb-2">Wallet Access</div>
+                                    <div v-if="!isAdmin" class="d-flex flex-wrap gap-1 pa-2 rounded bg-grey-lighten-4 border">
+                                        <v-chip
+                                            v-for="(name, i) in formData.wallet_access"
+                                            :key="i"
+                                            color="#DBE8E3"
+                                            class="text-grey-darken-3 font-weight-bold mr-1 my-1"
+                                            size="small"
+                                            label
+                                            variant="flat"
+                                        >
+                                            {{ name }}
+                                        </v-chip>
+                                        <span v-if="!formData.wallet_access || formData.wallet_access.length === 0" class="text-caption text-grey">None</span>
+                                    </div>
                                     <v-select
+                                        v-else
                                         v-model="formData.wallet_ids"
                                         :items="availableWallets"
                                         item-title="name"
@@ -88,8 +103,6 @@
                                         multiple
                                         chips
                                         closable-chips
-                                        :readonly="!isAdmin"
-                                        :bg-color="!isAdmin ? 'grey-lighten-4' : undefined"
                                         :loading="loadingWallets"
                                     ></v-select>
                                 </v-col>
@@ -167,6 +180,7 @@ const formData = ref({
     role: null as 'admin' | 'user' | 'manager' | null, 
     status: true,
     wallet_ids: [] as number[],
+    wallet_access: [] as string[],
 });
 
 const roles = [
@@ -214,6 +228,7 @@ async function loadMember() {
              formData.value.role = user.role as any;
              formData.value.status = user.status ?? true;
              formData.value.wallet_ids = user.wallet_ids || [];
+             formData.value.wallet_access = user.wallet_access || [];
         }
 
     } catch (error) {
