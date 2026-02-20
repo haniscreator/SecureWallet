@@ -3,12 +3,14 @@
 namespace App\Http\Controllers\Api\Currency;
 
 use App\Http\Controllers\Controller;
-use App\Domain\Currency\Models\Currency;
 use App\Domain\Currency\Resources\CurrencyResource;
 use Illuminate\Http\Request;
 
 use App\Domain\Currency\Requests\StoreCurrencyRequest;
 use App\Domain\Currency\Requests\UpdateCurrencyRequest;
+use App\Domain\Currency\Actions\CreateCurrencyAction;
+use App\Domain\Currency\Actions\UpdateCurrencyAction;
+use App\Domain\Currency\Actions\DeleteCurrencyAction;
 use App\Domain\Currency\Actions\ListCurrenciesAction;
 use App\Domain\Currency\Actions\GetCurrencyAction;
 use App\Domain\Currency\DataTransferObjects\CurrencyData;
@@ -16,9 +18,9 @@ use App\Domain\Currency\DataTransferObjects\CurrencyData;
 class CurrencyController extends Controller
 {
     public function __construct(
-        protected \App\Domain\Currency\Actions\CreateCurrencyAction $createCurrencyAction,
-        protected \App\Domain\Currency\Actions\UpdateCurrencyAction $updateCurrencyAction,
-        protected \App\Domain\Currency\Actions\DeleteCurrencyAction $deleteCurrencyAction,
+        protected CreateCurrencyAction $createCurrencyAction,
+        protected UpdateCurrencyAction $updateCurrencyAction,
+        protected DeleteCurrencyAction $deleteCurrencyAction,
         protected ListCurrenciesAction $listCurrenciesAction,
         protected GetCurrencyAction $getCurrencyAction
     ) {

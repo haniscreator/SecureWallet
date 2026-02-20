@@ -2,7 +2,7 @@
 
 This repository contains a simplified internal wallet management system for a fintech use case. It provides admin tools for wallet control, transaction visibility, and team access management. The current scope supports one company, with a design that enables future scalability. 
 
-For completeness, I’ve provided the changelog for the latest version rollout v1.1.0 [Changelog](https://secure-wallet-jet.vercel.app/changelog)
+For completeness, I’ve provided the changelog for the latest version rollout v1.1.1 [Changelog](https://secure-wallet-jet.vercel.app/changelog)
 
 ![Demo](screenshots/demo.png)
 
@@ -15,6 +15,15 @@ For completeness, I’ve provided the changelog for the latest version rollout v
 - **Database**: MySQL / SQLite (for unit testing)
 - **Testing**: PHPUnit, Vitest
 
+## What's Update?
+I would like to highlight some updates I made to the application:
+
+- User can cancel own transaction [Watch Video](https://drive.google.com/file/d/1ZDMxaZtLdHphUwPGxmAPui8jiBacCC4f/view?usp=sharing)
+- Added index at transactions table
+- Added more UI Test for Frontend
+- Code Refactoring on both frontend and backend
+
+👉 [Read More](docs/part-2/modification.md)
 
 ## Demo
 
